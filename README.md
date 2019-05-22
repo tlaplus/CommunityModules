@@ -19,12 +19,12 @@ malfunctions.
 Contributing
 ------------
 
-If you have one or more nippets, operators, or modules you'd like to share, please make
+If you have one or more snippets, operators, or modules you'd like to share, please make
 a pull request and we'll take care of it eventually.
 
 Before submitting your request make sure that:
 * Your contribution is working.
-* Your contribution is unique: don't reinvent the wheel and check whether someone already provided a similar solution.
+* Your contribution is unique (or better): check whether someone already provided a similar solution.
 * Your contribution is relevant to the project and actually adds some value.
 
 We take the discretion to approve or reject submissions at our will.
