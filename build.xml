@@ -1,0 +1,37 @@
+<project name="CommunityModules" default="dist" basedir=".">
+
+  <property name="src" location="."/>
+  <property name="build" location="build"/>
+  <property name="dist" location="dist"/>
+  <property name="lib" location="lib"/>
+
+  <target name="init" description="Create the build and dist directory structure">
+    <mkdir dir="${build}"/>
+    <mkdir dir="${dist}"/>
+    <mkdir dir="${lib}"/>
+  </target>
+
+  <target name="compile" depends="init" description="compile the java module overwrites">
+    <get src="https://nightly.tlapl.us/dist/tla2tools.jar" dest="${lib}"/>
+    <javac srcdir="${src}" destdir="${build}" classpath="${lib}/tla2tools.jar"
+           source="1.8"
+           target="1.8"
+           includeantruntime="false"/>
+  </target>
+
+  <target name="dist" depends="compile" description="Combine the module overwrites and the TLA+ definitions into a distribution">
+    <tstamp/>
+    <jar jarfile="${dist}/CommunityModules-${DSTAMP}${TSTAMP}.jar">
+         <fileset dir="${build}/"
+             includes="*.class"/>
+         <fileset dir="${src}/"
+             includes="*.tla,*.java,LICENSE,README.md"/>
+    </jar>
+  </target>
+
+  <target name="clean" description="Delete the ${build} and ${dist} directory trees">
+    <delete dir="${build}"/>
+    <delete dir="${dist}"/>
+    <delete dir="${lib}"/>
+  </target>
+</project>
