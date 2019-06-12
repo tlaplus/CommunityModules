@@ -28,3 +28,8 @@ Before submitting your request make sure that:
 * Your contribution is relevant to the project and actually adds some value.
 
 We take the discretion to approve or reject submissions at our will.
+
+Download
+--------
+
+[![Build Status](https://dev.azure.com/tlaplus/tlaplus/_apis/build/status/tlaplus.CommunityModules?branchName=master)](https://dev.azure.com/tlaplus/tlaplus/_build/latest?definitionId=4&branchName=master)
