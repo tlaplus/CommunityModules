@@ -38,21 +38,21 @@ public final class SequencesExt {
 		// no-instantiation!
 	}
 	
-	public static BoolValue IsASet(final Value val) {
+	public static BoolValue IsInjective(final Value val) {
 		if (val instanceof TupleValue) {
-			return isASetNonDestructive(((TupleValue) val).elems);
+			return isInjectiveNonDestructive(((TupleValue) val).elems);
 		} else {
 			final Value conv = val.toTuple();
 			if (conv == null) {
 				throw new EvalException(EC.TLC_MODULE_ONE_ARGUMENT_ERROR,
 						new String[] { "IsASet", "sequence", Values.ppr(val.toString()) });
 			}
-			return isASetDestructive(((TupleValue) conv).elems);
+			return isInjectiveDestructive(((TupleValue) conv).elems);
 		}
 	}
 	
 	// O(n log n) runtime and O(1) space.
-	private static BoolValue isASetDestructive(final Value[] values) {
+	private static BoolValue isInjectiveDestructive(final Value[] values) {
 		Arrays.sort(values);
 		for (int i = 1; i < values.length; i++) {
 			if (values[i-1].equals(values[i])) {
@@ -66,7 +66,7 @@ public final class SequencesExt {
 	// space is good enough. Sorting values in-place is a no-go because it
 	// would modify the TLA+ tuple. Elements can be any sub-type of Value, not
 	// just IntValue.
-	private static BoolValue isASetNonDestructive(final Value[] values) {
+	private static BoolValue isInjectiveNonDestructive(final Value[] values) {
 		for (int i = 0; i < values.length; i++) {
 			for (int j = i + 1; j < values.length; j++) {
 				if (values[i].equals(values[j])) {
