@@ -1,6 +1,6 @@
 <project name="CommunityModules" default="dist" basedir=".">
 
-  <property name="src" location="."/>
+  <property name="src" location="modules/"/>
   <property name="build" location="build"/>
   <property name="dist" location="dist"/>
   <property name="lib" location="lib"/>
@@ -25,7 +25,9 @@
          <fileset dir="${build}/"
              includes="*.class"/>
          <fileset dir="${src}/"
-             includes="*.tla,*.java,LICENSE,README.md"/>
+             includes="*.tla,*.java"/>
+         <fileset dir="."
+             includes="LICENSE,README.md"/>
     </jar>
   </target>
 
