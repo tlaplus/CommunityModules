@@ -24,27 +24,46 @@
  *   Markus Alexander Kuppe - initial API and implementation
  ******************************************************************************/
 
+import tlc2.value.IValue;
 import tlc2.value.impl.FcnRcdValue;
+import tlc2.value.impl.IntValue;
 import tlc2.value.impl.StringValue;
+import tlc2.value.impl.TupleValue;
 
 public class Json {
 
 	// (p1 :> 0 @@ p2 :> 0 @@ p3 :> 0)
 	// ->
 	// "{\"p1\":0, \"p2\":0, \"p3\":0}"
-	public static final StringValue ToJsonObject(final FcnRcdValue r) {
+	public static final StringValue ToJsonObject(final IValue v) {
 		final StringBuffer buf = new StringBuffer();
 		buf.append("{");
 		
-		for (int i = 0; i < r.domain.length; i++) {
-			buf.append("\"");
-			buf.append(r.domain[i]);
-			buf.append("\"");
-			
-			buf.append(":");
-			buf.append(r.values[i]);
-			if (i < r.domain.length - 1) {
-				buf.append(",");
+		if (v instanceof FcnRcdValue) {
+			final FcnRcdValue r = (FcnRcdValue) v;
+			for (int i = 0; i < r.domain.length; i++) {
+				buf.append("\"");
+				buf.append(r.domain[i]);
+				buf.append("\"");
+				
+				buf.append(":");
+				buf.append(r.values[i]);
+				if (i < r.domain.length - 1) {
+					buf.append(",");
+				}
+			}
+		} else if (v instanceof TupleValue) {
+			final TupleValue t = (TupleValue) v;
+			for (int i = 0; i < t.elems.length; i++) {
+				buf.append("\"");
+				buf.append(IntValue.gen(i + 1));
+				buf.append("\"");
+				
+				buf.append(":");
+				buf.append(t.elems[i]);
+				if (i < t.elems.length - 1) {
+					buf.append(",");
+				}
 			}
 		}
 		
