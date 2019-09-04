@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry kind="src" path="modules"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/tlatools"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER">
 		<attributes>
 			<attribute name="module" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry combineaccessrules="false" kind="src" path="/tlatools"/>
+	<classpathentry kind="lib" path="lib/tla2tools.jar"/>
 	<classpathentry kind="output" path="build"/>
 </classpath>
