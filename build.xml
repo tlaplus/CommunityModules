@@ -1,9 +1,10 @@
-<project name="CommunityModules" default="dist" basedir=".">
+<project name="CommunityModules" default="test" basedir=".">
 
 	<property name="src" location="modules/"/>
 	<property name="build" location="build"/>
 	<property name="dist" location="dist"/>
 	<property name="lib" location="lib"/>
+	<property name="tests" location="tests"/>
 
 	<target name="init" description="Create the build and dist directory structure">
 		<mkdir dir="${build}"/>
@@ -31,9 +32,26 @@
 		</jar>
 	</target>
 
+	<target name="test" depends="dist" description="Run the modules in tests/ on the TLA+ modules in dist/">
+		<!-- If an assert fails, TLC will return a non-zero exit value which is makes the ant target fail. -->
+		<java classname="tlc2.TLC" fork="true" failonerror="true">
+			<!-- Tell Java to use a garbage collector which makes TLC happy. -->
+			<jvmarg value="-XX:+UseParallelGC"/>
+			
+			<arg value="${basedir}/tests/AllTests"/>
+
+			<classpath>
+				<pathelement location="${lib}/tla2tools.jar" />
+				<!-- The jar that has just been built by the dist target. -->
+				<pathelement location="${dist}/CommunityModules-${DSTAMP}${TSTAMP}.jar" />
+			</classpath>
+		</java>
+	</target>
+
 	<target name="clean" description="Delete the ${build} and ${dist} directory trees">
 		<delete dir="${build}"/>
 		<delete dir="${dist}"/>
 		<delete dir="${lib}"/>
+		<delete dir="${tests}/states"/>
 	</target>
 </project>
