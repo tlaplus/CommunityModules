@@ -1,5 +1,5 @@
 ----------------------------- MODULE SVG -----------------------------
-EXTENDS Naturals, Sequences, Integers, TLC, FiniteSets
+EXTENDS Naturals, Sequences, SequencesExt, Integers, TLC, FiniteSets
 
 (******************************************************************************)
 (* Helper Operators                                                           *)
@@ -110,14 +110,6 @@ Group(children, attrs) ==
     (* contained in this group.                                               *)
     (**************************************************************************)
     SVGElem("g", attrs, children, "")
-
-SetToSeq(S) == 
-    (**************************************************************************)
-    (* Convert a set to some sequence that contains all the elements of the   *)
-    (* set exactly once, and contains no other elements.                      *)
-    (**************************************************************************)
-    LET Injective(f) == \A x, y \in DOMAIN f : (f[x] = f[y]) => (x = y) IN
-    CHOOSE f \in [1..Cardinality(S) -> S] : Injective(f)
     
 MakeFrame(elem) == 
     (******************************************************************************)
