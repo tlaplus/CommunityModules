@@ -31,18 +31,6 @@ LOCAL SVGElem(_name, _attrs, _children, _innerText) ==
      children   |-> _children,
      innerText  |-> _innerText ]
 
-SVGElemToString(elem) == 
-    (**************************************************************************)
-    (* Convert an SVG element record into its string representation.          *)
-    (*                                                                        *)
-    (* This operator is expected to be replaced by a Java module override.    *)
-    (* We do not implement it in pure TLA+ because doing non-trivial string   *)
-    (* manipulation in TLA+ is tedious.  Also, the performance of             *)
-    (* implementing this in TLA+ has been demonstrated to be prohibitively    *)
-    (* slow.                                                                  *)
-    (**************************************************************************)
-    TRUE
-    
 (******************************************************************************)
 (*                                                                            *)
 (* Core Graphic Elements.                                                     *)
@@ -110,13 +98,17 @@ Group(children, attrs) ==
     (* contained in this group.                                               *)
     (**************************************************************************)
     SVGElem("g", attrs, children, "")
-    
-MakeFrame(elem) == 
-    (******************************************************************************)
-    (* Builds a single frame for part of a sequence of animation frames.  This is *)
-    (* an SVG group element that contains identifying information about the       *)
-    (* frame.                                                                     *)
-    (******************************************************************************)
-    SVGElemToString(Group(<<elem>>, [class |-> "tlaframe"]))
+
+SVGElemToString(elem) == 
+    (**************************************************************************)
+    (* Convert an SVG element record into its string representation.          *)
+    (*                                                                        *)
+    (* This operator is expected to be replaced by a Java module override.    *)
+    (* We do not implement it in pure TLA+ because doing non-trivial string   *)
+    (* manipulation in TLA+ is tedious.  Also, the performance of             *)
+    (* implementing this in TLA+ has been demonstrated to be prohibitively    *)
+    (* slow.                                                                  *)
+    (**************************************************************************)
+    TRUE
 
 =============================================================================
