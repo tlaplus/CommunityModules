@@ -25,10 +25,12 @@
  ******************************************************************************/
 
 import tlc2.value.IValue;
+import tlc2.value.impl.FcnLambdaValue;
 import tlc2.value.impl.FcnRcdValue;
 import tlc2.value.impl.IntValue;
 import tlc2.value.impl.StringValue;
 import tlc2.value.impl.TupleValue;
+import tlc2.value.impl.Value;
 
 public class Json {
 
@@ -39,8 +41,8 @@ public class Json {
 		final StringBuffer buf = new StringBuffer();
 		buf.append("{");
 		
-		if (v instanceof FcnRcdValue) {
-			final FcnRcdValue r = (FcnRcdValue) v;
+		if (v instanceof FcnRcdValue || v instanceof FcnLambdaValue) {
+			final FcnRcdValue r = (FcnRcdValue) ((Value) v).toFcnRcd();
 			for (int i = 0; i < r.domain.length; i++) {
 				buf.append("\"");
 				buf.append(r.domain[i]);
@@ -71,3 +73,4 @@ public class Json {
 		return new StringValue(buf.toString());
 	}
 }
+
