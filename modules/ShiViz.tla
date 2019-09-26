@@ -1,5 +1,5 @@
 ------------------------------- MODULE ShiViz -------------------------------
-EXTENDS Integers, Json, Toolbox
+EXTENDS Integers, Json, Toolbox, TLC
 
 -----------------------------------------------------------------------------
 
@@ -9,16 +9,18 @@ EXTENDS Integers, Json, Toolbox
 \* whereas the CHOOSE evalutes for states n and n + 1.
 \* This difference is most easily observed by looking
 \* at off-by-one difference of the initial state.
-LOCAL FnHost[i \in DOMAIN _TETrace] ==
-   (*************************************************************************)
-   (* The pc value that has been modified in (the current) state n compared *)
-   (* to the predecessor state n-1.                                         *)
-   (*************************************************************************)
-   IF i = 1 THEN "--"
-   ELSE IF _TETrace[i-1].pc = _TETrace[i].pc
-        THEN FnHost[i-1] \* pc variable has not changed.
-        ELSE CHOOSE p \in DOMAIN _TETrace[i-1].pc :
-                      _TETrace[i-1].pc[p] # _TETrace[i].pc[p]
+LOCAL FnHost ==
+    LET host[i \in DOMAIN _TETrace] ==
+        (*************************************************************************)
+        (* The pc value that has been modified in (the current) state n compared *)
+        (* to the predecessor state n-1.                                         *)
+        (*************************************************************************)
+        IF i = 1 THEN "--"
+        ELSE IF _TETrace[i-1].pc = _TETrace[i].pc
+                THEN host[i-1] \* pc variable has not changed.
+                ELSE CHOOSE p \in DOMAIN _TETrace[i-1].pc :
+                            _TETrace[i-1].pc[p] # _TETrace[i].pc[p]
+    IN TLCEval(host)
 
 Host == FnHost[_TEPosition]
     
@@ -32,10 +34,12 @@ LOCAL clock(n) ==
 LOCAL sum(F, G) == 
    [d \in DOMAIN F |-> F[d] + G[d]]
 
-LOCAL FnClock[i \in DOMAIN _TETrace] == 
-   IF i = 1
-   THEN clock(i)
-   ELSE sum(FnClock[i-1], clock(i))
+LOCAL FnClock == 
+    LET vclock[i \in DOMAIN _TETrace] == 
+        IF i = 1
+        THEN clock(i)
+        ELSE sum(TLCEval(vclock[i-1]), clock(i))
+    IN TLCEval(vclock)
 
 Clock ==
    (*************************************************************************)
@@ -45,5 +49,5 @@ Clock ==
 
 =============================================================================
 \* Modification History
-\* Last modified Tue Aug 27 17:20:37 PDT 2019 by markus
+\* Last modified Tue Sep 25 17:20:37 PDT 2019 by markus
 \* Created Tue Aug 27 13:04:16 PDT 2019 by markus
