@@ -1,4 +1,4 @@
-------------------------------- MODULE ShiViz -------------------------------
+u------------------------------- MODULE ShiViz -------------------------------
 EXTENDS Integers, Json, Toolbox, TLC
 
 -----------------------------------------------------------------------------
@@ -27,7 +27,8 @@ Host == FnHost[_TEPosition]
 -----------------------------------------------------------------------------
 
 LOCAL clock(n) == 
-   [p \in DOMAIN _TETrace[n].pc |-> IF p = FnHost[n] 
+   IF n = 1 THEN [p \in DOMAIN _TETrace[n].pc |-> 0] \* In the init state, all clocks are 0.
+   ELSE [p \in DOMAIN _TETrace[n].pc |-> IF p = FnHost[n] 
                                     THEN 1
                                     ELSE 0]
 
