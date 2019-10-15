@@ -3,6 +3,7 @@
 LOCAL INSTANCE Sequences
 LOCAL INSTANCE Naturals
 LOCAL INSTANCE FiniteSets
+LOCAL INSTANCE Functions
   (*************************************************************************)
   (* Imports the definitions from the modules, but doesn't export them.    *)
   (*************************************************************************)
@@ -24,6 +25,8 @@ IsInjective(s) ==
   (*                                                                       *)
   (* This definition is overridden by TLC in the Java class SequencesExt.  *)
   (* The operator is overridden by the Java method with the same name.     *)
+  (*                                                                       *)
+  (* Also see Functions!Injective operator.                                *)
   (*************************************************************************)
   \A i, j \in DOMAIN s: (s[i] = s[j]) => (i = j)
 
@@ -33,5 +36,87 @@ SetToSeq(S) ==
   (* set exactly once, and contains no other elements.                      *)
   (**************************************************************************)
   CHOOSE f \in [1..Cardinality(S) -> S] : IsInjective(f)
+
+-----------------------------------------------------------------------------
+
+Reverse(s) ==
+  (**************************************************************************)
+  (* Reverse the given sequence s:  Let l be Len(s) (length of s).          *)
+  (* Equals a sequence s.t. << S[l], S[l-1], ..., S[1]>>                    *)
+  (**************************************************************************)
+  [ i \in 1..Len(s) |-> s[(Len(s) - i) + 1] ]
+
+-----------------------------------------------------------------------------
+
+\* The operators below have been extracted from the TLAPS module 
+\* SequencesTheorems.tla as of 10/14/2019.  The original comments have been
+\* partially rewritten.
+
+InsertAt(s, i, e) ==
+  (**************************************************************************)
+  (* Inserts element e at the position i moving the original element to i+1 *)
+  (* and so on.  In other words, a sequence t s.t.:                         *)
+  (*   /\ Len(t) = Len(s) + 1                                               *)
+  (*   /\ t[i] = e                                                          *)
+  (*   /\ \A j \in 1..(i - 1): t[j] = s[j]                                  *)
+  (*   /\ \A k \in (i + 1)..Len(s): t[k + 1] = s[k]                         *)
+  (**************************************************************************)
+  SubSeq(s, 1, i-1) \o <<e>> \o SubSeq(s, i, Len(s))
+
+ReplaceAt(s, i, e) ==
+  (**************************************************************************)
+  (* Replaces the element at position i with the element e.                 *)
+  (**************************************************************************)
+  [s EXCEPT ![i] = e]
+  
+RemoveAt(s, i) == 
+  (**************************************************************************)
+  (* Replaces the element at position i shortening the length of s by one.  *)
+  (**************************************************************************)
+  SubSeq(s, 1, i-1) \o SubSeq(s, i+1, Len(s))
+
+-----------------------------------------------------------------------------
+
+Front(s) == 
+  (**************************************************************************)
+  (* The sequence formed by removing its last element.                      *)
+  (**************************************************************************)
+  SubSeq(s, 1, Len(s)-1)
+
+Last(s) ==
+  (**************************************************************************)
+  (* The last element of the sequence.                                      *)
+  (**************************************************************************)
+  s[Len(s)]
+
+-----------------------------------------------------------------------------
+	
+IsPrefix(s, t) ==
+  (**************************************************************************)
+  (* TRUE iff the sequence s is a prefix of the sequence t, s.t.            *)
+  (* \E u \in Seq(Range(t)) : t = s \o u. In other words, there exists      *)
+  (* a suffix u that with s prepended equals t.                             *)
+  (**************************************************************************)
+  DOMAIN s \subseteq DOMAIN t /\ \A i \in DOMAIN s: s[i] = t[i]
+
+IsStrictPrefix(s,t) ==
+  (**************************************************************************)
+  (* TRUE iff the sequence s is a prefix of the sequence t and s # t        *)
+  (**************************************************************************)
+  IsPrefix(s, t) /\ s # t
+
+IsSuffix(s, t) ==
+  (**************************************************************************)
+  (* TRUE iff the sequence s is a suffix of the sequence t, s.t.            *)
+  (* \E u \in Seq(Range(t)) : t = u \o s. In other words, there exists a    *)
+  (* prefix that with s appended equals t.                                  *)
+  (**************************************************************************)
+  IsPrefix(Reverse(s), Reverse(t))
+
+IsStrictSuffix(s, t) ==
+  (**************************************************************************)
+  (* TRUE iff the sequence s is a suffix of the sequence t and s # t        *)
+  (**************************************************************************)
+  IsSuffix(s,t) /\ s # t
 
 =============================================================================
