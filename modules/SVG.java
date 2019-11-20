@@ -46,12 +46,12 @@ public final class SVG {
 	 *	 innerText 	|-> <string> ]
 	 */
 	public static Value SVGElemToString(Value elem) throws Exception {
-		if (!(elem instanceof RecordValue)) {
+		if (!(elem instanceof RecordValue) || elem.toRcd() == null) {
 			throw new Exception(
-					"An SVG element must be a record. Value given is of type: " + elem.getClass().toString());
+					"An SVG element must be a record. Value given is of type: " + elem.getClass().getName());
 		}
 
-		RecordValue frv = (RecordValue) elem;
+		RecordValue frv = (RecordValue) elem.toRcd();
 
 		// Get 'name'.
 		StringValue nameVal = (StringValue) frv.apply(new StringValue("name"), 0);
