@@ -52,6 +52,12 @@ Reverse(s) ==
   (**************************************************************************)
   [ i \in 1..Len(s) |-> s[(Len(s) - i) + 1] ]
 
+Remove(s, e) ==
+    (************************************************************************)
+    (* The sequence s with e removed or s iff e \notin Range(s)             *)
+    (************************************************************************)
+    SelectSeq(s, LAMBDA t: t # e)
+
 ReplaceAll(s, old, new) ==
   (*************************************************************************)
   (* Equals the sequence s except that all occurrences of element old are  *)
