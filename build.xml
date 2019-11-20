@@ -12,8 +12,11 @@
 		<mkdir dir="${lib}"/>
 	</target>
 
-	<target name="compile" depends="init" description="compile the java module overwrites">
+	<target name="download" depends="init" description="downloads tla2tools.jar" unless="skip.download">
 		<get src="https://nightly.tlapl.us/dist/tla2tools.jar" dest="${lib}"/>
+	</target>
+
+	<target name="compile" depends="download" description="compile the java module overwrites">
 		<javac srcdir="${src}" destdir="${build}" classpath="${lib}/tla2tools.jar"
            source="1.8"
            target="1.8"
