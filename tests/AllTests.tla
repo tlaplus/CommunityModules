@@ -6,6 +6,7 @@
 (***************************************************)
 EXTENDS SequencesExtTests,
         SVGTests,
-        JsonTests
+        JsonTests,
+        BitwiseTests
 
 ===========================================
