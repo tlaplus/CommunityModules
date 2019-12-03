@@ -27,7 +27,7 @@
 		<tstamp/>
 		<jar jarfile="${dist}/CommunityModules-${DSTAMP}${TSTAMP}.jar">
 			<fileset dir="${build}/"
-             includes="*.class"/>
+             includes="**/*.class"/>
 			<fileset dir="${src}/"
              includes="*.tla,*.java"/>
 			<fileset dir="."

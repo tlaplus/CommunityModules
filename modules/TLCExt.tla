@@ -18,4 +18,16 @@ AssertEq(a, b) ==
         /\ a = b
     ELSE a = b
 
+PickSuccessor(exp) ==
+  (******************************************************************************)
+  (* When set as an action constraint in the configuration file, interactively  *)
+  (* pick successor states during state exploration, iff the expression exp     *)
+  (* evaluates to FALSE.  To always pick successor states manually, use         *)
+  (* PickSuccessor(FALSE). To pick successor states when the current prefix of  *)
+  (* behaviors exceeds 22 states, use PickSuccessor(TLCGet("level") < 23).      *)
+  (******************************************************************************)
+  IF (exp)
+  THEN TRUE
+  ELSE CHOOSE bool \in BOOLEAN : TRUE 
+
 =============================================================================
