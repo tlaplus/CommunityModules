@@ -45,7 +45,7 @@ public final class SequencesExt {
 			final Value conv = val.toTuple();
 			if (conv == null) {
 				throw new EvalException(EC.TLC_MODULE_ONE_ARGUMENT_ERROR,
-						new String[] { "IsASet", "sequence", Values.ppr(val.toString()) });
+						new String[] { "IsInjective", "sequence", Values.ppr(val.toString()) });
 			}
 			return isInjectiveDestructive(((TupleValue) conv).elems);
 		}

@@ -18,6 +18,13 @@ AssertEq(a, b) ==
         /\ a = b
     ELSE a = b
 
+
+AssertError(err, exp) ==
+    LET FailsEval(e) == CHOOSE b \in BOOLEAN : TRUE \* Expression failed to evaluate. 
+        TLCError     == CHOOSE s \in STRING  : TRUE \* TLC error string.
+    IN IF FailsEval(exp) THEN Assert(err = TLCError, TLCError) ELSE TRUE
+    
+
 PickSuccessor(exp) ==
   (******************************************************************************)
   (* When set as an action constraint in the configuration file, interactively  *)

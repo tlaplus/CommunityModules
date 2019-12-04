@@ -27,11 +27,14 @@ package tlc2.overrides;
 
 import java.io.IOException;
 import java.util.Scanner;
+
 import tla2sany.semantic.ExprOrOpArgNode;
+import tla2sany.semantic.StringNode;
 import tlc2.TLCGlobals;
 import tlc2.output.EC;
 import tlc2.output.MP;
 import tlc2.tool.Action;
+import tlc2.tool.EvalException;
 import tlc2.tool.ModelChecker;
 import tlc2.tool.StateVec;
 import tlc2.tool.TLCState;
@@ -39,11 +42,31 @@ import tlc2.tool.coverage.CostModel;
 import tlc2.tool.impl.Tool;
 import tlc2.util.Context;
 import tlc2.value.impl.BoolValue;
+import tlc2.value.impl.StringValue;
 import tlc2.value.impl.Value;
 import util.Assert;
 
 public class TLCExt {
 
+	@Evaluation(definition = "AssertError", module = "TLCExt")
+	public synchronized static Value assertError(final Tool tool, final ExprOrOpArgNode[] args, final Context c, final TLCState s0,
+			final TLCState s1, final int control, final CostModel cm) {
+		
+		// Check expected err is a string.
+		Assert.check(args[0] instanceof StringNode, "In computing AssertError, a non-string expression (" + args[0]
+				+ ") was used as the err " + "of an AssertError(err, exp).");
+		
+		try {
+			tool.eval(args[1], c, s0, s1, control, cm);
+		} catch (EvalException e) {
+			final StringValue err = (StringValue) tool.eval(args[0], c, s0);
+			if (err.val.equals(e.getMessage())) {
+				return BoolValue.ValTrue;
+			}
+		}
+		return BoolValue.ValFalse;
+	}
+	
 	private static final Scanner scanner = new Scanner(System.in);
 	
 	// This is likely only useful with a single worker, but let's synchronize anyway.
