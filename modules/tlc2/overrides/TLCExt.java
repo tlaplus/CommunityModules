@@ -25,12 +25,14 @@
  ******************************************************************************/
 package tlc2.overrides;
 
+import java.io.IOException;
 import java.util.Scanner;
-
 import tla2sany.semantic.ExprOrOpArgNode;
+import tlc2.TLCGlobals;
 import tlc2.output.EC;
 import tlc2.output.MP;
 import tlc2.tool.Action;
+import tlc2.tool.ModelChecker;
 import tlc2.tool.StateVec;
 import tlc2.tool.TLCState;
 import tlc2.tool.coverage.CostModel;
@@ -77,7 +79,7 @@ public class TLCExt {
 			// TODO Add more commands such as continue/resume to pick every successor,
 			// randomly pick next N successors, terminate to stop state space exploration, ...
 			MP.printMessage(EC.TLC_MODULE_OVERRIDE_STDOUT,
-					String.format("Extend behavior of length %s with a \"%s\" step [%s]? (Yes/no/states/diff):",
+					String.format("Extend behavior of length %s with a \"%s\" step [%s]? (Yes/no/explored/states/diff):",
 							s0.getLevel(), action.getName(), action));
 
 			final String nextLine = scanner.nextLine();
@@ -88,6 +90,13 @@ public class TLCExt {
 						String.format("%s\n~>\n%s", s0.toString().trim(), s1.toString().trim()));
 			} else if (nextLine.charAt(0) == 'd') {
 				MP.printMessage(EC.TLC_MODULE_OVERRIDE_STDOUT, s1.toString(s0));
+			} else if (nextLine.charAt(0) == 'e') {
+				try {
+					((ModelChecker) TLCGlobals.mainChecker).theFPSet.put(s1.fingerPrint());
+				} catch (IOException notExpectedToHappen) {
+					notExpectedToHappen.printStackTrace();
+				}
+				return BoolValue.ValTrue;
 			} else if (nextLine.charAt(0) == 'n') {
 				return BoolValue.ValFalse;
 			}
