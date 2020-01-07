@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Copyright (c) 2019 Microsoft Research. All rights reserved. 
+ * Copyright (c) 2020 Microsoft Research. All rights reserved. 
  *
  * The MIT License (MIT)
  * 
@@ -25,13 +25,38 @@
  ******************************************************************************/
 package tlc2.overrides;
 
-// tlc2.tool.impl.SpecProcessor's "api" only loads class
-// "tlc2.overrides.TLCOverrides".
-public class TLCOverrides implements ITLCOverrides {
+import java.io.File;
+import java.io.IOException;
 
-	@SuppressWarnings("rawtypes")
-	@Override
-	public Class[] get() {
-		return new Class[] { TLCExt.class, IOUtils.class };
+import tlc2.value.IValue;
+import tlc2.value.ValueInputStream;
+import tlc2.value.ValueOutputStream;
+import tlc2.value.impl.BoolValue;
+import tlc2.value.impl.StringValue;
+import util.UniqueString;
+
+public class IOUtils {
+
+	@TLAPlusOperator(identifier = "IODeserialize", module = "IOUtils")
+	public static final IValue deserialize(final StringValue absolutePath, final BoolValue compress)
+			throws IOException {
+		final ValueInputStream vis = new ValueInputStream(new File(absolutePath.val.toString()), compress.val);
+		try {
+			return vis.read(UniqueString.internTbl.toMap());
+		} finally {
+			vis.close();
+		}
+	}
+
+	@TLAPlusOperator(identifier = "IOSerialize", module = "IOUtils")
+	public static final IValue serialize(final IValue value, final StringValue absolutePath, final BoolValue compress)
+			throws IOException {
+		final ValueOutputStream vos = new ValueOutputStream(new File(absolutePath.val.toString()), compress.val);
+		try {
+			value.write(vos);
+		} finally {
+			vos.close();
+		}
+		return BoolValue.ValTrue;
 	}
 }
