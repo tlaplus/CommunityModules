@@ -6,6 +6,12 @@
 	<property name="lib" location="lib"/>
 	<property name="tests" location="tests"/>
 
+	<tstamp>
+		<format property="timestamp"
+          pattern="yyyyMMdHHmm"
+          locale="en,UK"/>
+	</tstamp>
+
 	<target name="init" description="Create the build and dist directory structure">
 		<mkdir dir="${build}"/>
 		<mkdir dir="${dist}"/>
@@ -25,7 +31,7 @@
 
 	<target name="dist" depends="compile" description="Combine the module overwrites and the TLA+ definitions into a distribution">
 		<tstamp/>
-		<jar jarfile="${dist}/CommunityModules-${DSTAMP}${TSTAMP}.jar">
+		<jar jarfile="${dist}/CommunityModules-${timestamp}.jar">
 			<fileset dir="${build}/"
              includes="**/*.class"/>
 			<fileset dir="${src}/"
@@ -50,7 +56,7 @@
 			<classpath>
 				<pathelement location="${lib}/tla2tools.jar" />
 				<!-- The jar that has just been built by the dist target. -->
-				<pathelement location="${dist}/CommunityModules-${DSTAMP}${TSTAMP}.jar" />
+				<pathelement location="${dist}/CommunityModules-${timestamp}.jar" />
 			</classpath>
 		</java>
 	</target>
