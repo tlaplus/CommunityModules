@@ -23,7 +23,9 @@ AssertError(err, exp) ==
     LET FailsEval(e) == CHOOSE b \in BOOLEAN : TRUE \* Expression failed to evaluate. 
         TLCError     == CHOOSE s \in STRING  : TRUE \* TLC error string.
     IN IF FailsEval(exp) THEN Assert(err = TLCError, TLCError) ELSE TRUE
-    
+    	
+-----------------------------------------------------------------------------
+(* HERE BE DRAGONS! The operators below are experimental! *)
 
 PickSuccessor(exp) ==
   (******************************************************************************)
@@ -36,5 +38,18 @@ PickSuccessor(exp) ==
   IF (exp)
   THEN TRUE
   ELSE CHOOSE bool \in BOOLEAN : TRUE 
+
+Trace == 
+  (******************************************************************************)
+  (* The sequence of states (represented as a record whose DOMAIN is the set of *)
+  (* a spec's variables) from an initial state to the current state.  In other  *)
+  (* words, a prefix - of a behavior - ending with the current state.  A way to *)
+  (* think about this operator is to see it as an implicit history variable     *)
+  (* that does not have to be explicitly specified at the level of the spec.    *)
+  (* Note that op is incompatible with TLC!RandomElement and Randomization (see *)
+  (* tlc2.tool.TLCTrace.getTrace(LongVec)) and will cause TLC to crash.  This   *)
+  (* technical limitation could be removed though.                              *)
+  (******************************************************************************)
+  TRUE \* TODO
 
 =============================================================================

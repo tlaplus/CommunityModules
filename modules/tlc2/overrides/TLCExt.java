@@ -34,15 +34,20 @@ import tlc2.TLCGlobals;
 import tlc2.output.EC;
 import tlc2.output.MP;
 import tlc2.tool.Action;
+import tlc2.tool.ConcurrentTLCTrace;
 import tlc2.tool.EvalException;
 import tlc2.tool.ModelChecker;
 import tlc2.tool.StateVec;
 import tlc2.tool.TLCState;
+import tlc2.tool.TLCStateInfo;
 import tlc2.tool.coverage.CostModel;
 import tlc2.tool.impl.Tool;
 import tlc2.util.Context;
+import tlc2.util.IdThread;
 import tlc2.value.impl.BoolValue;
+import tlc2.value.impl.RecordValue;
 import tlc2.value.impl.StringValue;
+import tlc2.value.impl.TupleValue;
 import tlc2.value.impl.Value;
 import util.Assert;
 
@@ -124,5 +129,20 @@ public class TLCExt {
 				return BoolValue.ValFalse;
 			}
 		}
+	}
+
+	@TLAPlusOperator(identifier = "Trace", module = "TLCExt", minLevel = 1)
+	public synchronized static Value getTrace() throws IOException {
+		final ModelChecker mc = (ModelChecker) TLCGlobals.mainChecker;
+		final ConcurrentTLCTrace traceFile = mc.trace;
+
+		final TLCState currentState = IdThread.getCurrentState();
+
+		final TLCStateInfo[] trace = traceFile.getTrace(currentState);
+		final Value[] values = new Value[trace.length];
+		for (int j = 0; j < trace.length; j++) {
+			values[j] = new RecordValue(trace[j].state);
+		}
+		return new TupleValue(values);
 	}
 }
