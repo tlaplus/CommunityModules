@@ -137,7 +137,10 @@ public class TLCExt {
 		final ConcurrentTLCTrace traceFile = mc.trace;
 
 		final TLCState currentState = IdThread.getCurrentState();
-
+		if (currentState == null) {
+			return new TupleValue(new Value[0]);
+		}
+		
 		final TLCStateInfo[] trace = traceFile.getTrace(currentState);
 		final Value[] values = new Value[trace.length];
 		for (int j = 0; j < trace.length; j++) {
