@@ -27,12 +27,20 @@ package tlc2.overrides;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 
+import tlc2.output.EC;
+import tlc2.tool.EvalException;
 import tlc2.value.IValue;
 import tlc2.value.ValueInputStream;
 import tlc2.value.ValueOutputStream;
+import tlc2.value.Values;
 import tlc2.value.impl.BoolValue;
+import tlc2.value.impl.IntValue;
+import tlc2.value.impl.RecordValue;
 import tlc2.value.impl.StringValue;
+import tlc2.value.impl.TupleValue;
+import tlc2.value.impl.Value;
 import util.UniqueString;
 
 public class IOUtils {
@@ -59,4 +67,37 @@ public class IOUtils {
 		}
 		return BoolValue.ValTrue;
 	}
+
+	@TLAPlusOperator(identifier = "IOExec", module = "IOUtils", minLevel = 1)
+	public static Value exec(final Value command, final Value parameter) throws IOException, InterruptedException {
+		// 1. Check parameters and covert.
+		if (!(command instanceof StringValue)) {
+			throw new EvalException(EC.TLC_MODULE_ONE_ARGUMENT_ERROR,
+					new String[] { "IOExec", "string", Values.ppr(command.toString()) });
+		}
+		if (!(parameter instanceof TupleValue)) {
+			throw new EvalException(EC.TLC_MODULE_ONE_ARGUMENT_ERROR,
+					new String[] { "IOExec", "sequence", Values.ppr(parameter.toString()) });
+		}
+		final StringValue sv = (StringValue) command;
+		final TupleValue tv = (TupleValue) parameter;
+		
+		// 2. Build actual command-line by merging command and parameter.
+		final String cmd = String.format(sv.toUnquotedString(),
+				Arrays.asList(tv.getElems()).stream().map(e -> e.toUnquotedString()).toArray(size -> new Object[size]));
+		
+		// 3. Run command-line and receive its output.
+		final Process process = new ProcessBuilder(cmd.split(" "))/*.inheritIO()*/.start();
+		
+		final StringValue stdout = new StringValue(new String(process.getInputStream().readAllBytes()));
+		final StringValue stderr = new StringValue(new String(process.getErrorStream().readAllBytes()));
+		final IntValue exitCode = IntValue.gen(process.waitFor());
+		
+		return new RecordValue(EXEC_NAMES, new Value[] {exitCode, stdout, stderr}, false);
+	}
+
+	private static final UniqueString EXITVALUE = UniqueString.uniqueStringOf("exitValue");
+	private static final UniqueString STDOUT = UniqueString.uniqueStringOf("stdout");
+	private static final UniqueString STDERR = UniqueString.uniqueStringOf("stderr");
+	private static final UniqueString[] EXEC_NAMES = new UniqueString[] { EXITVALUE, STDOUT, STDERR };
 }
