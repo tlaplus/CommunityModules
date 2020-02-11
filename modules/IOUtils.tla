@@ -1,6 +1,7 @@
 ------------------------------ MODULE IOUtils ------------------------------
 
 LOCAL INSTANCE TLC
+LOCAL INSTANCE Integers
   (*************************************************************************)
   (* Imports the definitions from the modules, but doesn't export them.    *)
   (*************************************************************************)
