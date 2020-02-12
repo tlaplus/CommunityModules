@@ -23,7 +23,7 @@ AssertError(err, exp) ==
     LET FailsEval(e) == CHOOSE b \in BOOLEAN : TRUE \* Expression failed to evaluate. 
         TLCError     == CHOOSE s \in STRING  : TRUE \* TLC error string.
     IN IF FailsEval(exp) THEN Assert(err = TLCError, TLCError) ELSE TRUE
-    	
+
 -----------------------------------------------------------------------------
 (* HERE BE DRAGONS! The operators below are experimental! *)
 
