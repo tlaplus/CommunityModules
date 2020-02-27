@@ -7,7 +7,7 @@ LEMMA AppendTransitivityIsInjective
      == ASSUME NEW S, NEW seq \in Seq(S),
                IsInjective(seq),
                NEW elt \in S,
-               elt \notin { seq[x]: x \in DOMAIN seq }
+               elt \notin Range(seq)
         PROVE IsInjective(Append(seq, elt))
 
 LEMMA TailTransitivityIsInjective
