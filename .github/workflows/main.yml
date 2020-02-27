@@ -23,7 +23,7 @@ jobs:
         chmod +x tlaps-1.4.4-x86_64-linux-gnu-inst.bin
         ./tlaps-1.4.4-x86_64-linux-gnu-inst.bin -d tlaps
     - name: Run TLAPS
-      run: tlaps/bin/tlapm --cleanfp -I tlaps/ modules/SequenceExtTheorems_proofs.tla
+      run: tlaps/bin/tlapm --cleanfp -I tlaps/ -I modules/ modules/SequenceExtTheorems_proofs.tla
     - name: Build with Ant
       run: ant -noinput -buildfile build.xml -Dtimestamp=${{steps.date.outputs.date}}
     - name: Create Release
