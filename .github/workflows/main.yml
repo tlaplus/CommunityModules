@@ -17,11 +17,11 @@ jobs:
       id: date
       run: echo "::set-output name=date::$(date +'%Y%m%d%H%M')"
     - name: Get TLAPS
-      run: wget https://tla.msr-inria.inria.fr/tlaps/dist/1.4.4/tlaps-1.4.4-x86_64-linux-gnu-inst.bin
+      run: wget https://tla.msr-inria.inria.fr/tlaps/dist/current/tlaps-1.4.5-x86_64-linux-gnu-inst.bin
     - name: Install TLAPS
       run: |
-        chmod +x tlaps-1.4.4-x86_64-linux-gnu-inst.bin
-        ./tlaps-1.4.4-x86_64-linux-gnu-inst.bin -d tlaps
+        chmod +x tlaps-1.4.5-x86_64-linux-gnu-inst.bin
+        ./tlaps-1.4.5-x86_64-linux-gnu-inst.bin -d tlaps
     - name: Run TLAPS
       run: tlaps/bin/tlapm --cleanfp -I tlaps/ -I modules/ modules/SequencesExtTheorems_proofs.tla
     - name: Build with Ant
