@@ -16,6 +16,11 @@ LEMMA TailTransitivityIsInjective
                IsInjective(seq)
         PROVE IsInjective(Tail(seq))
 
+LEMMA HeadTailRange ==
+  ASSUME NEW S, NEW seq \in Seq(S), seq # << >>, IsInjective(seq)
+  PROVE  /\ Head(seq) \in Range(seq)
+         /\ Range(Tail(seq)) = Range(seq) \ {Head(seq)}
+
 =============================================================================
 \* Modification History
 \* Last modified Thu Feb 27 11:38:41 PST 2020 by markus
