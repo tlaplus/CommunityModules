@@ -53,7 +53,7 @@ import util.Assert;
 
 public class TLCExt {
 
-	@Evaluation(definition = "AssertError", module = "TLCExt")
+	@Evaluation(definition = "AssertError", module = "TLCExt", warn = false)
 	public synchronized static Value assertError(final Tool tool, final ExprOrOpArgNode[] args, final Context c, final TLCState s0,
 			final TLCState s1, final int control, final CostModel cm) {
 		
@@ -75,7 +75,7 @@ public class TLCExt {
 	private static final Scanner scanner = new Scanner(System.in);
 	
 	// This is likely only useful with a single worker, but let's synchronize anyway.
-	@Evaluation(definition = "PickSuccessor", module = "TLCExt")
+	@Evaluation(definition = "PickSuccessor", module = "TLCExt", warn = false)
 	public synchronized static Value pickSuccessor(final Tool tool, final ExprOrOpArgNode[] args, final Context c, final TLCState s0,
 			final TLCState s1, final int control, final CostModel cm) {
 		
@@ -131,7 +131,7 @@ public class TLCExt {
 		}
 	}
 
-	@TLAPlusOperator(identifier = "Trace", module = "TLCExt", minLevel = 1)
+	@TLAPlusOperator(identifier = "Trace", module = "TLCExt", minLevel = 1, warn = false)
 	public synchronized static Value getTrace() throws IOException {
 		final ModelChecker mc = (ModelChecker) TLCGlobals.mainChecker;
 		final ConcurrentTLCTrace traceFile = mc.trace;

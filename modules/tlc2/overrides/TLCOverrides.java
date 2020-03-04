@@ -32,6 +32,6 @@ public class TLCOverrides implements ITLCOverrides {
 	@SuppressWarnings("rawtypes")
 	@Override
 	public Class[] get() {
-		return new Class[] { TLCExt.class, IOUtils.class };
+		return new Class[] { TLCExt.class, IOUtils.class, SVG.class, SequencesExt.class, Json.class, Bitwise.class };
 	}
 }

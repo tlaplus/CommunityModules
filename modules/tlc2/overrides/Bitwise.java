@@ -1,3 +1,4 @@
+package tlc2.overrides;
 /*******************************************************************************
  * Copyright (c) 2019 Microsoft Research. All rights reserved. 
  *
@@ -23,54 +24,17 @@
  * Contributors:
  *   Markus Alexander Kuppe - initial API and implementation
  ******************************************************************************/
-
-import tlc2.value.IValue;
-import tlc2.value.impl.FcnLambdaValue;
-import tlc2.value.impl.FcnRcdValue;
 import tlc2.value.impl.IntValue;
-import tlc2.value.impl.StringValue;
-import tlc2.value.impl.TupleValue;
-import tlc2.value.impl.Value;
 
-public class Json {
+public class Bitwise {
 
-	// (p1 :> 0 @@ p2 :> 0 @@ p3 :> 0)
-	// ->
-	// "{\"p1\":0, \"p2\":0, \"p3\":0}"
-	public static final StringValue ToJsonObject(final IValue v) {
-		final StringBuffer buf = new StringBuffer();
-		buf.append("{");
-		
-		if (v instanceof FcnRcdValue || v instanceof FcnLambdaValue) {
-			final FcnRcdValue r = (FcnRcdValue) ((Value) v).toFcnRcd();
-			for (int i = 0; i < r.domain.length; i++) {
-				buf.append("\"");
-				buf.append(r.domain[i]);
-				buf.append("\"");
-				
-				buf.append(":");
-				buf.append(r.values[i]);
-				if (i < r.domain.length - 1) {
-					buf.append(",");
-				}
-			}
-		} else if (v instanceof TupleValue) {
-			final TupleValue t = (TupleValue) v;
-			for (int i = 0; i < t.elems.length; i++) {
-				buf.append("\"");
-				buf.append(IntValue.gen(i + 1));
-				buf.append("\"");
-				
-				buf.append(":");
-				buf.append(t.elems[i]);
-				if (i < t.elems.length - 1) {
-					buf.append(",");
-				}
-			}
-		}
-		
-		buf.append("}");
-		return new StringValue(buf.toString());
+	@TLAPlusOperator(identifier = "Ant", module = "Bitwise", warn = false)
+    public static IntValue And(IntValue x, IntValue y, IntValue n, IntValue m) {
+        return IntValue.gen(x.val & y.val);
+    }
+
+	@TLAPlusOperator(identifier = "shiftR", module = "Bitwise", warn = false)
+	public static IntValue shiftR(final IntValue n, final IntValue pos) {
+		return IntValue.gen(n.val >>> pos.val);
 	}
 }
-

@@ -1,3 +1,4 @@
+package tlc2.overrides;
 /*******************************************************************************
  * Copyright (c) 2019 Microsoft Research. All rights reserved. 
  *
@@ -45,6 +46,7 @@ public final class SVG {
 	 *	 children 	|-> <tuple>
 	 *	 innerText 	|-> <string> ]
 	 */
+	@TLAPlusOperator(identifier = "SVGElemToString", module = "SVG", warn = false)
 	public static Value SVGElemToString(Value elem) throws Exception {
 		if (!(elem instanceof RecordValue) || elem.toRcd() == null) {
 			throw new Exception(
