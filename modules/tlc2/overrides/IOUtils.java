@@ -93,6 +93,47 @@ public class IOUtils {
 		return new RecordValue(EXEC_NAMES, new Value[] {exitCode, stdout, stderr}, false);
 	}
 
+	@TLAPlusOperator(identifier = "IOExecTemplate", module = "IOUtils", minLevel = 1)
+	public static Value ioExecTemplate(final Value commandTemplate, final Value parameter) throws IOException, InterruptedException {
+		// 1. Check parameters and covert.
+		if (!(commandTemplate instanceof StringValue)) {
+			throw new EvalException(EC.TLC_MODULE_ONE_ARGUMENT_ERROR,
+					new String[] { "IOExec", "string", Values.ppr(commandTemplate.toString()) });
+		}
+		if (!(parameter instanceof TupleValue)) {
+			throw new EvalException(EC.TLC_MODULE_ONE_ARGUMENT_ERROR,
+					new String[] { "IOExec", "sequence", Values.ppr(parameter.toString()) });
+		}
+		final StringValue sv = (StringValue) commandTemplate;
+		final TupleValue tv = (TupleValue) parameter;
+
+		// 2. Build actual command-line by merging command and parameter.
+		// XXX does not support multiple %s inside a template part
+		final String[] command = sv.val.toString().split("\\s+");
+		int j = 0;
+		for (int i = 0; i < command.length; ++i) {
+			if (command[i].contains("%s")) {
+                if (j < tv.elems.length) {
+                    command[i] = String.format(command[i], ((StringValue) tv.elems[j++]).val.toString());
+                } else {
+                    // Too many %s
+                    // XXX throw proper exception
+                    throw new EvalException(EC.TLC_MODULE_ONE_ARGUMENT_ERROR,
+                            new String[] { "IOExec", "sequence", Values.ppr(parameter.toString()) });
+                }
+			}
+		}
+
+		// 3. Run command-line and receive its output.
+		final Process process = new ProcessBuilder(command)/*.inheritIO()*/.start();
+
+		final StringValue stdout = new StringValue(new String(process.getInputStream().readAllBytes()));
+		final StringValue stderr = new StringValue(new String(process.getErrorStream().readAllBytes()));
+		final IntValue exitCode = IntValue.gen(process.waitFor());
+
+		return new RecordValue(EXEC_NAMES, new Value[] {exitCode, stdout, stderr}, false);
+	}
+
 	private static String convert(IValue v) {
 		if (! (v instanceof StringValue)) {
 			// XXX Proper exception
