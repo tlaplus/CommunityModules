@@ -69,31 +69,39 @@ public class IOUtils {
 	}
 
 	@TLAPlusOperator(identifier = "IOExec", module = "IOUtils", minLevel = 1)
-	public static Value exec(final Value command, final Value parameter) throws IOException, InterruptedException {
+	public static Value ioExec(final Value parameter) throws IOException, InterruptedException {
 		// 1. Check parameters and covert.
-		if (!(command instanceof StringValue)) {
-			throw new EvalException(EC.TLC_MODULE_ONE_ARGUMENT_ERROR,
-					new String[] { "IOExec", "string", Values.ppr(command.toString()) });
-		}
 		if (!(parameter instanceof TupleValue)) {
 			throw new EvalException(EC.TLC_MODULE_ONE_ARGUMENT_ERROR,
 					new String[] { "IOExec", "sequence", Values.ppr(parameter.toString()) });
 		}
-		final StringValue sv = (StringValue) command;
 		final TupleValue tv = (TupleValue) parameter;
-		
-		// 2. Build actual command-line by merging command and parameter.
-		final String cmd = String.format(sv.toUnquotedString(),
-				Arrays.asList(tv.getElems()).stream().map(e -> e.toUnquotedString()).toArray(size -> new Object[size]));
-		
+
+		// 2. Build actual command by converting each parameter element to a string.
+		//	No escaping or quoting is done so the process receives the exact string.
+		final String[] command = Arrays.asList(tv.getElems()).stream()
+				.map(IOUtils::convert)
+				.toArray(size -> new String[size]);
+
 		// 3. Run command-line and receive its output.
-		final Process process = new ProcessBuilder(cmd.split(" "))/*.inheritIO()*/.start();
-		
+		final Process process = new ProcessBuilder(command)/*.inheritIO()*/.start();
+
 		final StringValue stdout = new StringValue(new String(process.getInputStream().readAllBytes()));
 		final StringValue stderr = new StringValue(new String(process.getErrorStream().readAllBytes()));
 		final IntValue exitCode = IntValue.gen(process.waitFor());
-		
+
 		return new RecordValue(EXEC_NAMES, new Value[] {exitCode, stdout, stderr}, false);
+	}
+
+	private static String convert(IValue v) {
+		if (! (v instanceof StringValue)) {
+			// XXX Proper exception
+			throw new EvalException(EC.TLC_MODULE_ONE_ARGUMENT_ERROR,
+					new String[] { "IOExec", "sequence", Values.ppr(v.toString()) });
+		}
+		final StringValue sv = (StringValue) v;
+
+		return sv.val.toString();
 	}
 
 	private static final UniqueString EXITVALUE = UniqueString.uniqueStringOf("exitValue");
