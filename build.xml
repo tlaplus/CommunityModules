@@ -22,19 +22,7 @@
 		<get src="https://nightly.tlapl.us/dist/tla2tools.jar" dest="${lib}"/>
 	</target>
 
-	<target name="download-jackson-core" depends="init" description="downloads jackson-core-2.10.2.jar" unless="skip.download">
-		<get src="https://repo1.maven.org/maven2/com/fasterxml/jackson/core/jackson-core/2.10.2/jackson-core-2.10.2.jar" dest="${lib}"/>
-	</target>
-
-	<target name="download-jackson-databind" depends="init" description="downloads jackson-databind-2.10.2.jar" unless="skip.download">
-		<get src="https://repo1.maven.org/maven2/com/fasterxml/jackson/core/jackson-databind/2.10.2/jackson-databind-2.10.2.jar" dest="${lib}"/>
-	</target>
-
-	<target name="download-jackson-annotations" depends="init" description="downloads jackson-annotations-2.10.2.jar" unless="skip.download">
-		<get src="https://repo1.maven.org/maven2/com/fasterxml/jackson/core/jackson-annotations/2.10.2/jackson-annotations-2.10.2.jar" dest="${lib}"/>
-	</target>
-
-	<target name="compile" depends="download,download-jackson-core,download-jackson-databind,download-jackson-annotations" description="compile the java module overwrites">
+	<target name="compile" depends="download" description="compile the java module overwrites">
 		<javac srcdir="${src}" destdir="${build}" classpath="${lib}/tla2tools.jar:${lib}/jackson-core-2.10.2.jar:${lib}/jackson-databind-2.10.2.jar:${lib}/jackson-annotations-2.10.2.jar"
            source="1.8"
            target="1.8"
