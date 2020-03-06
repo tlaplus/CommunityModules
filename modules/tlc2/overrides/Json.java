@@ -103,14 +103,14 @@ public class Json {
   /**
    * Deserializes a tuple of newline delimited JSON values from the given path.
    *
-   * @param absolutePath the JSON file path
+   * @param path the JSON file path
    * @return a tuple of JSON values
    */
   @TLAPlusOperator(identifier = "JsonDeserialize", module = "Json", warn = false)
-  public static IValue deserialize(final StringValue absolutePath) throws IOException {
+  public static IValue deserialize(final StringValue path) throws IOException {
     ObjectMapper mapper = new ObjectMapper();
     List<Value> values = new ArrayList<>();
-    try (BufferedReader reader = new BufferedReader(new FileReader(new File(absolutePath.val.toString())))) {
+    try (BufferedReader reader = new BufferedReader(new FileReader(new File(path.val.toString())))) {
       String line = reader.readLine();
       while (line != null) {
         JsonNode node = mapper.readTree(line);
@@ -124,16 +124,20 @@ public class Json {
   /**
    * Serializes a tuple of values to newline delimited JSON.
    *
-   * @param absolutePath the file to which to write the values
-   * @param value        the values to write
+   * @param path  the file to which to write the values
+   * @param value the values to write
+   * @return a boolean value indicating whether the serialization was successful
    */
   @TLAPlusOperator(identifier = "JsonSerialize", module = "Json", warn = false)
-  public static void serialize(final StringValue absolutePath, final TupleValue value) throws IOException {
-    try (BufferedWriter writer = new BufferedWriter(new FileWriter(new File(absolutePath.val.toString())))) {
+  public static BoolValue serialize(final StringValue path, final TupleValue value) throws IOException {
+    File file = new File(path.val.toString());
+    file.getParentFile().mkdirs();
+    try (BufferedWriter writer = new BufferedWriter(new FileWriter(new File(path.val.toString())))) {
       for (int i = 0; i < value.elems.length; i++) {
         writer.write(getNode(value.elems[i]).toString() + "\n");
       }
     }
+    return BoolValue.ValTrue;
   }
 
   /**
