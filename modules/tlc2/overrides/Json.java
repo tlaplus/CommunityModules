@@ -26,53 +26,159 @@ package tlc2.overrides;
  ******************************************************************************/
 
 import tlc2.value.IValue;
-import tlc2.value.impl.FcnLambdaValue;
-import tlc2.value.impl.FcnRcdValue;
-import tlc2.value.impl.IntValue;
-import tlc2.value.impl.StringValue;
-import tlc2.value.impl.TupleValue;
-import tlc2.value.impl.Value;
+import tlc2.value.impl.*;
+
+import java.util.Arrays;
 
 public class Json {
 
-	// (p1 :> 0 @@ p2 :> 0 @@ p3 :> 0)
-	// ->
-	// "{\"p1\":0, \"p2\":0, \"p3\":0}"
+	// Convert sets and sequences to JSON arrays.
+	// Convert records to JSON objects.
+	// E.g.
+	// {1, 2, 3} -> "[1, 2, 3]"
+	// <<"a", "b", "c">> -> "[\"a\", \"b\", \"c\"]"
+	// (p1 :> 0 @@ p2 :> 0 @@ p3 :> 0) -> "{\"p1\": 0, \"p2\": 0, \"p3\": 0)
 	@TLAPlusOperator(identifier = "ToJsonObject", module = "Json", warn = false)
-	public static final StringValue ToJsonObject(final IValue v) {
+	public static StringValue ToJsonObject(final IValue v) {
 		final StringBuffer buf = new StringBuffer();
-		buf.append("{");
-		
-		if (v instanceof FcnRcdValue || v instanceof FcnLambdaValue) {
-			final FcnRcdValue r = (FcnRcdValue) ((Value) v).toFcnRcd();
-			for (int i = 0; i < r.domain.length; i++) {
-				buf.append("\"");
-				buf.append(r.domain[i]);
-				buf.append("\"");
-				
-				buf.append(":");
-				buf.append(r.values[i]);
-				if (i < r.domain.length - 1) {
-					buf.append(",");
-				}
-			}
-		} else if (v instanceof TupleValue) {
-			final TupleValue t = (TupleValue) v;
-			for (int i = 0; i < t.elems.length; i++) {
-				buf.append("\"");
-				buf.append(IntValue.gen(i + 1));
-				buf.append("\"");
-				
-				buf.append(":");
-				buf.append(t.elems[i]);
-				if (i < t.elems.length - 1) {
-					buf.append(",");
-				}
-			}
-		}
-		
-		buf.append("}");
+		toJsonObject(buf, v);
 		return new StringValue(buf.toString());
 	}
-}
 
+	private static boolean toJsonObject(final StringBuffer buf, final IValue v) {
+		// Most Value implementations have either `toFcnRcd` or `toSetEnum` implemented, so we use them for the actual
+		// conversions.
+		if (v instanceof FcnRcdValue) {
+			final FcnRcdValue frv = (FcnRcdValue) v;
+			TupleValue tv = (TupleValue) toTuple(frv);
+			if (tv != null) {
+				tv.normalize();
+				serializeJsonArray(buf, tv.elems);
+			} else {
+				final String[] keys = Arrays.stream(frv.domain).map(Json::toKey).toArray(size -> new String[size]);
+				serializeJsonObject(buf, keys, frv.values);
+			}
+		} else if (v instanceof SetEnumValue) {
+			// SetEnumValue does not have a `toFcnRcd` implemented.
+			SetEnumValue sev = (SetEnumValue) v;
+			sev.normalize();
+			serializeJsonArray(buf, sev.elems.toArray());
+		} else if (v instanceof RecordValue) {
+			final Value vv = (Value) v;
+			toJsonObject(buf, vv.toFcnRcd());
+		} else if (v instanceof TupleValue) {
+			final Value vv = (Value) v;
+			toJsonObject(buf, vv.toFcnRcd());
+		} else if (v instanceof SetOfFcnsValue) {
+			final SetOfFcnsValue sofv = (SetOfFcnsValue) v;
+			toJsonObject(buf, sofv.toSetEnum());
+		} else if (v instanceof SetOfRcdsValue) {
+			final SetOfRcdsValue sorv = (SetOfRcdsValue) v;
+			toJsonObject(buf, sorv.toSetEnum());
+		} else if (v instanceof SetOfTuplesValue) {
+			final SetOfTuplesValue sotv = (SetOfTuplesValue) v;
+			toJsonObject(buf, sotv.toSetEnum());
+		} else if (v instanceof SubsetValue) {
+			final SubsetValue sv = (SubsetValue) v;
+			toJsonObject(buf, sv.toSetEnum());
+		} else if (v instanceof IntervalValue) {
+			final IntervalValue iv = (IntervalValue) v;
+			toJsonObject(buf, iv.toSetEnum());
+		} else {
+			// XXX What to throw?
+		}
+
+		return false;
+	}
+
+	// From FcnRcdValue.java
+	private static Value toTuple(final FcnRcdValue frv) {
+		if (frv.intv != null) {
+			if (frv.intv.low == 1) {
+				return frv.toTuple();
+			} else {
+				return null;
+			}
+		}
+		for (int i = 0; i < frv.domain.length; i++) {
+		  if (!(frv.domain[i] instanceof IntValue)) {
+			return null;
+		  }
+		}
+		frv.normalize();
+		for (int i = 0; i < frv.domain.length; i++) {
+		  if (((IntValue)frv.domain[i]).val != (i+1)) {
+			return null;
+		  }
+		}
+		return frv.toTuple();
+	}
+
+	private static void toJson(final StringBuffer buf, final IValue v) {
+		if (!toJsonObject(buf, v)) {
+			if (v instanceof BoolValue) {
+				final BoolValue bv = (BoolValue) v;
+				buf.append(bv.val ? "true" : "false");
+			} else if (v instanceof IntValue) {
+				final IntValue iv = (IntValue) v;
+				buf.append(iv.val);
+			} else if (v instanceof ModelValue) {
+				final ModelValue mv = (ModelValue) v;
+				buf.append("\"");
+				buf.append(mv.val);
+				buf.append("\"");
+			} else if (v instanceof StringValue) {
+				final StringValue sv = (StringValue) v;
+				buf.append("\"");
+				buf.append(sv.val);
+				buf.append("\"");
+			} else {
+				// XXX what to throw?
+			}
+		}
+	}
+
+	private static String toKey(final IValue v) {
+		if (v instanceof BoolValue) {
+			final BoolValue bv = (BoolValue) v;
+			return bv.val ? "true" : "false";
+		} else if (v instanceof IntValue) {
+			final IntValue iv = (IntValue) v;
+			return Integer.toString(iv.val);
+		} else if (v instanceof ModelValue) {
+			final ModelValue mv = (ModelValue) v;
+			return mv.val.toString();
+		} else if (v instanceof StringValue) {
+			final StringValue sv = (StringValue) v;
+			return sv.val.toString();
+		}
+
+		// XXX what to throw?
+		return null;
+	}
+
+	private static void serializeJsonObject(final StringBuffer buf, final String[] keys, final Value[] vs) {
+		buf.append("{");
+		for (int i = 0; i < keys.length; i++) {
+			if (i > 0) {
+				buf.append(", ");
+			}
+			buf.append("\"");
+			buf.append(keys[i]);
+			buf.append("\": ");
+			toJson(buf, vs[i]);
+		}
+		buf.append("}");
+	}
+
+	private static void serializeJsonArray(final StringBuffer buf, final Value[] vs) {
+		buf.append("[");
+		for (int i = 0; i < vs.length; i++) {
+			if (i > 0) {
+				buf.append(", ");
+			}
+			toJson(buf, vs[i]);
+		}
+		buf.append("]");
+	}
+}
