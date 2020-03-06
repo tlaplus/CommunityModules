@@ -50,8 +50,8 @@ ASSUME(AssertEq(ToJsonObject([a |-> {<<1, 2>>}, b |-> [c |-> 3]]), "{\"a\":[[1,2
 TestObjects ==
     LET output == <<[a |-> 1, b |-> "a"], [a |-> 2, b |-> "b"], [a |-> 3, b |-> "c"]>>
     IN
-       /\ JsonSerialize("tests/json/test.json", output)
-       /\ LET input == JsonDeserialize("tests/json/test.json")
+       /\ JsonSerialize("build/json/test.json", output)
+       /\ LET input == JsonDeserialize("build/json/test.json")
           IN
              /\ Len(input) = 3
              /\ input[1].a = 1
@@ -66,8 +66,8 @@ ASSUME(TestObjects)
 TestArrays ==
     LET output == << <<1, 2, 3>>, <<4, 5, 6>>, <<7, 8, 9>> >>
     IN
-       /\ JsonSerialize("tests/json/test.json", output)
-       /\ LET input == JsonDeserialize("tests/json/test.json")
+       /\ JsonSerialize("build/json/test.json", output)
+       /\ LET input == JsonDeserialize("build/json/test.json")
           IN
              /\ Len(input) = 3
              /\ input[1][1] = 1
@@ -85,8 +85,8 @@ ASSUME(TestArrays)
 TestPrimitives ==
     LET output == <<1, 2, 3, 4>>
     IN
-       /\ JsonSerialize("tests/json/test.json", output)
-       /\ LET input == JsonDeserialize("tests/json/test.json")
+       /\ JsonSerialize("build/json/test.json", output)
+       /\ LET input == JsonDeserialize("build/json/test.json")
           IN
              /\ Len(input) = 4
              /\ input[1] = 1
