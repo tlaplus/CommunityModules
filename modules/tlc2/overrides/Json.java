@@ -50,8 +50,14 @@ import tlc2.value.impl.BoolValue;
 import tlc2.value.impl.FcnLambdaValue;
 import tlc2.value.impl.FcnRcdValue;
 import tlc2.value.impl.IntValue;
+import tlc2.value.impl.IntervalValue;
 import tlc2.value.impl.RecordValue;
+import tlc2.value.impl.SetEnumValue;
+import tlc2.value.impl.SetOfFcnsValue;
+import tlc2.value.impl.SetOfRcdsValue;
+import tlc2.value.impl.SetOfTuplesValue;
 import tlc2.value.impl.StringValue;
+import tlc2.value.impl.SubsetValue;
 import tlc2.value.impl.TupleValue;
 import tlc2.value.impl.Value;
 import util.UniqueString;
@@ -151,9 +157,45 @@ public class Json {
       return getObjectNode((FcnRcdValue) value);
     } else if (value instanceof FcnLambdaValue) {
       return getObjectNode((FcnRcdValue) ((FcnLambdaValue) value).toFcnRcd());
+    } else if (value instanceof SetEnumValue) {
+      return getArrayNode((SetEnumValue) value);
+    } else if (value instanceof SetOfRcdsValue) {
+      return getArrayNode((SetEnumValue) ((SetOfRcdsValue) value).toSetEnum());
+    } else if (value instanceof SetOfTuplesValue) {
+      return getArrayNode((SetEnumValue) ((SetOfTuplesValue) value).toSetEnum());
+    } else if (value instanceof SetOfFcnsValue) {
+      return getArrayNode((SetEnumValue) ((SetOfFcnsValue) value).toSetEnum());
+    } else if (value instanceof SubsetValue) {
+      return getArrayNode((SetEnumValue) ((SubsetValue) value).toSetEnum());
+    } else if (value instanceof IntervalValue) {
+      return getArrayNode((SetEnumValue) ((IntervalValue) value).toSetEnum());
     } else {
-      throw new IOException("Cannot convert value: Unknown type");
+      throw new IOException("Cannot convert value: unsupported value type " + value.getClass().getName());
     }
+  }
+
+  /**
+   * Returns a boolean indicating whether the given value is a valid sequence.
+   *
+   * @param value the value to check
+   * @return indicates whether the value is a valid sequence
+   */
+  private static boolean isValidSequence(FcnRcdValue value) {
+    if (value.intv != null) {
+      return value.intv.low == 1 && value.intv.high == value.domain.length;
+    }
+    for (Value domain : value.domain) {
+      if (!(domain instanceof IntValue)) {
+        return false;
+      }
+    }
+    value.normalize();
+    for (int i = 0; i < value.domain.length; i++) {
+      if (((IntValue) value.domain[i]).val != (i + 1)) {
+        return false;
+      }
+    }
+    return true;
   }
 
   /**
@@ -172,34 +214,29 @@ public class Json {
     } else if (value instanceof FcnLambdaValue) {
       return getObjectNode((FcnRcdValue) ((FcnLambdaValue) value).toFcnRcd());
     } else {
-      throw new IOException("Cannot convert value: Unknown type");
+      throw new IOException("Cannot convert value: unsupported value type " + value.getClass().getName());
     }
   }
 
   /**
-   * Recursively converts the given value to an {@code ArrayNode}.
-   *
-   * @param value the value to convert
-   * @return the converted {@code JsonNode}
-   */
-  private static JsonNode getArrayNode(IValue value) throws IOException {
-    if (value instanceof TupleValue) {
-      return getArrayNode((TupleValue) value);
-    } else {
-      throw new IOException("Cannot convert value: Unknown type");
-    }
-  }
-
-  /**
-   * Converts the given record value to an {@code ObjectNode}, recursively converting values.
+   * Converts the given record value to a {@code JsonNode}, recursively converting values.
    *
    * @param value the value to convert
    * @return the converted {@code ObjectNode}
    */
   private static JsonNode getObjectNode(FcnRcdValue value) throws IOException {
+    if (isValidSequence(value)) {
+      return getArrayNode(value);
+    }
+
     Map<String, JsonNode> entries = new HashMap<>();
     for (int i = 0; i < value.domain.length; i++) {
-      entries.put(value.domain[i].toString(), getNode(value.values[i]));
+      Value domainValue = value.domain[i];
+      if (domainValue instanceof StringValue) {
+        entries.put(((StringValue) domainValue).val.toString(), getNode(value.values[i]));
+      } else {
+        entries.put(domainValue.toString(), getNode(value.values[i]));
+      }
     }
     return new ObjectNode(new JsonNodeFactory(true), entries);
   }
@@ -233,6 +270,36 @@ public class Json {
   }
 
   /**
+   * Recursively converts the given value to an {@code ArrayNode}.
+   *
+   * @param value the value to convert
+   * @return the converted {@code JsonNode}
+   */
+  private static JsonNode getArrayNode(IValue value) throws IOException {
+    if (value instanceof TupleValue) {
+      return getArrayNode((TupleValue) value);
+    } else if (value instanceof FcnRcdValue) {
+      return getArrayNode((FcnRcdValue) value);
+    } else if (value instanceof FcnLambdaValue) {
+      return getArrayNode((FcnRcdValue) ((FcnLambdaValue) value).toFcnRcd());
+    } else if (value instanceof SetEnumValue) {
+      return getArrayNode((SetEnumValue) value);
+    } else if (value instanceof SetOfRcdsValue) {
+      return getArrayNode((SetEnumValue) ((SetOfRcdsValue) value).toSetEnum());
+    } else if (value instanceof SetOfTuplesValue) {
+      return getArrayNode((SetEnumValue) ((SetOfTuplesValue) value).toSetEnum());
+    } else if (value instanceof SetOfFcnsValue) {
+      return getArrayNode((SetEnumValue) ((SetOfFcnsValue) value).toSetEnum());
+    } else if (value instanceof SubsetValue) {
+      return getArrayNode((SetEnumValue) ((SubsetValue) value).toSetEnum());
+    } else if (value instanceof IntervalValue) {
+      return getArrayNode((SetEnumValue) ((IntervalValue) value).toSetEnum());
+    } else {
+      throw new IOException("Cannot convert value: unsupported value type " + value.getClass().getName());
+    }
+  }
+
+  /**
    * Converts the given tuple value to an {@code ArrayNode}.
    *
    * @param value the value to convert
@@ -242,6 +309,41 @@ public class Json {
     List<JsonNode> elements = new ArrayList<>(value.elems.length);
     for (int i = 0; i < value.elems.length; i++) {
       elements.add(getNode(value.elems[i]));
+    }
+    return new ArrayNode(new JsonNodeFactory(true), elements);
+  }
+
+  /**
+   * Converts the given record value to an {@code ArrayNode}.
+   *
+   * @param value the value to convert
+   * @return the converted {@code ArrayNode}
+   */
+  private static JsonNode getArrayNode(FcnRcdValue value) throws IOException {
+    if (!isValidSequence(value)) {
+      return getObjectNode(value);
+    }
+
+    value.normalize();
+    List<JsonNode> elements = new ArrayList<>(value.values.length);
+    for (int i = 0; i < value.values.length; i++) {
+      elements.add(getNode(value.values[i]));
+    }
+    return new ArrayNode(new JsonNodeFactory(true), elements);
+  }
+
+  /**
+   * Converts the given tuple value to an {@code ArrayNode}.
+   *
+   * @param value the value to convert
+   * @return the converted {@code ArrayNode}
+   */
+  private static JsonNode getArrayNode(SetEnumValue value) throws IOException {
+    value.normalize();
+    Value[] values = value.elems.toArray();
+    List<JsonNode> elements = new ArrayList<>(values.length);
+    for (int i = 0; i < values.length; i++) {
+      elements.add(getNode(values[i]));
     }
     return new ArrayNode(new JsonNodeFactory(true), elements);
   }
@@ -267,7 +369,7 @@ public class Json {
       case NULL:
         return null;
       default:
-        throw new IOException("Cannot convert tuple value: Unknown type");
+        throw new IOException("Cannot convert value: unsupported JSON type " + node.getNodeType());
     }
   }
 
