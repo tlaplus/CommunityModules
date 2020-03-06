@@ -23,7 +23,7 @@
 	</target>
 
 	<target name="compile" depends="download" description="compile the java module overwrites">
-		<javac srcdir="${src}" destdir="${build}" classpath="${lib}/tla2tools.jar"
+		<javac srcdir="${src}" destdir="${build}" classpath="${lib}/tla2tools.jar:${lib}/jackson-core-2.10.2.jar:${lib}/jackson-databind-2.10.2.jar:${lib}/jackson-annotations-2.10.2.jar"
            source="1.8"
            target="1.8"
            includeantruntime="false"/>
@@ -55,6 +55,9 @@
 
 			<classpath>
 				<pathelement location="${lib}/tla2tools.jar" />
+				<pathelement location="${lib}/jackson-core-2.10.2.jar" />
+				<pathelement location="${lib}/jackson-databind-2.10.2.jar" />
+				<pathelement location="${lib}/jackson-annotations-2.10.2.jar" />
 				<!-- The jar that has just been built by the dist target. -->
 				<pathelement location="${dist}/CommunityModules-${timestamp}.jar" />
 			</classpath>
