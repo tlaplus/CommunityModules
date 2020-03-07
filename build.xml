@@ -5,6 +5,7 @@
 	<property name="dist" location="dist"/>
 	<property name="lib" location="lib"/>
 	<property name="tests" location="tests"/>
+	<property name="tlc" location="tlc"/>
 
 	<tstamp>
 		<format property="timestamp"
@@ -15,15 +16,15 @@
 	<target name="init" description="Create the build and dist directory structure">
 		<mkdir dir="${build}"/>
 		<mkdir dir="${dist}"/>
-		<mkdir dir="${lib}"/>
+		<mkdir dir="${tlc}"/>
 	</target>
 
 	<target name="download" depends="init" description="downloads tla2tools.jar" unless="skip.download">
-		<get src="https://nightly.tlapl.us/dist/tla2tools.jar" dest="${lib}"/>
+		<get src="https://nightly.tlapl.us/dist/tla2tools.jar" dest="${tlc}"/>
 	</target>
 
 	<target name="compile" depends="download" description="compile the java module overwrites">
-		<javac srcdir="${src}" destdir="${build}" classpath="${lib}/tla2tools.jar:${lib}/jackson-core-2.10.2.jar:${lib}/jackson-databind-2.10.2.jar:${lib}/jackson-annotations-2.10.2.jar"
+		<javac srcdir="${src}" destdir="${build}" classpath="${tlc}/tla2tools.jar:${lib}/jackson-core-2.10.2.jar:${lib}/jackson-databind-2.10.2.jar:${lib}/jackson-annotations-2.10.2.jar"
            source="1.8"
            target="1.8"
            includeantruntime="false"/>
@@ -54,7 +55,7 @@
 			<arg value="${basedir}/tests/AllTests"/>
 
 			<classpath>
-				<pathelement location="${lib}/tla2tools.jar" />
+				<pathelement location="${tlc}/tla2tools.jar" />
 				<pathelement location="${lib}/jackson-core-2.10.2.jar" />
 				<pathelement location="${lib}/jackson-databind-2.10.2.jar" />
 				<pathelement location="${lib}/jackson-annotations-2.10.2.jar" />
@@ -64,10 +65,10 @@
 		</java>
 	</target>
 
-	<target name="clean" description="Delete the ${build} and ${dist} directory trees">
+	<target name="clean" description="Delete the ${build}, ${tlc} and ${dist} directory trees">
 		<delete dir="${build}"/>
 		<delete dir="${dist}"/>
-		<delete dir="${lib}"/>
+		<delete dir="${tlc}"/>
 		<delete dir="${tests}/states"/>
 	</target>
 </project>

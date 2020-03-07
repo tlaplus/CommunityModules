@@ -1,6 +1,5 @@
-lib/tla2tools.jar
+tlc/
 dist/
 build/
-tests/states/
 *.toolbox/
 *.tlaps/
