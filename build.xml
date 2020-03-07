@@ -52,6 +52,9 @@
 			<sysproperty key="tlc2.TLC.ide" value="azure-pipeline"/>
 			<sysproperty key="util.ExecutionStatisticsCollector.id" value="01ed03e40ba44f278a934849dd2b1038"/>
 			
+			<arg value="-metadir"/>
+			<arg value="${basedir}/build/states"/>
+			<arg value="-cleanup"/>
 			<arg value="${basedir}/tests/AllTests"/>
 
 			<classpath>
@@ -69,6 +72,5 @@
 		<delete dir="${build}"/>
 		<delete dir="${dist}"/>
 		<delete dir="${tlc}"/>
-		<delete dir="${tests}/states"/>
 	</target>
 </project>
