@@ -4,7 +4,6 @@ EXTENDS Json, Integers, Sequences, TLC, TLCExt
 \* Empty values
 ASSUME(AssertEq(ToJsonArray({}), "[]"))
 ASSUME(AssertEq(ToJsonArray(<<>>), "[]"))
-ASSUME(AssertEq(ToJsonArray(<<>>), "[]"))
 
 \* Primitive values
 ASSUME(AssertEq(ToJson(FALSE), "false"))
