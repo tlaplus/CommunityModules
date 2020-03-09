@@ -408,5 +408,10 @@ public class Json {
     }
     return new RecordValue(keys.toArray(new UniqueString[0]), values.toArray(new Value[0]), false);
   }
+
+
+  final static void resolves() {
+	  // See TLCOverrides.java
+  }
 }
 
