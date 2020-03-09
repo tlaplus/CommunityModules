@@ -1,6 +1,8 @@
 ----------------------------- MODULE JsonTests -----------------------------
 EXTENDS Json, Integers, Sequences, TLC, TLCExt
 
+CONSTANT ModelValueConstant
+
 \* Empty values
 ASSUME(AssertEq(ToJsonArray({}), "[]"))
 ASSUME(AssertEq(ToJsonArray(<<>>), "[]"))
@@ -8,6 +10,8 @@ ASSUME(AssertEq(ToJsonArray(<<>>), "[]"))
 \* Primitive values
 ASSUME(AssertEq(ToJson(FALSE), "false"))
 ASSUME(AssertEq(ToJson(1), "1"))
+ASSUME(AssertEq(ToJson("a"), "\"a\""))
+ASSUME(AssertEq(ToJson(ModelValueConstant), "\"ModelValue\""))
 ASSUME(AssertEq(ToJson({TRUE, FALSE}), "[false,true]"))
 ASSUME(AssertEq(ToJson({1}), "[1]"))
 ASSUME(AssertEq(ToJsonArray({TRUE, FALSE}), "[false,true]"))

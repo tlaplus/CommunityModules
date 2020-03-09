@@ -51,6 +51,7 @@ import tlc2.value.impl.FcnLambdaValue;
 import tlc2.value.impl.FcnRcdValue;
 import tlc2.value.impl.IntValue;
 import tlc2.value.impl.IntervalValue;
+import tlc2.value.impl.ModelValue;
 import tlc2.value.impl.RecordValue;
 import tlc2.value.impl.SetEnumValue;
 import tlc2.value.impl.SetOfFcnsValue;
@@ -153,6 +154,8 @@ public class Json {
       return getArrayNode((TupleValue) value);
     } else if (value instanceof StringValue) {
       return new TextNode(((StringValue) value).val.toString());
+    } else if (value instanceof ModelValue) {
+      return new TextNode(((ModelValue) value).val.toString());
     } else if (value instanceof IntValue) {
       return new IntNode(((IntValue) value).val);
     } else if (value instanceof BoolValue) {
