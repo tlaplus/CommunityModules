@@ -7,6 +7,9 @@
 			<attribute name="module" value="true"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="lib/tla2tools.jar"/>
+	<classpathentry kind="lib" path="tlc/tla2tools.jar"/>
+	<classpathentry kind="lib" path="lib/jackson-annotations-2.10.2.jar"/>
+	<classpathentry kind="lib" path="lib/jackson-core-2.10.2.jar"/>
+	<classpathentry kind="lib" path="lib/jackson-databind-2.10.2.jar"/>
 	<classpathentry kind="output" path="build"/>
 </classpath>
