@@ -66,6 +66,28 @@
 				<pathelement location="${dist}/CommunityModules-${timestamp}.jar" />
 			</classpath>
 		</java>
+		
+		<!-- If an assert fails, TLC will return a non-zero exit value which is makes the ant target fail. -->
+		<java classname="tlc2.TLC" fork="true" failonerror="true">
+			<!-- Tell Java to use a garbage collector which makes TLC happy. -->
+			<jvmarg value="-XX:+UseParallelGC"/>
+			
+			<!-- Report execution statistics as azure-pipelien -->
+			<sysproperty key="tlc2.TLC.ide" value="azure-pipeline"/>
+			<sysproperty key="util.ExecutionStatisticsCollector.id" value="01ed03e40ba44f278a934849dd2b1038"/>
+			
+			<arg value="-metadir"/>
+			<arg value="${basedir}/build/states"/>
+			<arg value="-cleanup"/>
+			<arg value="-deadlock"/>
+			<arg value="${basedir}/tests/GH005/TLCExtTrace"/>
+
+			<classpath>
+				<pathelement location="${tlc}/tla2tools.jar" />
+				<!-- The jar that has just been built by the dist target. -->
+				<pathelement location="${dist}/CommunityModules-${timestamp}.jar" />
+			</classpath>
+		</java>
 	</target>
 
 	<target name="clean" description="Delete the ${build}, ${tlc} and ${dist} directory trees">

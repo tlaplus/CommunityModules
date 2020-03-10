@@ -54,13 +54,13 @@ import util.Assert;
 public class TLCExt {
 
 	@Evaluation(definition = "AssertError", module = "TLCExt", warn = false)
-	public synchronized static Value assertError(final Tool tool, final ExprOrOpArgNode[] args, final Context c, final TLCState s0,
-			final TLCState s1, final int control, final CostModel cm) {
-		
+	public synchronized static Value assertError(final Tool tool, final ExprOrOpArgNode[] args, final Context c,
+			final TLCState s0, final TLCState s1, final int control, final CostModel cm) {
+
 		// Check expected err is a string.
 		Assert.check(args[0] instanceof StringNode, "In computing AssertError, a non-string expression (" + args[0]
 				+ ") was used as the err " + "of an AssertError(err, exp).");
-		
+
 		try {
 			tool.eval(args[1], c, s0, s1, control, cm);
 		} catch (EvalException e) {
@@ -71,15 +71,17 @@ public class TLCExt {
 		}
 		return BoolValue.ValFalse;
 	}
-	
+
 	private static final Scanner scanner = new Scanner(System.in);
-	
-	// This is likely only useful with a single worker, but let's synchronize anyway.
+
+	// This is likely only useful with a single worker, but let's synchronize
+	// anyway.
 	@Evaluation(definition = "PickSuccessor", module = "TLCExt", warn = false)
-	public synchronized static Value pickSuccessor(final Tool tool, final ExprOrOpArgNode[] args, final Context c, final TLCState s0,
-			final TLCState s1, final int control, final CostModel cm) {
-		
-		// Eval expression and only let user interactively pick successor states when it evaluates to FALSE.
+	public synchronized static Value pickSuccessor(final Tool tool, final ExprOrOpArgNode[] args, final Context c,
+			final TLCState s0, final TLCState s1, final int control, final CostModel cm) {
+
+		// Eval expression and only let user interactively pick successor states when it
+		// evaluates to FALSE.
 		final Value guard = tool.eval(args[0], c, s0, s1, control, cm);
 		if (!(guard instanceof BoolValue)) {
 			Assert.fail("In evaluating TLCExt!PickSuccessor, a non-boolean expression (" + guard.getKindString()
@@ -88,9 +90,9 @@ public class TLCExt {
 		if (((BoolValue) guard).val) {
 			return BoolValue.ValTrue;
 		}
-		
+
 		// Find the (first) Action this pair of states belongs to. If more than one
-		// Action match, we pick the first one. 
+		// Action match, we pick the first one.
 		// TODO: This is clumsy (we regenerate all next-states again) and incorrect if
 		// two actions generate the same successor states. It's good enough for now
 		// until the Action instance was passed down the call-stack.
@@ -102,12 +104,14 @@ public class TLCExt {
 				break LOOP;
 			}
 		}
-		
+
 		while (true) {
 			// TODO Add more commands such as continue/resume to pick every successor,
-			// randomly pick next N successors, terminate to stop state space exploration, ...
+			// randomly pick next N successors, terminate to stop state space exploration,
+			// ...
 			MP.printMessage(EC.TLC_MODULE_OVERRIDE_STDOUT,
-					String.format("Extend behavior of length %s with a \"%s\" step [%s]? (Yes/no/explored/states/diff):",
+					String.format(
+							"Extend behavior of length %s with a \"%s\" step [%s]? (Yes/no/explored/states/diff):",
 							s0.getLevel(), action.getName(), action));
 
 			final String nextLine = scanner.nextLine();
@@ -136,16 +140,23 @@ public class TLCExt {
 		final ModelChecker mc = (ModelChecker) TLCGlobals.mainChecker;
 		final ConcurrentTLCTrace traceFile = mc.trace;
 
+		// If Trace operator is evaluated during the next-state relation, it will return
+		// the state from which the next state is generated.
 		final TLCState currentState = IdThread.getCurrentState();
 		if (currentState == null) {
 			return new TupleValue(new Value[0]);
 		}
-		
+
+		if (currentState.isInitial()) {
+			return new TupleValue(new Value[] { new RecordValue(currentState) });
+		}
+
 		final TLCStateInfo[] trace = traceFile.getTrace(currentState);
-		final Value[] values = new Value[trace.length];
-		for (int j = 0; j < trace.length; j++) {
+		final Value[] values = new Value[trace.length + 1];
+		for (int j = 0; j < (trace.length); j++) {
 			values[j] = new RecordValue(trace[j].state);
 		}
+		values[values.length - 1] = new RecordValue(currentState);
 		return new TupleValue(values);
 	}
 }
