@@ -135,28 +135,22 @@ public class TLCExt {
 		}
 	}
 
-	@TLAPlusOperator(identifier = "Trace", module = "TLCExt", minLevel = 1, warn = false)
-	public synchronized static Value getTrace() throws IOException {
+	@Evaluation(definition = "Trace", module = "TLCExt", minLevel = 1, warn = false)
+	public synchronized static Value getTrace(final Tool tool, final ExprOrOpArgNode[] args, final Context c,
+			final TLCState s0, final TLCState s1, final int control, final CostModel cm) throws IOException {
 		final ModelChecker mc = (ModelChecker) TLCGlobals.mainChecker;
 		final ConcurrentTLCTrace traceFile = mc.trace;
 
-		// If Trace operator is evaluated during the next-state relation, it will return
-		// the state from which the next state is generated.
-		final TLCState currentState = IdThread.getCurrentState();
-		if (currentState == null) {
-			return new TupleValue(new Value[0]);
+		if (s0.isInitial()) {
+			return new TupleValue(new Value[] { new RecordValue(s0) });
 		}
 
-		if (currentState.isInitial()) {
-			return new TupleValue(new Value[] { new RecordValue(currentState) });
-		}
-
-		final TLCStateInfo[] trace = traceFile.getTrace(currentState);
+		final TLCStateInfo[] trace = traceFile.getTrace(s0);
 		final Value[] values = new Value[trace.length + 1];
 		for (int j = 0; j < (trace.length); j++) {
 			values[j] = new RecordValue(trace[j].state);
 		}
-		values[values.length - 1] = new RecordValue(currentState);
+		values[values.length - 1] = new RecordValue(s0);
 		return new TupleValue(values);
 	}
 }

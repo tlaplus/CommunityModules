@@ -1,13 +1,13 @@
 ---- MODULE TLCExtTrace ----
 
-EXTENDS Integers, TLC, TLCExt
+EXTENDS Integers, TLCExt, Sequences
 
 VARIABLE x
 
 Spec == x = 1 /\ [][x < 10 /\ x' = x + 1]_x
 
-Inv == \/ x = 1
-       \/ PrintT(<<Trace, x>>)
+\* Assert that Trace is the sequence of states up to the current value of x.
+Inv == /\ Len(Trace) = x
+       /\ \A i \in 1..x : Trace[i].x = i /\ DOMAIN Trace[i] = {"x"}
        
 ==================================
-
