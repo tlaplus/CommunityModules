@@ -31,4 +31,4 @@ We take the discretion to approve or reject submissions at our will.
 Download
 --------
 
-[![Build Status](https://dev.azure.com/tlaplus/tlaplus/_apis/build/status/tlaplus.CommunityModules?branchName=master)](https://dev.azure.com/tlaplus/tlaplus/_build/latest?definitionId=4&branchName=master)
+![CI](https://github.com/tlaplus/CommunityModules/workflows/CI/badge.svg)
