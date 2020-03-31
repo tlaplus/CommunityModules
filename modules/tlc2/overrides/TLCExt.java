@@ -43,7 +43,6 @@ import tlc2.tool.TLCStateInfo;
 import tlc2.tool.coverage.CostModel;
 import tlc2.tool.impl.Tool;
 import tlc2.util.Context;
-import tlc2.util.IdThread;
 import tlc2.value.impl.BoolValue;
 import tlc2.value.impl.RecordValue;
 import tlc2.value.impl.StringValue;
@@ -145,7 +144,31 @@ public class TLCExt {
 			return new TupleValue(new Value[] { new RecordValue(s0) });
 		}
 
-		final TLCStateInfo[] trace = traceFile.getTrace(s0);
+		return getTrace0(s0, traceFile.getTrace(s0));
+	}
+
+	@Evaluation(definition = "TraceFrom", module = "TLCExt", minLevel = 1, warn = false)
+	public synchronized static Value getTraceFrom(final Tool tool, final ExprOrOpArgNode[] args, final Context c,
+			final TLCState s0, final TLCState s1, final int control, final CostModel cm) throws IOException {
+		final ModelChecker mc = (ModelChecker) TLCGlobals.mainChecker;
+		final ConcurrentTLCTrace traceFile = mc.trace;
+
+		final Value v = tool.eval(args[0], c, s0, s1, control, cm);
+		if (!(v instanceof RecordValue)) {
+			Assert.fail("In evaluating TLCExt!TraceFrom, a non-record expression (" + v.getKindString()
+					+ ") was used as the parameter.\n" + args[0]);
+		}
+		final TLCState from = ((RecordValue) v).toState();
+		Assert.check(from.allAssigned(), EC.GENERAL,
+				"In evaluating TLCExt!TraceFrom, the given parameter could not be converted into a valid state.");
+
+		if (s0.isInitial() || from.equals(s0)) {
+			return new TupleValue(new RecordValue(s0));
+		}
+		return getTrace0(s0, traceFile.getTrace(from, s0));
+	}
+
+	private static final Value getTrace0(final TLCState s0, final TLCStateInfo[] trace) {
 		final Value[] values = new Value[trace.length + 1];
 		for (int j = 0; j < (trace.length); j++) {
 			values[j] = new RecordValue(trace[j].state);
