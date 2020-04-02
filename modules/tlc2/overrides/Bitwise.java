@@ -28,7 +28,7 @@ import tlc2.value.impl.IntValue;
 
 public class Bitwise {
 
-	@TLAPlusOperator(identifier = "Ant", module = "Bitwise", warn = false)
+	@TLAPlusOperator(identifier = "And", module = "Bitwise", warn = false)
     public static IntValue And(IntValue x, IntValue y, IntValue n, IntValue m) {
         return IntValue.gen(x.val & y.val);
     }
