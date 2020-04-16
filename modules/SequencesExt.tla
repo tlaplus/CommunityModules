@@ -3,6 +3,7 @@
 LOCAL INSTANCE Sequences
 LOCAL INSTANCE Naturals
 LOCAL INSTANCE FiniteSets
+LOCAL INSTANCE FiniteSetsExt
 LOCAL INSTANCE Functions
   (*************************************************************************)
   (* Imports the definitions from the modules, but doesn't export them.    *)
@@ -36,6 +37,19 @@ SetToSeq(S) ==
   (* set exactly once, and contains no other elements.                      *)
   (**************************************************************************)
   CHOOSE f \in [1..Cardinality(S) -> S] : IsInjective(f)
+
+TupleOf(set, n) == 
+  (***************************************************************************)
+  (* TupleOf(s, 3) = s \X s \X s                                             *)
+  (***************************************************************************)
+  [1..n -> set]
+
+SeqOf(set, n) == 
+  (***************************************************************************)
+  (* All sequences up to length n with all elements in set.  Includes empty  *)
+  (* sequence                                                                *)
+  (***************************************************************************)
+  UNION {[1..m -> set] : m \in 0..n}
 
 -----------------------------------------------------------------------------
 
@@ -141,5 +155,23 @@ IsStrictSuffix(s, t) ==
   (* TRUE iff the sequence s is a suffix of the sequence t and s # t        *)
   (**************************************************************************)
   IsSuffix(s,t) /\ s # t
+
+-----------------------------------------------------------------------------
+
+SeqMod(a, b) == 
+  (***************************************************************************)
+  (*   Range(a % b) = 0..b-1, but DOMAIN seq = 1..Len(seq).                  *)
+  (*   So to do modular arithmetic on sequences we need to                   *)
+  (*   map 0 to b.                                                           *)
+  (***************************************************************************)
+  IF a % b = 0 THEN b ELSE a % b
+
+
+ReduceSeq(op(_, _), seq, acc) == 
+  (***************************************************************************)
+  (* We can't just apply ReduceSet to the Range(seq) because the same        *)
+  (* element might appear twice in the sequence.                             *)
+  (***************************************************************************)
+  ReduceSet(LAMBDA i, a: op(seq[i], a), DOMAIN seq, acc)
 
 =============================================================================
