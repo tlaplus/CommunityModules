@@ -1,3 +1,4 @@
+package tlc2.overrides;
 /*******************************************************************************
  * Copyright (c) 2019 Microsoft Research. All rights reserved. 
  *
@@ -38,6 +39,7 @@ public final class SequencesExt {
 		// no-instantiation!
 	}
 	
+	@TLAPlusOperator(identifier = "IsInjective", module = "SequencesExt", warn = false)
 	public static BoolValue IsInjective(final Value val) {
 		if (val instanceof TupleValue) {
 			return isInjectiveNonDestructive(((TupleValue) val).elems);
@@ -45,7 +47,7 @@ public final class SequencesExt {
 			final Value conv = val.toTuple();
 			if (conv == null) {
 				throw new EvalException(EC.TLC_MODULE_ONE_ARGUMENT_ERROR,
-						new String[] { "IsASet", "sequence", Values.ppr(val.toString()) });
+						new String[] { "IsInjective", "sequence", Values.ppr(val.toString()) });
 			}
 			return isInjectiveDestructive(((TupleValue) conv).elems);
 		}

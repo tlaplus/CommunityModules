@@ -1,0 +1,56 @@
+name: CI
+
+on: [push]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up JDK 1.9
+      uses: actions/setup-java@v1
+      with:
+        java-version: 9.0.x
+    - name: Get current date
+      id: date
+      run: echo "::set-output name=date::$(date +'%Y%m%d%H%M')"
+    # Do not download and install TLAPS over and over again.
+    - uses: actions/cache@v1
+      id: cache
+      with:
+        path: tlaps/
+        key: tlaps1.4.5
+    - name: Get TLAPS
+      if: steps.cache.outputs.cache-hit != 'true' # see actions/cache above
+      run: wget https://tla.msr-inria.inria.fr/tlaps/dist/current/tlaps-1.4.5-x86_64-linux-gnu-inst.bin
+    - name: Install TLAPS
+      if: steps.cache.outputs.cache-hit != 'true' # see actions/cache above
+      run: |
+        chmod +x tlaps-1.4.5-x86_64-linux-gnu-inst.bin
+        ./tlaps-1.4.5-x86_64-linux-gnu-inst.bin -d tlaps
+    - name: Run TLAPS
+      run: tlaps/bin/tlapm --cleanfp -I tlaps/ -I modules/ modules/SequencesExtTheorems_proofs.tla
+    - name: Build with Ant
+      run: ant -noinput -buildfile build.xml -Dtimestamp=${{steps.date.outputs.date}}
+    - name: Create Release
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{steps.date.outputs.date}}
+        release_name: ${{steps.date.outputs.date}}
+        draft: false
+        prerelease: false
+    - name: Upload Release Asset
+      id: upload-release-asset 
+      uses: actions/upload-release-asset@v1.0.1
+      env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: dist/CommunityModules-${{steps.date.outputs.date}}.jar
+        asset_name: CommunityModules-${{steps.date.outputs.date}}.jar
+        asset_content_type: application/zip

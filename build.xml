@@ -1,39 +1,99 @@
-<project name="CommunityModules" default="dist" basedir=".">
+<project name="CommunityModules" default="test" basedir=".">
 
-  <property name="src" location="modules/"/>
-  <property name="build" location="build"/>
-  <property name="dist" location="dist"/>
-  <property name="lib" location="lib"/>
+	<property name="src" location="modules/"/>
+	<property name="build" location="build"/>
+	<property name="dist" location="dist"/>
+	<property name="lib" location="lib"/>
+	<property name="tests" location="tests"/>
+	<property name="tlc" location="tlc"/>
 
-  <target name="init" description="Create the build and dist directory structure">
-    <mkdir dir="${build}"/>
-    <mkdir dir="${dist}"/>
-    <mkdir dir="${lib}"/>
-  </target>
+	<tstamp>
+		<format property="timestamp"
+          pattern="yyyyMMdHHmm"
+          locale="en,UK"/>
+	</tstamp>
 
-  <target name="compile" depends="init" description="compile the java module overwrites">
-    <get src="https://nightly.tlapl.us/dist/tla2tools.jar" dest="${lib}"/>
-    <javac srcdir="${src}" destdir="${build}" classpath="${lib}/tla2tools.jar"
+	<target name="init" description="Create the build and dist directory structure">
+		<mkdir dir="${build}"/>
+		<mkdir dir="${dist}"/>
+		<mkdir dir="${tlc}"/>
+	</target>
+
+	<target name="download" depends="init" description="downloads tla2tools.jar" unless="skip.download">
+		<get src="https://github.com/tlaplus/tlaplus/releases/download/v1.6.1/tla2tools.jar" dest="${tlc}"/>
+		<!-- https://nightly.tlapl.us/dist/tla2tools.jar -->
+	</target>
+
+	<target name="compile" depends="download" description="compile the java module overwrites">
+		<javac srcdir="${src}" destdir="${build}" classpath="${tlc}/tla2tools.jar:${lib}/jackson-core-2.10.2.jar:${lib}/jackson-databind-2.10.2.jar:${lib}/jackson-annotations-2.10.2.jar"
            source="1.8"
            target="1.8"
            includeantruntime="false"/>
-  </target>
+	</target>
 
-  <target name="dist" depends="compile" description="Combine the module overwrites and the TLA+ definitions into a distribution">
-    <tstamp/>
-    <jar jarfile="${dist}/CommunityModules-${DSTAMP}${TSTAMP}.jar">
-         <fileset dir="${build}/"
-             includes="*.class"/>
-         <fileset dir="${src}/"
+	<target name="dist" depends="compile" description="Combine the module overwrites and the TLA+ definitions into a distribution">
+		<tstamp/>
+		<jar jarfile="${dist}/CommunityModules-${timestamp}.jar">
+			<fileset dir="${build}/"
+             includes="**/*.class"/>
+			<fileset dir="${src}/"
              includes="*.tla,*.java"/>
-         <fileset dir="."
+			<fileset dir="."
              includes="LICENSE,README.md"/>
-    </jar>
-  </target>
+		</jar>
+	</target>
 
-  <target name="clean" description="Delete the ${build} and ${dist} directory trees">
-    <delete dir="${build}"/>
-    <delete dir="${dist}"/>
-    <delete dir="${lib}"/>
-  </target>
+	<target name="test" depends="dist" description="Run the modules in tests/ on the TLA+ modules in dist/">
+		<!-- If an assert fails, TLC will return a non-zero exit value which is makes the ant target fail. -->
+		<java classname="tlc2.TLC" fork="true" failonerror="true">
+			<!-- Tell Java to use a garbage collector which makes TLC happy. -->
+			<jvmarg value="-XX:+UseParallelGC"/>
+			
+			<!-- Report execution statistics as azure-pipelien -->
+			<sysproperty key="tlc2.TLC.ide" value="azure-pipeline"/>
+			<sysproperty key="util.ExecutionStatisticsCollector.id" value="01ed03e40ba44f278a934849dd2b1038"/>
+			
+			<arg value="-metadir"/>
+			<arg value="${basedir}/build/states"/>
+			<arg value="-cleanup"/>
+			<arg value="${basedir}/tests/AllTests"/>
+
+			<classpath>
+				<pathelement location="${tlc}/tla2tools.jar" />
+				<pathelement location="${lib}/jackson-core-2.10.2.jar" />
+				<pathelement location="${lib}/jackson-databind-2.10.2.jar" />
+				<pathelement location="${lib}/jackson-annotations-2.10.2.jar" />
+				<!-- The jar that has just been built by the dist target. -->
+				<pathelement location="${dist}/CommunityModules-${timestamp}.jar" />
+			</classpath>
+		</java>
+		
+		<!-- If an assert fails, TLC will return a non-zero exit value which is makes the ant target fail. -->
+		<java classname="tlc2.TLC" fork="true" failonerror="true">
+			<!-- Tell Java to use a garbage collector which makes TLC happy. -->
+			<jvmarg value="-XX:+UseParallelGC"/>
+			
+			<!-- Report execution statistics as azure-pipelien -->
+			<sysproperty key="tlc2.TLC.ide" value="azure-pipeline"/>
+			<sysproperty key="util.ExecutionStatisticsCollector.id" value="01ed03e40ba44f278a934849dd2b1038"/>
+			
+			<arg value="-metadir"/>
+			<arg value="${basedir}/build/states"/>
+			<arg value="-cleanup"/>
+			<arg value="-deadlock"/>
+			<arg value="${basedir}/tests/GH005/TLCExtTrace"/>
+
+			<classpath>
+				<pathelement location="${tlc}/tla2tools.jar" />
+				<!-- The jar that has just been built by the dist target. -->
+				<pathelement location="${dist}/CommunityModules-${timestamp}.jar" />
+			</classpath>
+		</java>
+	</target>
+
+	<target name="clean" description="Delete the ${build}, ${tlc} and ${dist} directory trees">
+		<delete dir="${build}"/>
+		<delete dir="${dist}"/>
+		<delete dir="${tlc}"/>
+	</target>
 </project>
