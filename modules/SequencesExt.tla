@@ -47,10 +47,17 @@ TupleOf(set, n) ==
 SeqOf(set, n) == 
   (***************************************************************************)
   (* All sequences up to length n with all elements in set.  Includes empty  *)
-  (* sequence                                                                *)
+  (* sequence.                                                               *)
   (***************************************************************************)
   UNION {[1..m -> set] : m \in 0..n}
 
+BoundedSeq(S, n) ==
+  (***************************************************************************)
+  (* An alias for SeqOf to make the connection to Sequences!Seq, which is    *)
+  (* the unbounded version of BoundedSeq.                                    *)
+  (***************************************************************************)
+  SeqOf(S, n)
+  
 -----------------------------------------------------------------------------
 
 Contains(s, e) ==
