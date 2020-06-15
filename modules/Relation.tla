@@ -33,9 +33,6 @@ IsTransitive(R, S) == \A x,y,z \in S : R[x,y] /\ R[y,z] => R[x,z]
 
 (***************************************************************************)
 (* Compute the transitive closure of relation R over set S.                *)
-(*                                                                         *)
-(* (See TransitiveClosure.tla of the TLA+ Example repository for           *)
-(*  alternative definitions of the TransitiveClosure operator)             *)
 (***************************************************************************)
 TransitiveClosure(R, S) ==
   LET N == Cardinality(S)
@@ -52,7 +49,15 @@ ReflexiveTransitiveClosure(R, S) ==
   LET trcl == TransitiveClosure(R,S)
   IN  [x,y \in S |-> x=y \/ trcl[x,y]]
 
+(***************************************************************************)
+(* Is the relation R connected over set S, i.e. does there exist a path    *)
+(* between two arbitrary elements of S?                                    *)
+(***************************************************************************)
+IsConnected(R, S) ==
+  LET rtrcl == ReflexiveTransitiveClosure(R,S)
+  IN  \A x,y \in S : rtrcl[x,y]
+
 =============================================================================
 \* Modification History
-\* Last modified Tue May 27 19:05:08 CEST 2020 by markus
+\* Last modified Sun Jun 14 15:32:47 CEST 2020 by merz
 \* Created Tue Apr 26 10:24:07 CEST 2016 by merz
