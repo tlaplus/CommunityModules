@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry kind="src" path="modules"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/tlatools"/>
+	<classpathentry kind="src" output="build/modules" path="modules"/>
+	<classpathentry kind="src" output="build/tests" path="tests/java"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER">
 		<attributes>
 			<attribute name="module" value="true"/>
@@ -11,5 +11,7 @@
 	<classpathentry kind="lib" path="lib/jackson-annotations-2.10.2.jar"/>
 	<classpathentry kind="lib" path="lib/jackson-core-2.10.2.jar"/>
 	<classpathentry kind="lib" path="lib/jackson-databind-2.10.2.jar"/>
+	<classpathentry kind="lib" path="lib/hamcrest-core-1.3.jar"/>
+	<classpathentry kind="lib" path="lib/junit-4.13.jar"/>
 	<classpathentry kind="output" path="build"/>
 </classpath>

@@ -1,6 +1,7 @@
 <project name="CommunityModules" default="test" basedir=".">
 
 	<property name="src" location="modules/"/>
+	<property name="src-test" location="tests/java"/>
 	<property name="build" location="build"/>
 	<property name="dist" location="dist"/>
 	<property name="lib" location="lib"/>
@@ -14,18 +15,23 @@
 	</tstamp>
 
 	<target name="init" description="Create the build and dist directory structure">
-		<mkdir dir="${build}"/>
+		<mkdir dir="${build}/modules"/>
+		<mkdir dir="${build}/tests"/>
 		<mkdir dir="${dist}"/>
 		<mkdir dir="${tlc}"/>
 	</target>
 
 	<target name="download" depends="init" description="downloads tla2tools.jar" unless="skip.download">
-		<get src="https://github.com/tlaplus/tlaplus/releases/download/v1.7.0/tla2tools.jar" dest="${tlc}"/>
-		<!-- https://nightly.tlapl.us/dist/tla2tools.jar -->
+		<!--<get src="https://github.com/tlaplus/tlaplus/releases/download/v1.7.0/tla2tools.jar" dest="${tlc}"/>-->
+		<get src="https://nightly.tlapl.us/dist/tla2tools.jar" dest="${tlc}"/>
 	</target>
 
 	<target name="compile" depends="download" description="compile the java module overwrites">
-		<javac srcdir="${src}" destdir="${build}" classpath="${tlc}/tla2tools.jar:${lib}/jackson-core-2.10.2.jar:${lib}/jackson-databind-2.10.2.jar:${lib}/jackson-annotations-2.10.2.jar"
+		<javac srcdir="${src}" destdir="${build}/modules" classpath="${tlc}/tla2tools.jar:${lib}/jackson-core-2.10.2.jar:${lib}/jackson-databind-2.10.2.jar:${lib}/jackson-annotations-2.10.2.jar"
+           source="1.8"
+           target="1.8"
+           includeantruntime="false"/>
+		<javac srcdir="${src-test}" destdir="${build}/tests" classpath="${tlc}/tla2tools.jar:${lib}/junit-4.13.jar"
            source="1.8"
            target="1.8"
            includeantruntime="false"/>
@@ -34,7 +40,7 @@
 	<target name="dist" depends="compile" description="Combine the module overwrites and the TLA+ definitions into a distribution">
 		<tstamp/>
 		<jar jarfile="${dist}/CommunityModules-${timestamp}.jar">
-			<fileset dir="${build}/"
+			<fileset dir="${build}/modules/"
              includes="**/*.class"/>
 			<fileset dir="${src}/"
              includes="*.tla,*.java"/>
@@ -89,6 +95,42 @@
 				<pathelement location="${dist}/CommunityModules-${timestamp}.jar" />
 			</classpath>
 		</java>
+
+		<junit dir="${build}" printsummary="yes" haltonfailure="yes" showoutput="no" haltonerror="yes"  forkmode="perTest" fork="yes">
+			<!-- enable all assertions -->
+			<jvmarg value="-ea"/>
+			<jvmarg value="-XX:MaxDirectMemorySize=512k"/>
+			<jvmarg value="-XX:+UseParallelGC"/>
+			<!-- Uncomment to open a debug port in each forked VM to remote attach your Eclipse at port 1044.
+            <jvmarg value="-Xdebug" />
+	        <jvmarg value="-Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=1044" />
+			-->
+			<classpath>
+				<pathelement path="${build}/tests/" />
+				<pathelement location="${tlc}/tla2tools.jar" />
+				<pathelement location="${lib}/hamcrest-core-1.3.jar" />
+				<pathelement location="${lib}/junit-4.13.jar" />
+				<pathelement location="${lib}/jackson-core-2.10.2.jar" />
+				<pathelement location="${lib}/jackson-databind-2.10.2.jar" />
+				<pathelement location="${lib}/jackson-annotations-2.10.2.jar" />
+				<!-- The jar that has just been built by the dist target. -->
+				<pathelement location="${dist}/CommunityModules-${timestamp}.jar" />
+			</classpath>
+			<formatter type="xml" />
+
+			<!-- Pass the base path of the tlatools project to unit tests in case they need it to locate TLA+ specs or configs -->
+			<sysproperty key="basepath" value="${basedir}/tests"/>
+			<sysproperty key="tlc2.tool.fp.FPSet.impl" value="tlc2.tool.fp.OffHeapDiskFPSet"/>
+			<sysproperty key="util.FileUtil.milliseconds" value="true"/>
+			<sysproperty key="tlc2.tool.distributed.TLCWorker.threadCount" value="4"/>
+			<!-- The tests below can be tricked into running in a single VM by fiddling with the classloader 
+			     to reload and thus initialize all classes for each tests. -->
+			<batchtest fork="yes" todir="${build}/tests">
+				<fileset dir="${src-test}">
+					<include name="**/*Test*.java" />
+				</fileset>
+			</batchtest>
+		</junit>
 	</target>
 
 	<target name="clean" description="Delete the ${build}, ${tlc} and ${dist} directory trees">
