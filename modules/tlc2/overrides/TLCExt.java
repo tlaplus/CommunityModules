@@ -27,8 +27,11 @@ package tlc2.overrides;
 
 import java.io.IOException;
 import java.util.Scanner;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import tla2sany.semantic.ExprOrOpArgNode;
+import tla2sany.semantic.OpDeclNode;
 import tla2sany.semantic.StringNode;
 import tlc2.TLCGlobals;
 import tlc2.output.EC;
@@ -140,6 +143,23 @@ public class TLCExt {
 		final ModelChecker mc = (ModelChecker) TLCGlobals.mainChecker;
 		final ConcurrentTLCTrace traceFile = mc.trace;
 
+		if (!s0.allAssigned()) {
+			/*
+			 * Fail when Trace appears before the state is completely specified (see
+			 * EC.TLC_STATE_NOT_COMPLETELY_SPECIFIED_INITIAL) 
+			 * 
+			 * VARIABLE var
+			 * ...
+			 * Init == PrintT(Trace) /\ var = 42
+			 * ...
+			 */
+			final Set<OpDeclNode> unassigned = s0.getUnassigned();
+			Assert.fail(EC.GENERAL, String.format(
+					"In evaluating TLCExt!Trace, the initial state is not completely specified yet (variable%s %s undefined).",
+					unassigned.size() > 1 ? "s" : "",
+					unassigned.stream().map(n -> n.getName().toString()).collect(Collectors.joining(", "))));
+		}
+		
 		if (s0.isInitial()) {
 			return new TupleValue(new Value[] { new RecordValue(s0) });
 		}
@@ -155,7 +175,7 @@ public class TLCExt {
 
 		final Value v = tool.eval(args[0], c, s0, s1, control, cm);
 		if (!(v instanceof RecordValue)) {
-			Assert.fail("In evaluating TLCExt!TraceFrom, a non-record expression (" + v.getKindString()
+			Assert.fail(EC.GENERAL, "In evaluating TLCExt!TraceFrom, a non-record expression (" + v.getKindString()
 					+ ") was used as the parameter.\n" + args[0]);
 		}
 		final TLCState from = ((RecordValue) v).toState();
