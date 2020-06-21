@@ -155,7 +155,7 @@ public class TLCExt {
 			 */
 			final Set<OpDeclNode> unassigned = s0.getUnassigned();
 			Assert.fail(EC.GENERAL, String.format(
-					"In evaluating TLCExt!Trace, the initial state is not completely specified yet (variable%s %s undefined).",
+					"In evaluating TLCExt!Trace, the state is not completely specified yet (variable%s %s undefined).",
 					unassigned.size() > 1 ? "s" : "",
 					unassigned.stream().map(n -> n.getName().toString()).collect(Collectors.joining(", "))));
 		}
