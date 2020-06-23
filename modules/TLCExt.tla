@@ -49,6 +49,9 @@ Trace ==
   (* Note that op is incompatible with TLC!RandomElement and Randomization (see *)
   (* tlc2.tool.TLCTrace.getTrace(LongVec)) and will cause TLC to crash.  This   *)
   (* technical limitation could be removed though.                              *)
+  (*                                                                            *)
+  (* Beware that this operator and TraceFrom below are O(n^2) in the number     *)
+  (* of states that TLC has to generate.                                        *)
   (******************************************************************************)
   TRUE \* TODO
 
