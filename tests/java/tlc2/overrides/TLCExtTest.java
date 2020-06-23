@@ -42,6 +42,6 @@ public class TLCExtTest extends ModelCheckerTestCase {
 	@Test
 	public void testSpec() {
 		assertTrue(recorder.recordedWithStringValue(EC.GENERAL,
-				"In evaluating TLCExt!Trace, the initial state is not completely specified yet (variables v, w undefined)."));
+				"In evaluating TLCExt!Trace, the state is not completely specified yet (variables v, w undefined)."));
 	}
 }
