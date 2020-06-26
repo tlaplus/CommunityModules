@@ -1,7 +1,7 @@
 Community Repository
 ====================
 
-This is an open repository dedicated to **contributions from the TLA+ commmunity**.
+[This is an open repository](https://github.com/tlaplus/CommunityModules/) dedicated to **contributions from the TLA+ commmunity**.
 Here you are able to submit the snippets, operators, and modules that you wrote for
 your specifications and that you want to share with the rest of the TLA+ community.
 
