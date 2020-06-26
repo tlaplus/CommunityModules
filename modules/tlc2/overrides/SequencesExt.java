@@ -30,6 +30,7 @@ import tlc2.output.EC;
 import tlc2.tool.EvalException;
 import tlc2.value.Values;
 import tlc2.value.impl.BoolValue;
+import tlc2.value.impl.SetEnumValue;
 import tlc2.value.impl.TupleValue;
 import tlc2.value.impl.Value;
 
@@ -77,5 +78,19 @@ public final class SequencesExt {
 			}
 		}
 		return BoolValue.ValTrue;
+	}
+	
+	/*
+	 * Improve carbon footprint of SequencesExt!SetToSeq. Convert SetEnumValue to
+	 * TupleValue (linear in the number of elements) instead of generating the set
+	 * of *all* functions (n^n) and choosing one that's injective.
+	 */
+	@TLAPlusOperator(identifier = "SetToSeq", module = "SequencesExt", warn = false)
+	public static Value SetToSeq(final Value val) {
+		// TODO: This should eventually be replaced with SetEnumValue#toTupleValue.
+		// I don't want to make CommunityModules depend on the most recent TLC nightly
+		// build right now.
+		final SetEnumValue setEnumValue = (SetEnumValue) val.toSetEnum().normalize();
+		return new TupleValue(setEnumValue.elems.toArray());
 	}
 }
