@@ -40,6 +40,7 @@ import tlc2.tool.Action;
 import tlc2.tool.ConcurrentTLCTrace;
 import tlc2.tool.EvalException;
 import tlc2.tool.ModelChecker;
+import tlc2.tool.SimulationWorker;
 import tlc2.tool.StateVec;
 import tlc2.tool.TLCState;
 import tlc2.tool.TLCStateInfo;
@@ -140,8 +141,6 @@ public class TLCExt {
 	@Evaluation(definition = "Trace", module = "TLCExt", minLevel = 1, warn = false)
 	public synchronized static Value getTrace(final Tool tool, final ExprOrOpArgNode[] args, final Context c,
 			final TLCState s0, final TLCState s1, final int control, final CostModel cm) throws IOException {
-		final ModelChecker mc = (ModelChecker) TLCGlobals.mainChecker;
-		final ConcurrentTLCTrace traceFile = mc.trace;
 
 		if (!s0.allAssigned()) {
 			/*
@@ -163,6 +162,15 @@ public class TLCExt {
 		if (s0.isInitial()) {
 			return new TupleValue(new Value[] { new RecordValue(s0) });
 		}
+		
+		if (TLCGlobals.simulator != null) {
+			// TODO Somehow load only this implementation in simulation mode => module
+			// overrides for a specific tool mode.
+			final SimulationWorker w = (SimulationWorker) Thread.currentThread();
+			return new TupleValue(w.getTrace().toRecords(s0));
+		}
+		final ModelChecker mc = (ModelChecker) TLCGlobals.mainChecker;
+		final ConcurrentTLCTrace traceFile = mc.trace;
 
 		return getTrace0(s0, traceFile.getTrace(s0));
 	}
@@ -170,9 +178,7 @@ public class TLCExt {
 	@Evaluation(definition = "TraceFrom", module = "TLCExt", minLevel = 1, warn = false)
 	public synchronized static Value getTraceFrom(final Tool tool, final ExprOrOpArgNode[] args, final Context c,
 			final TLCState s0, final TLCState s1, final int control, final CostModel cm) throws IOException {
-		final ModelChecker mc = (ModelChecker) TLCGlobals.mainChecker;
-		final ConcurrentTLCTrace traceFile = mc.trace;
-
+		
 		final Value v = tool.eval(args[0], c, s0, s1, control, cm);
 		if (!(v instanceof RecordValue)) {
 			Assert.fail(EC.GENERAL, "In evaluating TLCExt!TraceFrom, a non-record expression (" + v.getKindString()
@@ -185,6 +191,13 @@ public class TLCExt {
 		if (s0.isInitial() || from.equals(s0)) {
 			return new TupleValue(new RecordValue(s0));
 		}
+		
+		if (TLCGlobals.simulator != null) {
+			final SimulationWorker w = (SimulationWorker) Thread.currentThread();
+			return new TupleValue(w.getTrace().toRecords(from, s0));
+		}
+		final ModelChecker mc = (ModelChecker) TLCGlobals.mainChecker;
+		final ConcurrentTLCTrace traceFile = mc.trace;
 		return getTrace0(s0, traceFile.getTrace(from, s0));
 	}
 
