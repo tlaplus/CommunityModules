@@ -99,6 +99,13 @@ Group(children, attrs) ==
     (**************************************************************************)
     SVGElem("g", attrs, children, "")
 
+Svg(children, attrs) == 
+    (**************************************************************************)
+    (* Svg container.  'children' is a sequence of elements that will be      *)
+    (* contained in this svg container.                                       *)
+    (**************************************************************************)
+    SVGElem("svg", attrs, children, "")
+
 SVGElemToString(elem) == 
     (**************************************************************************)
     (* Convert an SVG element record into its string representation.          *)
