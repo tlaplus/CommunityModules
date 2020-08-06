@@ -93,4 +93,22 @@ public final class SequencesExt {
 		final SetEnumValue setEnumValue = (SetEnumValue) val.toSetEnum().normalize();
 		return new TupleValue(setEnumValue.elems.toArray());
 	}
+
+	/*
+	 * Contains(s, e) == \E i \in 1..Len(s) : s[i] = e
+	 */
+	@TLAPlusOperator(identifier = "Contains", module = "SequencesExt", warn = false)
+	public static Value Contains(final Value s, final Value e) {
+		final TupleValue tv = (TupleValue) s.toTuple();
+		if (tv == null) {
+			throw new EvalException(EC.TLC_MODULE_ONE_ARGUMENT_ERROR,
+					new String[] { "IsInjective", "sequence", Values.ppr(s.toString()) });
+		}
+		for (int i = 0; i < tv.elems.length; i++) {
+			if (tv.elems[i].equals(e)) {
+				return BoolValue.ValTrue;
+			}
+		}
+		return BoolValue.ValFalse;
+	}
 }

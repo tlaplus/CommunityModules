@@ -78,4 +78,18 @@ ASSUME(~IsSuffix(<<3,2>>, <<1,2,3>>))
 ASSUME(IsSuffix(<<1,2,3>>, <<1,2,3>>))
 
 ASSUME(~IsStrictSuffix(<<1,2,3>>, <<1,2,3>>))
+
+-----------------------------------------------------------------------------
+
+ASSUME(~Contains(<<>>, 3))
+ASSUME(Contains(<<3>>, 3))
+ASSUME(~Contains(<<3>>, 4))
+ASSUME(Contains(<<3,4>>, 3))
+ASSUME(Contains(<<3,4>>, 4))
+
+
+ASSUME(Contains(<<{3},{4}>>, {4}))
+ASSUME(Contains(<<{3},{4}>>, {3}))
+ASSUME(~Contains(<<{3},{4}>>, {2}))
+
 =============================================================================
