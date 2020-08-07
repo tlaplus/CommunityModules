@@ -5,6 +5,24 @@ Community Repository
 Here you are able to submit the snippets, operators, and modules that you wrote for
 your specifications and that you want to share with the rest of the TLA+ community.
 
+The Modules
+-----------
+
+| Name  | Short description | Module Override? | Contributors |
+| :--: | ---- | ---- | ---- |
+| <a href="https://github.com/tlaplus/CommunityModules/blob/master/modules/Functions.tla">Functions.tla</a> | Notions about functions including injection, surjection, and bijection. | | [@muenchnerkindl](https://github.com/muenchnerkindl) | 
+| <a href="https://github.com/tlaplus/CommunityModules/blob/master/modules/Graphs.tla">Graphs.tla</a> | Common operators on directed and undirected graphs. | | Leslie Lamport | 
+| <a href="https://github.com/tlaplus/CommunityModules/blob/master/modules/SequencesExt.tla">SequencesExt.tla</a> | Various operators to manipulate sequences. | [&#10004;](https://github.com/tlaplus/CommunityModules/blob/master/modules/tlc2/overrides/SequencesExt.java)| [@lemmy](https://github.com/lemmy) | 
+| <a href="https://github.com/tlaplus/CommunityModules/blob/master/modules/Relation.tla">Relation.tla</a> | Basic operations on relations, represented as binary Boolean functions over some set S.| | [@muenchnerkindl](https://github.com/muenchnerkindl) | <a href="https://github.com/tlaplus/CommunityModules/blob/master/modules/FiniteSetsExt.tla">FiniteSetsExt.tla</a> | | An Operator to do folds without having to use RECURSIVE. | [@hwayne](https://github.com/hwayne) | 
+| <a href="https://github.com/tlaplus/CommunityModules/blob/master/modules/Bitwise.tla">Bitwise.tla</a> | Bitwise And and shift-right. | [&#10004;](https://github.com/tlaplus/CommunityModules/blob/master/modules/tlc2/overrides/Bitwise.java) | [@lemmy](https://github.com/lemmy) | 
+| <a href="https://github.com/tlaplus/CommunityModules/blob/master/modules/DifferentialEquations.tla">DifferentialEquations.tla</a> | see page 178ff of [Specifying Systems](https://lamport.azurewebsites.net/tla/book-02-08-08.pdf)| | Leslie Lamport | 
+| <a href="https://github.com/tlaplus/CommunityModules/blob/master/modules/Json.tla">Json.tla</a> | Print TLA+ values as JSON values. | [&#10004;](https://github.com/tlaplus/CommunityModules/blob/master/modules/tlc2/overrides/Json.java)| [@kuujo](https://github.com/kuujo) | 
+| <a href="https://github.com/tlaplus/CommunityModules/blob/master/modules/SVG.tla">SVG.tla</a> | see https://github.com/will62794/tlaplus_animation | [&#10004;](https://github.com/tlaplus/CommunityModules/blob/master/modules/tlc2/overrides/SVG.java)| [@will62794](https://github.com/will62794) | 
+| <a href="https://github.com/tlaplus/CommunityModules/blob/master/modules/ShiViz.tla">ShiViz.tla</a> | Visualize error-traces of multi-process PlusCal algorithms with an [Interactive Communication Graphs](https://bestchai.bitbucket.io/shiviz/). |  | [@lemmy](https://github.com/lemmy) | 
+| <a href="https://github.com/tlaplus/CommunityModules/blob/master/modules/TLCExt.tla">TLCExt.tla</a> | Assertion operators and experimental TLC features. | [&#10004;](https://github.com/tlaplus/CommunityModules/blob/master/modules/tlc2/overrides/TLCExt.java)| [@lemmy](https://github.com/lemmy) | 
+| <a href="https://github.com/tlaplus/CommunityModules/blob/master/modules/IOUtils.tla">IOUtils.tla</a> | Input/Output of TLA+ values & Spawn system commands from a spec. | [&#10004;](https://github.com/tlaplus/CommunityModules/blob/master/modules/tlc2/overrides/IOUtils.java) | [@lemmy](https://github.com/lemmy), [@lvanengelen](https://github.com/lvanengelen) | 
+
+
 How to use it
 -------------
 
