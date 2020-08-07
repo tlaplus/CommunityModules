@@ -5,6 +5,8 @@ Community Repository
 Here you are able to submit the snippets, operators, and modules that you wrote for
 your specifications and that you want to share with the rest of the TLA+ community.
 
+(For us to gauge demand, please star (`eyes up and right`) this repository if you use the CommunityModules.)
+
 The Modules
 -----------
 
