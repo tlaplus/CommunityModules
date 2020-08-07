@@ -18,15 +18,8 @@ modules and therefore cannot provide any assistance on eventual malfunctions.
 Contributing
 ------------
 
-If you have one or more snippets, operators, or modules you'd like to share, please make
-a pull request and we'll take care of it eventually.
-
-Before submitting your request make sure that:
-* Your contribution is working.
-* Your contribution is unique (or better): check whether someone already provided a similar solution.
-* Your contribution is relevant to the project and actually adds some value.
-
-We take the discretion to approve or reject submissions at our will.
+If you have one or more snippets, operators, or modules you'd like to share, please open an issue or create
+a pull request.  Before submitting your operator or module, please consider adding documentation.  The more documentation there is, the more likely it is that someone will find it useful.
 
 Download
 --------
