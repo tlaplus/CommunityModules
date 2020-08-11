@@ -209,4 +209,22 @@ public class TLCExt {
 		values[values.length - 1] = new RecordValue(s0);
 		return new TupleValue(values);
 	}
+	
+	@Evaluation(definition = "TLCDefer", module = "TLCExt", warn = false)
+	public static Value tlcDefer(final Tool tool, final ExprOrOpArgNode[] args, final Context c,
+			final TLCState s0, final TLCState s1, final int control, final CostModel cm) {
+		try {
+			s1.setCallable(() -> {
+				final Value[] argVals = new Value[args.length];
+				// evaluate the operator's arguments:
+				for (int i = 0; i < args.length; i++) {
+					argVals[i] = tool.eval(args[i], c, s0, s1, control, cm);
+				}
+				return null;
+			});
+		} catch (Throwable e) {
+			Assert.fail(EC.TLC_MODULE_VALUE_JAVA_METHOD_OVERRIDE, new String[] { "SimulationDefer", e.getMessage() });
+		}
+		return BoolValue.ValTrue;
+	}	
 }

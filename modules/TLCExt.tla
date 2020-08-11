@@ -58,4 +58,20 @@ Trace ==
 TraceFrom(state) ==
   TRUE \* TODO
 
+-----------------------------------------------------------------------------
+
+TLCDefer(expression) ==
+  (******************************************************************************)
+  (* Defer evaluation of expression to some later time or never.                *)
+  (*                                                                            *)
+  (* For TLC's simulation mode, later is defined as the point of time when      *)
+  (* simulation has chosen a successor state to extend the prefix of the        *)
+  (* current behavior.                                                          *)
+  (*                                                                            *)
+  (* A use case is TLCDefer(TLCSet(42, someVal)), which sets someVal only       *)
+  (* for the states of the behavior and not the set of all successor states     *)
+  (* of all states in the behavior.                                             *)
+  (******************************************************************************)
+  TRUE
+
 =============================================================================
