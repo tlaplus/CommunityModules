@@ -34,6 +34,8 @@ jobs:
       run: tlaps/bin/tlapm --cleanfp -I tlaps/ -I modules/ modules/SequencesExtTheorems_proofs.tla
     - name: Build with Ant
       run: ant -noinput -buildfile build.xml -Dtimestamp=${{steps.date.outputs.date}}
+    - name: Copied CommunityModules-SomeDate.jar to CommunityModules.jar
+      run: cp dist/CommunityModules-${{steps.date.outputs.date}}.jar dist/CommunityModules.jar
     - name: Create Release
       id: create_release
       uses: actions/create-release@v1
@@ -53,4 +55,14 @@ jobs:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
         asset_path: dist/CommunityModules-${{steps.date.outputs.date}}.jar
         asset_name: CommunityModules-${{steps.date.outputs.date}}.jar
+        asset_content_type: application/zip
+    - name: Upload dateless Release Asset
+      id: upload-dateless-release-asset 
+      uses: actions/upload-release-asset@v1.0.1
+      env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: dist/CommunityModules.jar
+        asset_name: CommunityModules.jar
         asset_content_type: application/zip
