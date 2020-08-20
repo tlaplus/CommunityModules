@@ -83,6 +83,18 @@ public class TLCExt {
 	public synchronized static Value pickSuccessor(final Tool tool, final ExprOrOpArgNode[] args, final Context c,
 			final TLCState s0, final TLCState s1, final int control, final CostModel cm) {
 
+		// TLC checks action constraints before it checks if states are new or not. Exclude seen states here
+		// to not repeatedly ask a user to extend a behavior with the same state over and over again.
+		try {
+			if (((ModelChecker) TLCGlobals.mainChecker).theFPSet.contains(s1.fingerPrint())) {
+				// If it is a seen state it is by definition in the model.
+				return BoolValue.ValTrue;
+			}
+		} catch (IOException notExpectedToHappen) {
+			notExpectedToHappen.printStackTrace();
+			return BoolValue.ValTrue;
+		}
+		
 		// Eval expression and only let user interactively pick successor states when it
 		// evaluates to FALSE.
 		final Value guard = tool.eval(args[0], c, s0, s1, control, cm);
