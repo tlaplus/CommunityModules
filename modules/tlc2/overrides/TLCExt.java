@@ -235,8 +235,8 @@ public class TLCExt {
 				return null;
 			});
 		} catch (Throwable e) {
-			Assert.fail(EC.TLC_MODULE_VALUE_JAVA_METHOD_OVERRIDE, new String[] { "SimulationDefer", e.getMessage() });
+			Assert.fail(EC.TLC_MODULE_VALUE_JAVA_METHOD_OVERRIDE, new String[] { "TLCDefer", e.getMessage() });
 		}
 		return BoolValue.ValTrue;
-	}	
+	}
 }
