@@ -74,4 +74,14 @@ TLCDefer(expression) ==
   (******************************************************************************)
   TRUE
 
+-----------------------------------------------------------------------------
+
+TLCNoOp(val) ==
+  (******************************************************************************)
+  (* No-operation operator (does nothing).  Only useful to debug TLC's          *)
+  (* evaluator that is written in Java: Insert TLCNoOp into the expression      *)
+  (* whose evaluation you wish to debug and set a breakpoint in this            *)
+  (* operator's Java module override TLCExt#tlcNoOp in TLCExt.java.             *)
+  (******************************************************************************)
+  val
 =============================================================================

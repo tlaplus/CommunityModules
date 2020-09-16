@@ -239,4 +239,9 @@ public class TLCExt {
 		}
 		return BoolValue.ValTrue;
 	}
+	
+	@TLAPlusOperator(identifier = "TLCNoOp", module = "TLCExt", warn = false)
+	public static Value tlcNoOp(final Value val) {
+		return val;
+	}
 }
