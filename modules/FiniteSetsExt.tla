@@ -1,5 +1,5 @@
 --------------------------- MODULE FiniteSetsExt ---------------------------
-EXTENDS Naturals
+EXTENDS Naturals, FiniteSets
 
 
 ReduceSet(op(_, _), set, acc) ==
@@ -20,5 +20,19 @@ ReduceSet(op(_, _), set, acc) ==
 Sum(set) == ReduceSet(LAMBDA x, y: x + y, set, 0)
 
 Product(set) == ReduceSet(LAMBDA x, y: x * y, set, 1)
+
+-----------------------------------------------------------------------------
+
+Quantify(S, P(_)) ==
+   (*************************************************************************)
+   (* Quantify the elements in S matching the predicate (LAMDBA) P.         *)
+   (* This operator is overridden by FiniteSetsExt#quantify whose           *)
+   (* implementation does *not* enumerate the intermediate set! This is     *)
+   (* the only advantage that Quantify(...) has over Cardinality(...).      *)
+   (*                                                                       *)
+   (* Example:                                                              *)
+   (*          Quantify(1..9, LAMBDA n : n % 2 = 0) = 4                     *)
+   (*************************************************************************)
+   Cardinality({s \in S : P(s)})
 
 =============================================================================

@@ -1,0 +1,38 @@
+---- CONFIG FiniteSetsExtTests ----
+INIT Init
+NEXT Next
+=====
+
+------------------------- MODULE FiniteSetsExtTests -------------------------
+EXTENDS Naturals, TLC, TLCExt, FiniteSetsExt
+
+ASSUME LET S == {"a","b","c","c"}
+       IN Quantify(S, LAMBDA s: s = "c") = Cardinality({s \in S : s = "c"})
+
+ASSUME \A S \in SUBSET {"a","b","c","c"} :
+		  Quantify(S, LAMBDA s: s = "c") = Cardinality({s \in S : s = "c"})
+
+ASSUME \A S \in SUBSET {"a","b","c","c"} :
+		  Quantify(S, LAMBDA s: FALSE) = Cardinality({s \in S : FALSE})
+
+ASSUME LET S == 1..10
+       IN Quantify(S, LAMBDA s: s = 3) = Cardinality({s \in S : s = 3})
+
+(******************************************************************************) 
+(* Test that Quantify handles sets that exceeds TLC's maxSetSize, which  *)
+(* implies that no (intermediate) set is created.                             *)
+(******************************************************************************) 
+ASSUME LET S == 1..2000000
+       IN Quantify(S, LAMBDA s: TRUE) = Cardinality(S)
+
+-----------------------------------------------------------------------------
+
+(* TLC won't evaluate the assumes above if a there is no behavior *)
+(* spec. The config above is another artifact of this.            *)                              
+\*VARIABLE x
+\*
+\*Init == FALSE /\ x = 0
+\*
+\*Next == FALSE /\ x' = x
+
+=============================================================================
