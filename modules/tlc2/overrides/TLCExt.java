@@ -53,6 +53,7 @@ import tlc2.value.impl.StringValue;
 import tlc2.value.impl.TupleValue;
 import tlc2.value.impl.Value;
 import util.Assert;
+import util.Assert.TLCRuntimeException;
 
 public class TLCExt {
 
@@ -66,7 +67,7 @@ public class TLCExt {
 
 		try {
 			tool.eval(args[1], c, s0, s1, control, cm);
-		} catch (EvalException e) {
+		} catch (EvalException | TLCRuntimeException e) {
 			final StringValue err = (StringValue) tool.eval(args[0], c, s0);
 			if (err.val.equals(e.getMessage())) {
 				return BoolValue.ValTrue;
