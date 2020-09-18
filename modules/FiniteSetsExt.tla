@@ -26,6 +26,7 @@ Product(set) == ReduceSet(LAMBDA x, y: x * y, set, 1)
 Quantify(S, P(_)) ==
    (*************************************************************************)
    (* Quantify the elements in S matching the predicate (LAMDBA) P.         *)
+   (*                                                                       *)
    (* This operator is overridden by FiniteSetsExt#quantify whose           *)
    (* implementation does *not* enumerate the intermediate set! This is     *)
    (* the only advantage that Quantify(...) has over Cardinality(...).      *)
@@ -34,5 +35,23 @@ Quantify(S, P(_)) ==
    (*          Quantify(1..9, LAMBDA n : n % 2 = 0) = 4                     *)
    (*************************************************************************)
    Cardinality({s \in S : P(s)})
+
+-----------------------------------------------------------------------------
+
+kSubset(k, S) == 
+   (*************************************************************************)
+   (* A k-subset ks of a set S has Cardinality(ks) = k.  The number of      *)
+   (* k-subsets of a set S with Cardinality(S) = n is given by the binomial *)
+   (* coefficients n over k.  A set S with Cardinality(S) = n has 2^n       *)
+   (* k-subsets.  \A k \notin 0..Cardinality(S): kSubset(k, S) = {}.        *)
+   (*                                                                       *)
+   (* This operator is overridden by FiniteSetsExt#kSubset whose            *)
+   (* implementation, contrary to  { s \in SUBSET S : Cardinality(s) = k }, *)
+   (* only enumerates the k-subsets of S and not all subsets.               *)
+   (*                                                                       *)
+   (* Example:                                                              *)
+   (*          kSubset(2, 1..3) = {{1,2},{2,3},{3,1}}                       *)
+   (*************************************************************************)
+   { s \in SUBSET S : Cardinality(s) = k }
 
 =============================================================================

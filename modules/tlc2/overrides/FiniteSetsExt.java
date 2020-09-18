@@ -35,6 +35,7 @@ import tlc2.value.impl.BoolValue;
 import tlc2.value.impl.EnumerableValue;
 import tlc2.value.impl.IntValue;
 import tlc2.value.impl.SetEnumValue;
+import tlc2.value.impl.SubsetValue;
 import tlc2.value.impl.Value;
 import tlc2.value.impl.ValueEnumeration;
 
@@ -76,5 +77,28 @@ public class FiniteSetsExt {
 
 		assert 0 <= size && size <= set.size();
 		return IntValue.gen(size);
+	}
+	
+	@TLAPlusOperator(identifier = "kSubset", module = "FiniteSetsExt", warn = false)
+	public static Value kSubset(final Value kv, final Value s) {
+		final SetEnumValue set = (SetEnumValue) s.toSetEnum();
+		if (set == null) {
+			throw new EvalException(EC.TLC_MODULE_ONE_ARGUMENT_ERROR,
+					new String[] { "second", "FiniteSetsExt", "kSubset", Values.ppr(s.toString()) });
+		}
+		if (!(kv instanceof IntValue)) {
+			throw new EvalException(EC.TLC_MODULE_ARGUMENT_ERROR,
+					new String[] { "first", "FiniteSetsExt", "kSubset", Values.ppr(kv.toString()) });
+		}
+		final int k = ((IntValue) kv).val;
+		
+		if (k < 0 || set.size() < k) {
+			return SetEnumValue.EmptySet;
+		}
+		// TODO Return the *non-existing* SubsetPredValue (similar to SetPredValue)
+		// instead to lazily generate/defer generation of the ksubsets to when the
+		// elements are accessed. Operations such as Cardinality(ksubset) would *not*
+		// need to enumerate the ksubset at all.
+		return new SubsetValue(set).kSubset(k);
 	}
 }

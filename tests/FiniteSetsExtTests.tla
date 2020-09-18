@@ -4,7 +4,7 @@ NEXT Next
 =====
 
 ------------------------- MODULE FiniteSetsExtTests -------------------------
-EXTENDS Naturals, TLC, TLCExt, FiniteSetsExt
+EXTENDS Integers, TLC, TLCExt, FiniteSetsExt
 
 ASSUME LET S == {"a","b","c","c"}
        IN Quantify(S, LAMBDA s: s = "c") = Cardinality({s \in S : s = "c"})
@@ -24,6 +24,22 @@ ASSUME LET S == 1..10
 (******************************************************************************) 
 ASSUME LET S == 1..2000000
        IN Quantify(S, LAMBDA s: TRUE) = Cardinality(S)
+
+-----------------------------------------------------------------------------
+
+ASSUME LET S == {"a","b","c","c"} \* Make sure value normalization works.
+       IN \A k \in -1..Cardinality(S) + 1: 
+             kSubset(k, S) = {s \in SUBSET S : Cardinality(s) = k}
+
+ASSUME LET S == {"a","b","c","c"} \* Make sure value normalization works.
+       IN kSubset(-1, S) = {} /\ kSubset(4, S) = {}
+  
+\* The commented variant takes my computer ~30 seconds, whereas the kSubset
+\* variant finishes in under 1s.  
+\*ASSUME LET S == 1..27
+\*       IN {s \in SUBSET S : Cardinality(s) = Cardinality(S)} = {S}
+ASSUME LET S == 1..27
+       IN kSubset(Cardinality(S), S) = {S}
 
 -----------------------------------------------------------------------------
 
