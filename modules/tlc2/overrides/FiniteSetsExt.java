@@ -28,6 +28,7 @@ package tlc2.overrides;
 import tlc2.output.EC;
 import tlc2.tool.EvalControl;
 import tlc2.tool.EvalException;
+import tlc2.tool.coverage.CostModel;
 import tlc2.value.IBoolValue;
 import tlc2.value.Values;
 import tlc2.value.impl.Applicable;
@@ -95,10 +96,13 @@ public class FiniteSetsExt {
 		if (k < 0 || set.size() < k) {
 			return SetEnumValue.EmptySet;
 		}
+		if (k == 0) {
+			return new SubsetValue(SetEnumValue.EmptySet);
+		}
 		// TODO Return the *non-existing* SubsetPredValue (similar to SetPredValue)
 		// instead to lazily generate/defer generation of the ksubsets to when the
 		// elements are accessed. Operations such as Cardinality(ksubset) would *not*
 		// need to enumerate the ksubset at all.
-		return new SubsetValue(set).kSubset(k);
+		return new SubsetValue(set, set.cm).kSubset(k);
 	}
 }
