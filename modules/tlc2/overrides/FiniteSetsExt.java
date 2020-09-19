@@ -99,10 +99,28 @@ public class FiniteSetsExt {
 		if (k == 0) {
 			return new SubsetValue(SetEnumValue.EmptySet);
 		}
-		// TODO Return the *non-existing* SubsetPredValue (similar to SetPredValue)
-		// instead to lazily generate/defer generation of the ksubsets to when the
-		// elements are accessed. Operations such as Cardinality(ksubset) would *not*
-		// need to enumerate the ksubset at all.
-		return new SubsetValue(set, set.cm).kSubset(k);
+		return new KSubsetValue(k, set, set.cm);
+	}
+
+	@SuppressWarnings("serial")
+	public static class KSubsetValue extends SubsetValue {
+
+		private final int k;
+
+		public KSubsetValue(int k, Value set) {
+			super(set);
+			this.k = k;
+		}
+
+		public KSubsetValue(int k, Value set, CostModel cm) {
+			super(set, cm);
+			this.k = k;
+		}
+
+		@Override
+		public ValueEnumeration elements() {
+			// Remember k as a member and return SubsetValue's kElement enumerator here.
+			return kElements(k);
+		}
 	}
 }
