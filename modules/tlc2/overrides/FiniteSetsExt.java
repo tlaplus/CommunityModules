@@ -50,11 +50,11 @@ public class FiniteSetsExt {
 	public static Value quantify(final Value set, final Value pred) {
 		if (!(set instanceof EnumerableValue)) {
 			throw new EvalException(EC.TLC_MODULE_ARGUMENT_ERROR,
-					new String[] { "first", "FiniteSetsExt", "Quantify", Values.ppr(set.toString()) });
+					new String[] { "first", "Quantify", "set", Values.ppr(set.toString()) });
 		}
 		if (!(pred instanceof Applicable)) {
 			throw new EvalException(EC.TLC_MODULE_ARGUMENT_ERROR,
-					new String[] { "second", "FiniteSetsExt", "Quantify", Values.ppr(pred.toString()) });
+					new String[] { "second", "Quantify", "boolean-valued operator", Values.ppr(pred.toString()) });
 		}
 		
 		
@@ -71,7 +71,7 @@ public class FiniteSetsExt {
 					size++;
 				}
 			} else {
-				throw new EvalException(EC.TLC_MODULE_ARGUMENT_ERROR, new String[] { "second", "CardinalityOf",
+				throw new EvalException(EC.TLC_MODULE_ARGUMENT_ERROR, new String[] { "second", "Quantify",
 						"boolean-valued operator", Values.ppr(test.toString()) });
 			}
 		}
@@ -85,11 +85,11 @@ public class FiniteSetsExt {
 		final SetEnumValue set = (SetEnumValue) s.toSetEnum();
 		if (set == null) {
 			throw new EvalException(EC.TLC_MODULE_ONE_ARGUMENT_ERROR,
-					new String[] { "second", "FiniteSetsExt", "kSubset", Values.ppr(s.toString()) });
+					new String[] { "second", "kSubset", "set", Values.ppr(s.toString()) });
 		}
 		if (!(kv instanceof IntValue)) {
 			throw new EvalException(EC.TLC_MODULE_ARGUMENT_ERROR,
-					new String[] { "first", "FiniteSetsExt", "kSubset", Values.ppr(kv.toString()) });
+					new String[] { "first", "kSubset", "natural number", Values.ppr(kv.toString()) });
 		}
 		final int k = ((IntValue) kv).val;
 		
