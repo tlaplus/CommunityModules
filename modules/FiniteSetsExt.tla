@@ -1,5 +1,5 @@
 --------------------------- MODULE FiniteSetsExt ---------------------------
-EXTENDS Naturals, FiniteSets
+EXTENDS Naturals, FiniteSets, Functions
 
 
 ReduceSet(op(_, _), set, acc) ==
@@ -73,8 +73,6 @@ Min(S) == CHOOSE x \in S : \A y \in S : x =< y
 Choice(Sets) == { f \in [Sets -> UNION Sets] : \A S \in Sets : f[S] \in S }
 
 -----------------------------------------------------------------------------
-
-Range(f) == {f[x] : x \in DOMAIN f}
 
 (***************************************************************************) 
 (* Compute all sets that contain one element from each of the input sets:  *)
