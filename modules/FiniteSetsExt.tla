@@ -69,6 +69,13 @@ Min(S) == CHOOSE x \in S : \A y \in S : x =< y
 (* If Sets is a set of (non-empty) sets then Choice(Sets) is the set of    *)
 (* all choice functions over Sets, that is, functions that associate some  *)
 (* with every set in Sets.                                                 *) 
+(*                                                                         *)
+(* Example:                                                                *)
+(*          Choice({{1,2}, {3,4}, {5}}) =                                  *)
+(*                           ({5} :> 5 @@ {1, 2} :> 1 @@ {3, 4} :> 3),     *)
+(*                           ({5} :> 5 @@ {1, 2} :> 1 @@ {3, 4} :> 4),     *)
+(*                           ({5} :> 5 @@ {1, 2} :> 2 @@ {3, 4} :> 3),     *)
+(*                           ({5} :> 5 @@ {1, 2} :> 2 @@ {3, 4} :> 4) }    *)
 (***************************************************************************) 
 Choice(Sets) == { f \in [Sets -> UNION Sets] : \A S \in Sets : f[S] \in S }
 
@@ -76,7 +83,10 @@ Choice(Sets) == { f \in [Sets -> UNION Sets] : \A S \in Sets : f[S] \in S }
 
 (***************************************************************************) 
 (* Compute all sets that contain one element from each of the input sets:  *)
-(* Shuffle({{1,2}, {3,4}, {5}}) = {{1,3,5}, {1,4,5}, {2,3,5}, {2,4,5}}     *)
+(*                                                                         *)
+(* Example:                                                                *)
+(*          Shuffle({{1,2}, {3,4}, {5}}) =                                 *)
+(*                         {{1,3,5}, {1,4,5}, {2,3,5}, {2,4,5}}            *)
 (***************************************************************************) 
 Shuffle(Sets) == { Range(f) : f \in Choice(Sets) }
 
