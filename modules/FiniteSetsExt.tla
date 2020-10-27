@@ -85,8 +85,8 @@ Choice(Sets) == { f \in [Sets -> UNION Sets] : \A S \in Sets : f[S] \in S }
 (* Compute all sets that contain one element from each of the input sets:  *)
 (*                                                                         *)
 (* Example:                                                                *)
-(*          Shuffle({{1,2}, {3,4}, {5}}) =                                 *)
-(*                         {{1,3,5}, {1,4,5}, {2,3,5}, {2,4,5}}            *)
+(*          Shuffle({{1,2}, {2,3}, {5}}) =                                 *)
+(*                         {{2, 5}, {1, 2, 5}, {1, 3, 5}, {2, 3, 5}}       *)
 (***************************************************************************) 
 Shuffle(Sets) == { Range(f) : f \in Choice(Sets) }
 
