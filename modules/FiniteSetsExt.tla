@@ -1,5 +1,5 @@
 --------------------------- MODULE FiniteSetsExt ---------------------------
-EXTENDS Naturals, FiniteSets
+EXTENDS Naturals, FiniteSets, Functions
 
 
 ReduceSet(op(_, _), set, acc) ==
@@ -53,5 +53,27 @@ kSubset(k, S) ==
    (*          kSubset(2, 1..3) = {{1,2},{2,3},{3,1}}                       *)
    (*************************************************************************)
    { s \in SUBSET S : Cardinality(s) = k }
+
+-----------------------------------------------------------------------------
+
+(***************************************************************************)
+(* We define Max(S) and Min(S) to be the maximum and minimum,              *)
+(* respectively, of a finite, non-empty set S of integers.                 *)
+(***************************************************************************)
+Max(S) == CHOOSE x \in S : \A y \in S : x >= y
+Min(S) == CHOOSE x \in S : \A y \in S : x =< y
+
+-----------------------------------------------------------------------------
+
+(***************************************************************************) 
+(* Compute all sets that contain one element from each of the input sets:  *)
+(*                                                                         *)
+(* Example:                                                                *)
+(*          Choices({{1,2}, {2,3}, {5}}) =                                 *)
+(*                         {{2, 5}, {1, 2, 5}, {1, 3, 5}, {2, 3, 5}}       *)
+(***************************************************************************) 
+Choices(Sets) == LET ChoiceFunction(Ts) == { f \in [Ts -> UNION Ts] : 
+                                               \A T \in Ts : f[T] \in T }
+                 IN  { Range(f) : f \in ChoiceFunction(Sets) }
 
 =============================================================================
