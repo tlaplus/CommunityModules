@@ -76,4 +76,9 @@ Choices(Sets) == LET ChoiceFunction(Ts) == { f \in [Ts -> UNION Ts] :
                                                \A T \in Ts : f[T] \in T }
                  IN  { Range(f) : f \in ChoiceFunction(Sets) }
 
+-----------------------------------------------------------------------------
+
+ChooseOneUnique(S, P(_)) == CHOOSE x \in S :
+                                 P(x) /\ \A y \in S : P(y) => y = x
+
 =============================================================================
