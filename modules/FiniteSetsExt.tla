@@ -78,7 +78,15 @@ Choices(Sets) == LET ChoiceFunction(Ts) == { f \in [Ts -> UNION Ts] :
 
 -----------------------------------------------------------------------------
 
-ChooseOneUnique(S, P(_)) == CHOOSE x \in S :
-                                 P(x) /\ \A y \in S : P(y) => y = x
+(***************************************************************************)
+(* Chooses unique element from the input set matching the predicate        *)
+(* (LAMDBA) P.                                                             *)
+(*                                                                         *)
+(* Example:                                                                *)
+(*          ChooseUnique({2, 3, 4, 5}, LAMBDA x : x % 3 = 1) = 4           *)
+(*                                                                         *)
+(***************************************************************************)
+ChooseUnique(S, P(_)) == CHOOSE x \in S :
+                              P(x) /\ \A y \in S : P(y) => y = x
 
 =============================================================================
