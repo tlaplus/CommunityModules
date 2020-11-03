@@ -28,13 +28,13 @@ package tlc2.overrides;
 import tlc2.output.EC;
 import tlc2.tool.EvalControl;
 import tlc2.tool.EvalException;
-import tlc2.tool.coverage.CostModel;
 import tlc2.value.IBoolValue;
 import tlc2.value.Values;
 import tlc2.value.impl.Applicable;
 import tlc2.value.impl.BoolValue;
 import tlc2.value.impl.EnumerableValue;
 import tlc2.value.impl.IntValue;
+import tlc2.value.impl.KSubsetValue;
 import tlc2.value.impl.SetEnumValue;
 import tlc2.value.impl.SubsetValue;
 import tlc2.value.impl.Value;
@@ -100,27 +100,5 @@ public class FiniteSetsExt {
 			return new SubsetValue(SetEnumValue.EmptySet);
 		}
 		return new KSubsetValue(k, set, set.cm);
-	}
-
-	@SuppressWarnings("serial")
-	public static class KSubsetValue extends SubsetValue {
-
-		private final int k;
-
-		public KSubsetValue(int k, Value set) {
-			super(set);
-			this.k = k;
-		}
-
-		public KSubsetValue(int k, Value set, CostModel cm) {
-			super(set, cm);
-			this.k = k;
-		}
-
-		@Override
-		public ValueEnumeration elements() {
-			// Remember k as a member and return SubsetValue's kElement enumerator here.
-			return kElements(k);
-		}
 	}
 }
