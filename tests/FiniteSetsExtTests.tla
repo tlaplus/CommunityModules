@@ -43,6 +43,22 @@ ASSUME LET S == 1..27
 
 -----------------------------------------------------------------------------
 
+ASSUME ChooseUnique({2, 3, 4, 5}, LAMBDA x : x % 3 = 1) = 4
+
+ASSUME AssertError(
+           "Attempted to compute the value of an expression of form\nCHOOSE x \\in S: P, but no element of S satisfied P.\nline 94, col 26 to line 95, col 64 of module FiniteSetsExt", 
+           ChooseUnique({2, 3, 4, 5}, LAMBDA x : TRUE))
+
+ASSUME AssertError(
+           "Attempted to compute the value of an expression of form\nCHOOSE x \\in S: P, but no element of S satisfied P.\nline 94, col 26 to line 95, col 64 of module FiniteSetsExt", 
+           ChooseUnique({}, LAMBDA x : TRUE))
+
+ASSUME AssertError(
+           "Attempted to compute the value of an expression of form\nCHOOSE x \\in S: P, but no element of S satisfied P.\nline 94, col 26 to line 95, col 64 of module FiniteSetsExt", 
+           ChooseUnique({2, 3, 4, 5}, LAMBDA x : FALSE))
+
+-----------------------------------------------------------------------------
+
 (* TLC won't evaluate the assumes above if a there is no behavior *)
 (* spec. The config above is another artifact of this.            *)                              
 \*VARIABLE x
