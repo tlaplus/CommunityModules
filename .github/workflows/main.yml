@@ -1,6 +1,7 @@
 name: CI
 
 on: 
+ repository_dispatch:
  push:
     paths-ignore:
       - README.md
@@ -38,9 +39,11 @@ jobs:
     - name: Build with Ant
       run: ant -noinput -buildfile build.xml -Dtimestamp=${{steps.date.outputs.date}}
     - name: Copied CommunityModules-SomeDate.jar to CommunityModules.jar
+      if: github.event_name == 'push'
       run: cp dist/CommunityModules-${{steps.date.outputs.date}}.jar dist/CommunityModules.jar
     - name: Create Release
       id: create_release
+      if: github.event_name == 'push'
       uses: actions/create-release@v1
       env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -51,6 +54,7 @@ jobs:
         prerelease: false
     - name: Upload Release Asset
       id: upload-release-asset 
+      if: github.event_name == 'push'
       uses: actions/upload-release-asset@v1.0.1
       env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -61,6 +65,7 @@ jobs:
         asset_content_type: application/zip
     - name: Upload dateless Release Asset
       id: upload-dateless-release-asset 
+      if: github.event_name == 'push'
       uses: actions/upload-release-asset@v1.0.1
       env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
