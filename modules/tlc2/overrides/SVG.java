@@ -27,6 +27,7 @@ package tlc2.overrides;
 import util.UniqueString;
 import tlc2.value.impl.TupleValue;
 import tlc2.value.impl.StringValue;
+import tlc2.value.impl.FcnRcdValue;
 import tlc2.value.impl.RecordValue;
 import tlc2.value.impl.Value;
 
@@ -80,12 +81,21 @@ public final class SVG {
 		// Get 'children'. We convert it to a TupleValue, which we expect should
 		// always be possible.
 		Value childrenVal = frv.apply(new StringValue("children"), 0);
-		TupleValue children = (TupleValue)(childrenVal.toTuple());
-		if(children == null){
-			throw new Exception("Was unable to convert element to a tuple: " + childrenVal.toString());
+		Value[] children;
+		if (childrenVal instanceof TupleValue) {
+			TupleValue tv = (TupleValue) childrenVal.toTuple();
+			children = tv.elems;
+		} else if (childrenVal instanceof RecordValue) {
+			RecordValue rv = (RecordValue) childrenVal.toRcd();
+			children = rv.values;
+		} else if (childrenVal instanceof FcnRcdValue) {
+			FcnRcdValue fcv = (FcnRcdValue) childrenVal.toFcnRcd();
+			children = fcv.values;
+		} else {
+			throw new Exception("Was unable to convert element to a tuple or (function) record: " + childrenVal.toString());
 		}
 		String childStr = "";
-		for (Value child : children.elems) {
+		for (Value child : children) {
 			StringValue cv = (StringValue)SVGElemToString(child);
 			childStr += cv.getVal().toString();
 		}
