@@ -25,12 +25,13 @@
  ******************************************************************************/
 package tlc2.overrides;
 
-import util.UniqueString;
-import tlc2.value.impl.TupleValue;
-import tlc2.value.impl.StringValue;
 import tlc2.value.impl.FcnRcdValue;
+import tlc2.value.impl.IntValue;
 import tlc2.value.impl.RecordValue;
+import tlc2.value.impl.StringValue;
+import tlc2.value.impl.TupleValue;
 import tlc2.value.impl.Value;
+import util.UniqueString;
 
 public final class SVG {
 
@@ -120,5 +121,18 @@ public final class SVG {
 		svg += childStr;
 		svg += String.format("</%s>", name);
 		return new StringValue(svg);
+	}
+	
+	@TLAPlusOperator(identifier = "NodeOfRingNetwork", module = "SVG", warn = false)
+	public static Value ringNetwork(IntValue cx, IntValue cy, IntValue r, IntValue n, IntValue m) throws Exception {
+		// https://en.wikipedia.org/wiki/Polar_coordinate_system#Converting_between_polar_and_Cartesian_coordinates
+		
+		// Divide circle into equal segments.
+		final double angle = (2.0 * Math.PI / m.val) * n.val;
+		
+		// Polar to Cartesian coordinates offset by (cx,cy).
+		final int x = (int) (cx.val + r.val * Math.cos(angle));
+		final int y = (int) (cy.val + r.val * Math.sin(angle));
+		return new RecordValue(new UniqueString[] {UniqueString.of("x"), UniqueString.of("y")}, new Value[] {IntValue.gen(x), IntValue.gen(y)}, false);
 	}
 }

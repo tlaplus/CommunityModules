@@ -118,4 +118,37 @@ SVGElemToString(elem) ==
     (**************************************************************************)
     TRUE
 
+-------------------------------------------------------------------------------
+
+NodeOfRingNetwork(cx, cy, r, n, m) ==
+    (**************************************************************************)
+    (* Equals the Cartesian coordinates of the n-th of m nodes in a ring      *)
+    (* (https://en.wikipedia.org/wiki/Ring_network), such that the circle     *)
+    (* on which the nodes are placed has radius r and is centered at the      *)
+    (* coordinates cx, cy.                                                    *)
+    (*                                                                        *)
+    (* ASSUME /\ n \in 0..360 /\ m \in 0..360 /\ n <= m                       *)
+    (*        /\ cx \in Nat /\ cy \in Nat /\ r \in Nat                        *)
+    (*                                                                        *)
+    (* Example to create a ring network of M nodes (Rects with dimension 15)  *)
+    (* with center (10,10) and radius 5:                                      *)
+    (*                                                                        *)
+    (*      ASSUME M \in Nat                                                  *)
+    (*                                                                        *)
+    (*      RN[ n \in 1..M ] ==                                               *)
+    (*           LET c == NodeOfRingNetwork(10, 10, 5, n, M)                  *)
+    (*               node == Rect(c.x, c.y, 15, 15, <<>>)                     *)
+    (*           IN Group(<<node>>,  <<>>)                                    *)
+    (*                                                                        *)
+    (* Note: It would have been more elegant to provide the basic geometric   *)
+    (*       operators, such as polar to Cartesian conversion.  However,      *)
+    (*       TLC's lack of floats makes this impractical due to intermediate  *)
+    (*       rounding errors.                                                 *)
+    (*                                                                        *)
+    (* For this operator's actual definition, please consult the Java module  *)
+    (* override at:                                                           *)
+    (*         modules/tlc2/overrides/SVG.java#ringNetwork                    *)
+    (**************************************************************************)
+    [ x |-> 0, y |-> 0 ]
+
 =============================================================================
