@@ -1,4 +1,3 @@
-package tlc2.overrides;
 /*******************************************************************************
  * Copyright (c) 2019 Microsoft Research. All rights reserved. 
  *
@@ -24,6 +23,8 @@ package tlc2.overrides;
  * Contributors:
  *   William Schultz - initial API and implementation
  ******************************************************************************/
+package tlc2.overrides;
+
 import util.UniqueString;
 import tlc2.value.impl.TupleValue;
 import tlc2.value.impl.StringValue;
