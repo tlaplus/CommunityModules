@@ -132,7 +132,7 @@ public class Json {
   @TLAPlusOperator(identifier = "JsonSerialize", module = "Json", warn = false)
   public static BoolValue serialize(final StringValue path, final TupleValue value) throws IOException {
     File file = new File(path.val.toString());
-    file.getParentFile().mkdirs();
+    if (file.getParentFile() != null) {file.getParentFile().mkdirs();} // Cannot create parent dir for relative path.
     try (BufferedWriter writer = new BufferedWriter(new FileWriter(new File(path.val.toString())))) {
       for (int i = 0; i < value.elems.length; i++) {
         writer.write(getNode(value.elems[i]).toString() + "\n");
