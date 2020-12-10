@@ -107,21 +107,53 @@ public class Json {
    * @param path the JSON file path
    * @return a tuple of JSON values
    */
+  @TLAPlusOperator(identifier = "ndJsonDeserialize", module = "Json", warn = false)
+  public static IValue ndDeserialize(final StringValue path) throws IOException {
+	    ObjectMapper mapper = new ObjectMapper();
+	    List<Value> values = new ArrayList<>();
+	    try (BufferedReader reader = new BufferedReader(new FileReader(new File(path.val.toString())))) {
+	      String line = reader.readLine();
+	      while (line != null) {
+	        JsonNode node = mapper.readTree(line);
+	        values.add(getValue(node));
+	        line = reader.readLine();
+	      }
+	    }
+	    return new TupleValue(values.toArray(new Value[0]));
+	  }
+
+  /**
+   * Deserializes a tuple of *plain* JSON values from the given path.
+   *
+   * @param path the JSON file path
+   * @return a tuple of JSON values
+   */
   @TLAPlusOperator(identifier = "JsonDeserialize", module = "Json", warn = false)
   public static IValue deserialize(final StringValue path) throws IOException {
     ObjectMapper mapper = new ObjectMapper();
-    List<Value> values = new ArrayList<>();
-    try (BufferedReader reader = new BufferedReader(new FileReader(new File(path.val.toString())))) {
-      String line = reader.readLine();
-      while (line != null) {
-        JsonNode node = mapper.readTree(line);
-        values.add(getValue(node));
-        line = reader.readLine();
-      }
-    }
-    return new TupleValue(values.toArray(new Value[0]));
+    JsonNode node = mapper.readTree(new File(path.val.toString()));
+    return getValue(node);
   }
 
+  /**
+   * Serializes a tuple of values to newline delimited JSON.
+   *
+   * @param path  the file to which to write the values
+   * @param value the values to write
+   * @return a boolean value indicating whether the serialization was successful
+   */
+  @TLAPlusOperator(identifier = "ndJsonSerialize", module = "Json", warn = false)
+  public static BoolValue ndSerialize(final StringValue path, final TupleValue value) throws IOException {
+    File file = new File(path.val.toString());
+    if (file.getParentFile() != null) {file.getParentFile().mkdirs();} // Cannot create parent dir for relative path.
+    try (BufferedWriter writer = new BufferedWriter(new FileWriter(new File(path.val.toString())))) {
+        for (int i = 0; i < value.elems.length; i++) {
+            writer.write(getNode(value.elems[i]).toString() + "\n");
+          }
+    }
+    return BoolValue.ValTrue;
+  }
+  
   /**
    * Serializes a tuple of values to newline delimited JSON.
    *
@@ -134,9 +166,15 @@ public class Json {
     File file = new File(path.val.toString());
     if (file.getParentFile() != null) {file.getParentFile().mkdirs();} // Cannot create parent dir for relative path.
     try (BufferedWriter writer = new BufferedWriter(new FileWriter(new File(path.val.toString())))) {
-      for (int i = 0; i < value.elems.length; i++) {
-        writer.write(getNode(value.elems[i]).toString() + "\n");
-      }
+    	writer.write("[\n");
+		for (int i = 0; i < value.elems.length; i++) {
+			writer.write(getNode(value.elems[i]).toString());
+			if (i < value.elems.length - 1) {
+				// No dangling "," after last element.
+				writer.write(",\n");
+			}
+		}
+    	writer.write("\n]\n");
     }
     return BoolValue.ValTrue;
   }

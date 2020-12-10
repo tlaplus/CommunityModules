@@ -50,6 +50,55 @@ ASSUME(AssertEq(ToJsonObject(1 :> "b" @@ 0 :> "c"), "{\"0\":\"c\",\"1\":\"b\"}")
 ASSUME(AssertEq(ToJsonObject([a |-> {<<1, 2>>}, b |-> [c |-> 3]]), "{\"a\":[[1,2]],\"b\":{\"c\":3}}"))
 
 \* Serializing and deserializing objects
+ndTestObjects ==
+    LET output == <<[a |-> 1, b |-> "a"], [a |-> 2, b |-> "b"], [a |-> 3, b |-> "c"]>>
+    IN
+       /\ ndJsonSerialize("build/json/test.json", output)
+       /\ LET input == ndJsonDeserialize("build/json/test.json")
+          IN
+             /\ Len(input) = 3
+             /\ input[1].a = 1
+             /\ input[1].b = "a"
+             /\ input[2].a = 2
+             /\ input[2].b = "b"
+             /\ input[3].a = 3
+             /\ input[3].b = "c"
+ASSUME(ndTestObjects)
+
+\* Serializing and deserializing arrays
+ndTestArrays ==
+    LET output == << <<1, 2, 3>>, <<4, 5, 6>>, <<7, 8, 9>> >>
+    IN
+       /\ ndJsonSerialize("build/json/test.json", output)
+       /\ LET input == ndJsonDeserialize("build/json/test.json")
+          IN
+             /\ Len(input) = 3
+             /\ input[1][1] = 1
+             /\ input[1][2] = 2
+             /\ input[1][3] = 3
+             /\ input[2][1] = 4
+             /\ input[2][2] = 5
+             /\ input[2][3] = 6
+             /\ input[3][1] = 7
+             /\ input[3][2] = 8
+             /\ input[3][3] = 9
+ASSUME(ndTestArrays)
+
+\* Serializing and deserializing primitive values
+ndTestPrimitives ==
+    LET output == <<1, 2, 3, 4>>
+    IN
+       /\ ndJsonSerialize("build/json/test.json", output)
+       /\ LET input == ndJsonDeserialize("build/json/test.json")
+          IN
+             /\ Len(input) = 4
+             /\ input[1] = 1
+             /\ input[2] = 2
+             /\ input[3] = 3
+             /\ input[4] = 4
+ASSUME(ndTestPrimitives)
+
+\* Serializing and deserializing objects
 TestObjects ==
     LET output == <<[a |-> 1, b |-> "a"], [a |-> 2, b |-> "b"], [a |-> 3, b |-> "c"]>>
     IN
