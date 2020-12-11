@@ -40,7 +40,9 @@ jobs:
       run: ant -noinput -buildfile build.xml -Dtimestamp=${{steps.date.outputs.date}}
     - name: Copied CommunityModules-SomeDate.jar to CommunityModules.jar
       if: github.event_name == 'push'
-      run: cp dist/CommunityModules-${{steps.date.outputs.date}}.jar dist/CommunityModules.jar
+      run: |
+        cp dist/CommunityModules-${{steps.date.outputs.date}}.jar dist/CommunityModules.jar
+        cp dist/CommunityModules-deps-${{steps.date.outputs.date}}.jar dist/CommunityModules-deps.jar
     - name: Create Release
       id: create_release
       if: github.event_name == 'push'
@@ -73,4 +75,26 @@ jobs:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
         asset_path: dist/CommunityModules.jar
         asset_name: CommunityModules.jar
+        asset_content_type: application/zip
+    - name: Upload Release Asset
+      id: upload-release-asset-deps
+      if: github.event_name == 'push'
+      uses: actions/upload-release-asset@v1.0.1
+      env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: dist/CommunityModules-deps-${{steps.date.outputs.date}}.jar
+        asset_name: CommunityModules-deps-${{steps.date.outputs.date}}.jar
+        asset_content_type: application/zip
+    - name: Upload dateless Release Asset
+      id: upload-dateless-release-asset-deps
+      if: github.event_name == 'push'
+      uses: actions/upload-release-asset@v1.0.1
+      env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: dist/CommunityModules-deps.jar
+        asset_name: CommunityModules-deps.jar
         asset_content_type: application/zip
