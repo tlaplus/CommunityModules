@@ -47,6 +47,39 @@
 			<fileset dir="."
              includes="LICENSE,README.md"/>
 		</jar>
+
+
+		<!-- Extract jackson xml into class directory to be packaged into CommunityModules-deps.jar. -->
+		<unzip src="lib/jackson-databind-2.10.2.jar" dest="${build}/deps">
+			<patternset>
+			    <include name="**/*.class"/>
+			</patternset>
+		</unzip>
+		<unzip src="lib/jackson-annotations-2.10.2.jar" dest="${build}/deps">
+			<patternset>
+		        <include name="**/*.class"/>
+			</patternset>
+		</unzip>
+		<unzip src="lib/jackson-core-2.10.2.jar" dest="${build}/deps">
+			<patternset>
+		        <include name="**/*.class"/>
+			</patternset>
+		</unzip>
+		<jar jarfile="${dist}/CommunityModules-deps-${timestamp}.jar">
+			<fileset dir="${build}/modules/"
+             includes="**/*.class"/>
+			<fileset dir="${build}/deps"
+             includes="**/*.class"/>
+			<fileset dir="${lib}"
+             includes="**/NOTICE*"/>
+			<fileset dir="${lib}"
+             includes="**/LICENSE*"/>
+			<fileset dir="${src}/"
+             includes="*.tla,*.java"/>
+			<fileset dir="."
+             includes="LICENSE,README.md"/>
+		</jar>
+
 	</target>
 
 	<target name="test" depends="dist" description="Run the modules in tests/ on the TLA+ modules in dist/">
