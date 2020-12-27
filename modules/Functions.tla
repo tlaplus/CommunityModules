@@ -109,9 +109,3 @@ FoldFunctionOnSet(op(_,_), base, fun, indices) ==
   MapThenFoldSet(op, base, LAMBDA i : fun[i], LAMBDA s: CHOOSE x \in s : TRUE, indices)
 
 =============================================================================
-\* Modification History
-\* Last modified Mon Apr 05 03:25:53 CEST 2021 by marty
-\* Last modified Sun Dec 27 09:38:06 CET 2020 by merz
-\* Last modified Wed Jun 05 12:14:19 CEST 2013 by bhargav
-\* Last modified Fri May 03 12:55:35 PDT 2013 by tomr
-\* Created Thu Apr 11 10:30:48 PDT 2013 by tomr
