@@ -9,6 +9,7 @@ EXTENDS SequencesExtTests,
         JsonTests,
         BitwiseTests,
         IOUtilsTests,
-        FiniteSetsExtTests
+        FiniteSetsExtTests,
+        FunctionsTests
 
 ===========================================
