@@ -18,19 +18,6 @@ ToSet(s) ==
   (*************************************************************************)
   { s[i] : i \in DOMAIN s }
 
-IsInjective(s) == 
-  (*************************************************************************)
-  (* TRUE iff the sequence s contains no duplicates where two elements     *)
-  (* a, b of s are defined to be duplicates iff a = b.  In other words,    *)
-  (* Cardinality(ToSet(s)) = Len(s)                                        *)
-  (*                                                                       *)
-  (* This definition is overridden by TLC in the Java class SequencesExt.  *)
-  (* The operator is overridden by the Java method with the same name.     *)
-  (*                                                                       *)
-  (* Also see Functions!Injective operator.                                *)
-  (*************************************************************************)
-  \A i, j \in DOMAIN s: (s[i] = s[j]) => (i = j)
-
 SetToSeq(S) == 
   (**************************************************************************)
   (* Convert a set to some sequence that contains all the elements of the   *)
@@ -120,6 +107,12 @@ RemoveAt(s, i) ==
   SubSeq(s, 1, i-1) \o SubSeq(s, i+1, Len(s))
 
 -----------------------------------------------------------------------------
+
+Cons(elt, seq) == 
+    (***************************************************************************)
+    (* Cons prepends an element at the beginning of a sequence.                *)
+    (***************************************************************************)
+    <<elt>> \o seq
 
 Front(s) == 
   (**************************************************************************)

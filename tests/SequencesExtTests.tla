@@ -10,21 +10,6 @@ ASSUME(ToSet([i \in 1..10 |-> i]) = 1..10)
 ASSUME(ToSet(Tail([i \in 1..10 |-> i])) = 2..10)
 ASSUME(ToSet([i \in 0..9 |-> 42]) = {42})
 
-ASSUME(IsInjective(<<>>))
-ASSUME(IsInjective(<<1>>))
-ASSUME(IsInjective(<<1,2,3>>))
-ASSUME(~IsInjective(<<1,1>>))
-ASSUME(~IsInjective(<<1,1,2,3>>))
-
-ASSUME(IsInjective([i \in 1..10 |-> i]))
-ASSUME(IsInjective([i \in 1..10 |-> {i}]))
-ASSUME(IsInjective([i \in 1..10 |-> {i}]))
-ASSUME(~IsInjective([i \in 1..10 |-> {1,2,3}]))
-
-ASSUME(AssertError("The argument of IsInjective should be a sequence, but instead it is:\n{}", IsInjective({})))
-ASSUME(AssertError("The argument of IsInjective should be a sequence, but instead it is:\n[a: 1, b: 2]", IsInjective([a: 1, b: 2])))
-ASSUME(AssertError("The argument of IsInjective should be a sequence, but instead it is:\n(0 :> 0 @@ 1 :> 1 @@ 2 :> 2)", IsInjective([i \in 0..2 |-> i])))
-
 ASSUME(SetToSeq({}) = <<>>)
 ASSUME(SetToSeq({1}) = <<1>>)
 ASSUME(LET s == {"t","l","a","p","l","u","s"}

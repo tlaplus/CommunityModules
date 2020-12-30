@@ -20,22 +20,6 @@ jobs:
     - name: Get current date
       id: date
       run: echo "::set-output name=date::$(date +'%Y%m%d%H%M')"
-    # Do not download and install TLAPS over and over again.
-    - uses: actions/cache@v1
-      id: cache
-      with:
-        path: tlaps/
-        key: tlaps1.4.5
-    - name: Get TLAPS
-      if: steps.cache.outputs.cache-hit != 'true' # see actions/cache above
-      run: wget https://tla.msr-inria.inria.fr/tlaps/dist/current/tlaps-1.4.5-x86_64-linux-gnu-inst.bin
-    - name: Install TLAPS
-      if: steps.cache.outputs.cache-hit != 'true' # see actions/cache above
-      run: |
-        chmod +x tlaps-1.4.5-x86_64-linux-gnu-inst.bin
-        ./tlaps-1.4.5-x86_64-linux-gnu-inst.bin -d tlaps
-    - name: Run TLAPS
-      run: tlaps/bin/tlapm --cleanfp -I tlaps/ -I modules/ modules/SequencesExtTheorems_proofs.tla
     - name: Build with Ant
       run: ant -noinput -buildfile build.xml -Dtimestamp=${{steps.date.outputs.date}}
     - name: Copied CommunityModules-SomeDate.jar to CommunityModules.jar
