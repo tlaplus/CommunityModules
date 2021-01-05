@@ -27,7 +27,7 @@
 	</target>
 
 	<target name="compile" depends="download" description="compile the java module overwrites">
-		<javac srcdir="${src}" destdir="${build}/modules" classpath="${tlc}/tla2tools.jar:${lib}/jackson-core-2.10.2.jar:${lib}/jackson-databind-2.10.2.jar:${lib}/jackson-annotations-2.10.2.jar"
+		<javac srcdir="${src}" destdir="${build}/modules" classpath="${tlc}/tla2tools.jar:${lib}/gson-2.8.6.jar"
            source="1.8"
            target="1.8"
            includeantruntime="false"/>
@@ -49,18 +49,8 @@
 		</jar>
 
 
-		<!-- Extract jackson xml into class directory to be packaged into CommunityModules-deps.jar. -->
-		<unzip src="lib/jackson-databind-2.10.2.jar" dest="${build}/deps">
-			<patternset>
-			    <include name="**/*.class"/>
-			</patternset>
-		</unzip>
-		<unzip src="lib/jackson-annotations-2.10.2.jar" dest="${build}/deps">
-			<patternset>
-		        <include name="**/*.class"/>
-			</patternset>
-		</unzip>
-		<unzip src="lib/jackson-core-2.10.2.jar" dest="${build}/deps">
+		<!-- Extract gson xml into class directory to be packaged into CommunityModules-deps.jar. -->
+		<unzip src="lib/gson-2.8.6.jar" dest="${build}/deps">
 			<patternset>
 		        <include name="**/*.class"/>
 			</patternset>
@@ -87,11 +77,11 @@
 		<java classname="tlc2.TLC" fork="true" failonerror="true">
 			<!-- Tell Java to use a garbage collector which makes TLC happy. -->
 			<jvmarg value="-XX:+UseParallelGC"/>
-			
+
 			<!-- Report execution statistics as azure-pipelien -->
 			<sysproperty key="tlc2.TLC.ide" value="azure-pipeline"/>
 			<sysproperty key="util.ExecutionStatisticsCollector.id" value="01ed03e40ba44f278a934849dd2b1038"/>
-			
+
 			<arg value="-metadir"/>
 			<arg value="${basedir}/build/states"/>
 			<arg value="-cleanup"/>
@@ -99,23 +89,21 @@
 
 			<classpath>
 				<pathelement location="${tlc}/tla2tools.jar" />
-				<pathelement location="${lib}/jackson-core-2.10.2.jar" />
-				<pathelement location="${lib}/jackson-databind-2.10.2.jar" />
-				<pathelement location="${lib}/jackson-annotations-2.10.2.jar" />
+                                <pathelement location="${lib}/gson-2.8.6.jar" />
 				<!-- The jar that has just been built by the dist target. -->
 				<pathelement location="${dist}/CommunityModules-${timestamp}.jar" />
 			</classpath>
 		</java>
-		
+
 		<!-- If an assert fails, TLC will return a non-zero exit value which is makes the ant target fail. -->
 		<java classname="tlc2.TLC" fork="true" failonerror="true">
 			<!-- Tell Java to use a garbage collector which makes TLC happy. -->
 			<jvmarg value="-XX:+UseParallelGC"/>
-			
-			<!-- Report execution statistics as azure-pipelien -->
+
+			<!-- Report execution statistics as azure-pipeline -->
 			<sysproperty key="tlc2.TLC.ide" value="azure-pipeline"/>
 			<sysproperty key="util.ExecutionStatisticsCollector.id" value="01ed03e40ba44f278a934849dd2b1038"/>
-			
+
 			<arg value="-metadir"/>
 			<arg value="${basedir}/build/states"/>
 			<arg value="-cleanup"/>
@@ -143,9 +131,7 @@
 				<pathelement location="${tlc}/tla2tools.jar" />
 				<pathelement location="${lib}/hamcrest-core-1.3.jar" />
 				<pathelement location="${lib}/junit-4.13.jar" />
-				<pathelement location="${lib}/jackson-core-2.10.2.jar" />
-				<pathelement location="${lib}/jackson-databind-2.10.2.jar" />
-				<pathelement location="${lib}/jackson-annotations-2.10.2.jar" />
+                                <pathelement location="${lib}/gson-2.8.6.jar" />
 				<!-- The jar that has just been built by the dist target. -->
 				<pathelement location="${dist}/CommunityModules-${timestamp}.jar" />
 			</classpath>
@@ -156,7 +142,7 @@
 			<sysproperty key="tlc2.tool.fp.FPSet.impl" value="tlc2.tool.fp.OffHeapDiskFPSet"/>
 			<sysproperty key="util.FileUtil.milliseconds" value="true"/>
 			<sysproperty key="tlc2.tool.distributed.TLCWorker.threadCount" value="4"/>
-			<!-- The tests below can be tricked into running in a single VM by fiddling with the classloader 
+			<!-- The tests below can be tricked into running in a single VM by fiddling with the classloader
 			     to reload and thus initialize all classes for each tests. -->
 			<batchtest fork="yes" todir="${build}/tests">
 				<fileset dir="${src-test}">

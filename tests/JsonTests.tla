@@ -147,4 +147,12 @@ TestPrimitives ==
              /\ input[4] = 4
 ASSUME(TestPrimitives)
 
+\* Round trip with complex object
+\* There is no way to encode sets in json (like in XML or EDN), this is why we don't use it here
+RoundTrip ==
+    LET output == <<[a |-> 3], 2, <<<<1, 2>>, "look">>, <<<<<<[b |-> [c |-> <<4, 5, 6>>]]>>>>>>>>
+    IN
+       /\ JsonSerialize("build/json/test.json", output)
+       /\ output = JsonDeserialize("build/json/test.json")
+ASSUME(RoundTrip)
 =============================================================================

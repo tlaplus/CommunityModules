@@ -1,10 +1,10 @@
 package tlc2.overrides;
 /*******************************************************************************
- * Copyright (c) 2019 Microsoft Research. All rights reserved. 
+ * Copyright (c) 2019 Microsoft Research. All rights reserved.
  *
  * The MIT License (MIT)
  *
- * Permission is hereby granted, free of charge, to any person obtaining a copy 
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies
@@ -12,7 +12,7 @@ package tlc2.overrides;
  * so, subject to the following conditions:
  *
  * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software. 
+ * copies or substantial portions of the Software.
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
@@ -25,6 +25,11 @@ package tlc2.overrides;
  *   Markus Alexander Kuppe - initial API and implementation
  ******************************************************************************/
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.google.gson.JsonPrimitive;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -36,15 +41,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.BooleanNode;
-import com.fasterxml.jackson.databind.node.IntNode;
-import com.fasterxml.jackson.databind.node.JsonNodeFactory;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.fasterxml.jackson.databind.node.TextNode;
 import tlc2.value.IValue;
 import tlc2.value.impl.BoolValue;
 import tlc2.value.impl.FcnLambdaValue;
@@ -109,18 +105,17 @@ public class Json {
    */
   @TLAPlusOperator(identifier = "ndJsonDeserialize", module = "Json", warn = false)
   public static IValue ndDeserialize(final StringValue path) throws IOException {
-	    ObjectMapper mapper = new ObjectMapper();
-	    List<Value> values = new ArrayList<>();
-	    try (BufferedReader reader = new BufferedReader(new FileReader(new File(path.val.toString())))) {
-	      String line = reader.readLine();
-	      while (line != null) {
-	        JsonNode node = mapper.readTree(line);
-	        values.add(getValue(node));
-	        line = reader.readLine();
-	      }
-	    }
-	    return new TupleValue(values.toArray(new Value[0]));
-	  }
+    List<Value> values = new ArrayList<>();
+    try (BufferedReader reader = new BufferedReader(new FileReader(new File(path.val.toString())))) {
+      String line = reader.readLine();
+      while (line != null) {
+        JsonElement node = JsonParser.parseString(line);
+        values.add(getValue(node));
+        line = reader.readLine();
+      }
+    }
+    return new TupleValue(values.toArray(new Value[0]));
+  }
 
   /**
    * Deserializes a tuple of *plain* JSON values from the given path.
@@ -130,8 +125,7 @@ public class Json {
    */
   @TLAPlusOperator(identifier = "JsonDeserialize", module = "Json", warn = false)
   public static IValue deserialize(final StringValue path) throws IOException {
-    ObjectMapper mapper = new ObjectMapper();
-    JsonNode node = mapper.readTree(new File(path.val.toString()));
+    JsonElement node = JsonParser.parseReader(new FileReader(new File(path.val.toString())));
     return getValue(node);
   }
 
@@ -153,7 +147,7 @@ public class Json {
     }
     return BoolValue.ValTrue;
   }
-  
+
   /**
    * Serializes a tuple of values to newline delimited JSON.
    *
@@ -180,24 +174,24 @@ public class Json {
   }
 
   /**
-   * Recursively converts the given value to a {@code JsonNode}.
+   * Recursively converts the given value to a {@code JsonElement}.
    *
    * @param value the value to convert
-   * @return the converted {@code JsonNode}
+   * @return the converted {@code JsonElement}
    */
-  private static JsonNode getNode(IValue value) throws IOException {
+  private static JsonElement getNode(IValue value) throws IOException {
     if (value instanceof RecordValue) {
       return getObjectNode((RecordValue) value);
     } else if (value instanceof TupleValue) {
       return getArrayNode((TupleValue) value);
     } else if (value instanceof StringValue) {
-      return new TextNode(((StringValue) value).val.toString());
+      return new JsonPrimitive(((StringValue) value).val.toString());
     } else if (value instanceof ModelValue) {
-      return new TextNode(((ModelValue) value).val.toString());
+      return new JsonPrimitive(((ModelValue) value).val.toString());
     } else if (value instanceof IntValue) {
-      return new IntNode(((IntValue) value).val);
+      return new JsonPrimitive(((IntValue) value).val);
     } else if (value instanceof BoolValue) {
-      return BooleanNode.valueOf(((BoolValue) value).val);
+      return new JsonPrimitive(((BoolValue) value).val);
     } else if (value instanceof FcnRcdValue) {
       return getObjectNode((FcnRcdValue) value);
     } else if (value instanceof FcnLambdaValue) {
@@ -244,12 +238,12 @@ public class Json {
   }
 
   /**
-   * Recursively converts the given value to an {@code ObjectNode}.
+   * Recursively converts the given value to an {@code JsonObject}.
    *
    * @param value the value to convert
-   * @return the converted {@code JsonNode}
+   * @return the converted {@code JsonElement}
    */
-  private static JsonNode getObjectNode(IValue value) throws IOException {
+  private static JsonElement getObjectNode(IValue value) throws IOException {
     if (value instanceof RecordValue) {
       return getObjectNode((RecordValue) value);
     } else if (value instanceof TupleValue) {
@@ -264,63 +258,63 @@ public class Json {
   }
 
   /**
-   * Converts the given record value to a {@code JsonNode}, recursively converting values.
+   * Converts the given record value to a {@code JsonObject}, recursively converting values.
    *
    * @param value the value to convert
-   * @return the converted {@code ObjectNode}
+   * @return the converted {@code JsonElement}
    */
-  private static JsonNode getObjectNode(FcnRcdValue value) throws IOException {
+  private static JsonElement getObjectNode(FcnRcdValue value) throws IOException {
     if (isValidSequence(value)) {
       return getArrayNode(value);
     }
 
-    Map<String, JsonNode> entries = new HashMap<>();
+    JsonObject jsonObject = new JsonObject();
     for (int i = 0; i < value.domain.length; i++) {
       Value domainValue = value.domain[i];
       if (domainValue instanceof StringValue) {
-        entries.put(((StringValue) domainValue).val.toString(), getNode(value.values[i]));
+        jsonObject.add(((StringValue) domainValue).val.toString(), getNode(value.values[i]));
       } else {
-        entries.put(domainValue.toString(), getNode(value.values[i]));
+        jsonObject.add(domainValue.toString(), getNode(value.values[i]));
       }
     }
-    return new ObjectNode(new JsonNodeFactory(true), entries);
+    return jsonObject;
   }
 
   /**
-   * Converts the given record value to an {@code ObjectNode}.
+   * Converts the given record value to an {@code JsonObject}.
    *
    * @param value the value to convert
-   * @return the converted {@code ObjectNode}
+   * @return the converted {@code JsonElement}
    */
-  private static JsonNode getObjectNode(RecordValue value) throws IOException {
-    Map<String, JsonNode> entries = new HashMap<>();
+  private static JsonElement getObjectNode(RecordValue value) throws IOException {
+    JsonObject jsonObject = new JsonObject();
     for (int i = 0; i < value.names.length; i++) {
-      entries.put(value.names[i].toString(), getNode(value.values[i]));
+      jsonObject.add(value.names[i].toString(), getNode(value.values[i]));
     }
-    return new ObjectNode(new JsonNodeFactory(true), entries);
+    return jsonObject;
   }
 
   /**
-   * Converts the given tuple value to an {@code ObjectNode}.
+   * Converts the given tuple value to an {@code JsonObject}.
    *
    * @param value the value to convert
-   * @return the converted {@code ObjectNode}
+   * @return the converted {@code JsonElement}
    */
-  private static JsonNode getObjectNode(TupleValue value) throws IOException {
-    Map<String, JsonNode> entries = new HashMap<>();
+  private static JsonElement getObjectNode(TupleValue value) throws IOException {
+    JsonObject jsonObject = new JsonObject();
     for (int i = 0; i < value.elems.length; i++) {
-      entries.put(String.valueOf(i), getNode(value.elems[i]));
+      jsonObject.add(String.valueOf(i), getNode(value.elems[i]));
     }
-    return new ObjectNode(new JsonNodeFactory(true), entries);
+    return jsonObject;
   }
 
   /**
-   * Recursively converts the given value to an {@code ArrayNode}.
+   * Recursively converts the given value to an {@code JsonArray}.
    *
    * @param value the value to convert
-   * @return the converted {@code JsonNode}
+   * @return the converted {@code JsonElement}
    */
-  private static JsonNode getArrayNode(IValue value) throws IOException {
+  private static JsonElement getArrayNode(IValue value) throws IOException {
     if (value instanceof TupleValue) {
       return getArrayNode((TupleValue) value);
     } else if (value instanceof FcnRcdValue) {
@@ -345,114 +339,123 @@ public class Json {
   }
 
   /**
-   * Converts the given tuple value to an {@code ArrayNode}.
+   * Converts the given tuple value to an {@code JsonArray}.
    *
    * @param value the value to convert
-   * @return the converted {@code ArrayNode}
+   * @return the converted {@code JsonElement}
    */
-  private static JsonNode getArrayNode(TupleValue value) throws IOException {
-    List<JsonNode> elements = new ArrayList<>(value.elems.length);
+  private static JsonElement getArrayNode(TupleValue value) throws IOException {
+    JsonArray jsonArray = new JsonArray(value.elems.length);
     for (int i = 0; i < value.elems.length; i++) {
-      elements.add(getNode(value.elems[i]));
+      jsonArray.add(getNode(value.elems[i]));
     }
-    return new ArrayNode(new JsonNodeFactory(true), elements);
+    return jsonArray;
   }
 
   /**
-   * Converts the given record value to an {@code ArrayNode}.
+   * Converts the given record value to an {@code JsonArray}.
    *
    * @param value the value to convert
-   * @return the converted {@code ArrayNode}
+   * @return the converted {@code JsonElement}
    */
-  private static JsonNode getArrayNode(FcnRcdValue value) throws IOException {
+  private static JsonElement getArrayNode(FcnRcdValue value) throws IOException {
     if (!isValidSequence(value)) {
       return getObjectNode(value);
     }
 
     value.normalize();
-    List<JsonNode> elements = new ArrayList<>(value.values.length);
+    JsonArray jsonArray = new JsonArray(value.values.length);
     for (int i = 0; i < value.values.length; i++) {
-      elements.add(getNode(value.values[i]));
+      jsonArray.add(getNode(value.values[i]));
     }
-    return new ArrayNode(new JsonNodeFactory(true), elements);
+    return jsonArray;
   }
 
   /**
-   * Converts the given tuple value to an {@code ArrayNode}.
+   * Converts the given tuple value to an {@code JsonArray}.
    *
    * @param value the value to convert
-   * @return the converted {@code ArrayNode}
+   * @return the converted {@code JsonElement}
    */
-  private static JsonNode getArrayNode(SetEnumValue value) throws IOException {
+  private static JsonElement getArrayNode(SetEnumValue value) throws IOException {
     value.normalize();
     Value[] values = value.elems.toArray();
-    List<JsonNode> elements = new ArrayList<>(values.length);
+    JsonArray jsonArray = new JsonArray(values.length);
     for (int i = 0; i < values.length; i++) {
-      elements.add(getNode(values[i]));
+      jsonArray.add(getNode(values[i]));
     }
-    return new ArrayNode(new JsonNodeFactory(true), elements);
+    return jsonArray;
   }
 
   /**
-   * Recursively converts the given {@code JsonNode} to a TLC value.
+   * Recursively converts the given {@code JsonElement} to a TLC value.
    *
-   * @param node the {@code JsonNode} to convert
+   * @param node the {@code JsonElement} to convert
    * @return the converted value
    */
-  private static Value getValue(JsonNode node) throws IOException {
-    switch (node.getNodeType()) {
-      case ARRAY:
-        return getTupleValue(node);
-      case OBJECT:
-        return getRecordValue(node);
-      case NUMBER:
-        return IntValue.gen(node.asInt());
-      case BOOLEAN:
-        return new BoolValue(node.asBoolean());
-      case STRING:
-        return new StringValue(node.asText());
-      case NULL:
-        return null;
-      default:
-        throw new IOException("Cannot convert value: unsupported JSON type " + node.getNodeType());
+  private static Value getValue(JsonElement node) throws IOException {
+    if (node.isJsonArray()) {
+      return getTupleValue(node);
     }
+    else if (node.isJsonObject()) {
+      return getRecordValue(node);
+    }
+    else if (node.isJsonPrimitive()) {
+      JsonPrimitive primitive = node.getAsJsonPrimitive();
+      if (primitive.isNumber()) {
+        return IntValue.gen(primitive.getAsInt());
+      }
+      else if (primitive.isBoolean()) {
+        return new BoolValue(primitive.getAsBoolean());
+      }
+      else if (primitive.isString()) {
+        return new StringValue(primitive.getAsString());
+      }
+    }
+    else if (node.isJsonNull()) {
+      return null;
+    }
+    throw new IOException("Cannot convert value: unsupported JSON value " + node.toString());
   }
 
   /**
-   * Converts the given {@code JsonNode} to a tuple.
+   * Converts the given {@code JsonElement} to a tuple.
    *
-   * @param node the {@code JsonNode} to convert
+   * @param node the {@code JsonElement} to convert
    * @return the tuple value
    */
-  private static TupleValue getTupleValue(JsonNode node) throws IOException {
+  private static TupleValue getTupleValue(JsonElement node) throws IOException {
     List<Value> values = new ArrayList<>();
-    for (int i = 0; i < node.size(); i++) {
-      values.add(getValue(node.get(i)));
+    JsonArray jsonArray = node.getAsJsonArray();
+    for (int i = 0; i < jsonArray.size(); i++) {
+      values.add(getValue(jsonArray.get(i)));
     }
     return new TupleValue(values.toArray(new Value[0]));
   }
 
   /**
-   * Converts the given {@code JsonNode} to a record.
+   * Converts the given {@code JsonElement} to a record.
    *
-   * @param node the {@code JsonNode} to convert
+   * @param node the {@code JsonElement} to convert
    * @return the record value
    */
-  private static RecordValue getRecordValue(JsonNode node) throws IOException {
+  private static RecordValue getRecordValue(JsonElement node) throws IOException {
     List<UniqueString> keys = new ArrayList<>();
     List<Value> values = new ArrayList<>();
-    Iterator<Map.Entry<String, JsonNode>> iterator = node.fields();
+    Iterator<Map.Entry<String, JsonElement>> iterator = node.getAsJsonObject().entrySet().iterator();
     while (iterator.hasNext()) {
-      Map.Entry<String, JsonNode> entry = iterator.next();
+      Map.Entry<String, JsonElement> entry = iterator.next();
       keys.add(UniqueString.uniqueStringOf(entry.getKey()));
       values.add(getValue(entry.getValue()));
     }
     return new RecordValue(keys.toArray(new UniqueString[0]), values.toArray(new Value[0]), false);
   }
 
-
+  /**
+   * @deprecated It will be removed when this Class is moved to `TLC`.
+   */
+  @Deprecated
   final static void resolves() {
 	  // See TLCOverrides.java
   }
 }
-
