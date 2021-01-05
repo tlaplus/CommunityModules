@@ -29,6 +29,8 @@ The Modules
 How to use it
 -------------
 
+You must be running [Java 9 or higher](https://github.com/tlaplus/CommunityModules/issues/34#issuecomment-756571840).
+
 Just copy & paste the snippet, the operators or the set of modules you are interested in.
 
 Alternatively, you can download a [library archive](https://github.com/tlaplus/CommunityModules/releases) and add it to TLC's or the Toolbox's *TLA+ library path*.  The advantage of the library archive is that TLC will evaluate an operator faster if the operator comes with a (Java) implementation (see e.g. [SequencesExt.Java](https://github.com/tlaplus/CommunityModules/blob/master/modules/tlc2/overrides/SequencesExt.java)).  Run TLC with ```-DTLA-Library=/path/to/lib/archive``` or add the library archive to the Toolbox (```File > Preferences > TLA+ Preferences > TLA+ library path locations```).  The latest release is at the stable URL https://github.com/tlaplus/CommunityModules/releases/latest/download/CommunityModules.jar.
@@ -42,6 +44,14 @@ Contributing
 
 If you have one or more snippets, operators, or modules you'd like to share, please open an issue or create
 a pull request.  Before submitting your operator or module, please consider adding documentation.  The more documentation there is, the more likely it is that someone will find it useful.
+
+Test
+------------
+Run
+
+``` shell
+ant test
+```
 
 Download
 --------
