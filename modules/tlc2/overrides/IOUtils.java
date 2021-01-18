@@ -1,9 +1,9 @@
 /*******************************************************************************
- * Copyright (c) 2020 Microsoft Research. All rights reserved. 
+ * Copyright (c) 2020 Microsoft Research. All rights reserved.
  *
  * The MIT License (MIT)
- * 
- * Permission is hereby granted, free of charge, to any person obtaining a copy 
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
  * in the Software without restriction, including without limitation the rights
  * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies
@@ -11,8 +11,8 @@
  * so, subject to the following conditions:
  *
  * The above copyright notice and this permission notice shall be included in all
- * copies or substantial portions of the Software. 
- * 
+ * copies or substantial portions of the Software.
+ *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
  * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
  * FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
@@ -25,8 +25,10 @@
  ******************************************************************************/
 package tlc2.overrides;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Arrays;
 
 import tlc2.output.EC;
@@ -86,8 +88,8 @@ public class IOUtils {
 		// 3. Run command-line and receive its output.
 		final Process process = new ProcessBuilder(command)/*.inheritIO()*/.start();
 
-		final StringValue stdout = new StringValue(new String(process.getInputStream().readAllBytes()));
-		final StringValue stderr = new StringValue(new String(process.getErrorStream().readAllBytes()));
+                final StringValue stdout = new StringValue(stringFromInputStream(process.getInputStream()));
+                final StringValue stderr = new StringValue(stringFromInputStream(process.getErrorStream()));
 		final IntValue exitCode = IntValue.gen(process.waitFor());
 
 		return new RecordValue(EXEC_NAMES, new Value[] {exitCode, stdout, stderr}, false);
@@ -127,12 +129,22 @@ public class IOUtils {
 		// 3. Run command-line and receive its output.
 		final Process process = new ProcessBuilder(command)/*.inheritIO()*/.start();
 
-		final StringValue stdout = new StringValue(new String(process.getInputStream().readAllBytes()));
-		final StringValue stderr = new StringValue(new String(process.getErrorStream().readAllBytes()));
+                final StringValue stdout = new StringValue(stringFromInputStream(process.getInputStream()));
+                final StringValue stderr = new StringValue(stringFromInputStream(process.getErrorStream()));
 		final IntValue exitCode = IntValue.gen(process.waitFor());
 
 		return new RecordValue(EXEC_NAMES, new Value[] {exitCode, stdout, stderr}, false);
 	}
+
+        private static String stringFromInputStream(InputStream inputStream) throws IOException {
+            ByteArrayOutputStream result = new ByteArrayOutputStream();
+            byte[] buffer = new byte[4096];
+            int length;
+            while ((length = inputStream.read(buffer)) != -1) {
+                result.write(buffer, 0, length);
+            }
+            return result.toString();
+        }
 
 	private static String convert(IValue v) {
 		if (! (v instanceof StringValue)) {
