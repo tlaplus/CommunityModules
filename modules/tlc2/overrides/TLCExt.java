@@ -179,8 +179,7 @@ public class TLCExt {
 		if (TLCGlobals.simulator != null) {
 			// TODO Somehow load only this implementation in simulation mode => module
 			// overrides for a specific tool mode.
-			final SimulationWorker w = (SimulationWorker) Thread.currentThread();
-			return new TupleValue(w.getTrace().toRecords(s0));
+			return new TupleValue(TLCGlobals.simulator.getTrace().toRecords(s0));
 		}
 		final ModelChecker mc = (ModelChecker) TLCGlobals.mainChecker;
 		final ConcurrentTLCTrace traceFile = mc.trace;
