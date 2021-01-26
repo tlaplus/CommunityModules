@@ -1,5 +1,5 @@
 ----------------------------- MODULE SVG -----------------------------
-EXTENDS Naturals, Sequences, SequencesExt, Integers, TLC, FiniteSets
+EXTENDS Naturals, Sequences, Integers, TLC, FiniteSets
 
 (******************************************************************************)
 (* Helper Operators                                                           *)
