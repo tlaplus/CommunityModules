@@ -1,5 +1,6 @@
 ----------------------------- MODULE Relation ------------------------------
-EXTENDS Naturals, FiniteSets
+LOCAL INSTANCE Naturals
+LOCAL INSTANCE FiniteSets
 
 (***************************************************************************)
 (* This module provides some basic operations on relations, represented    *)

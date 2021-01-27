@@ -4,7 +4,7 @@ NEXT Next
 =====
 
 ------------------------- MODULE FiniteSetsExtTests -------------------------
-EXTENDS Integers, TLC, TLCExt, FiniteSetsExt
+EXTENDS Integers, TLC, TLCExt, FiniteSets, FiniteSetsExt
 
 ASSUME LET S == {"a","b","c","c"}
        IN Quantify(S, LAMBDA s: s = "c") = Cardinality({s \in S : s = "c"})
@@ -46,15 +46,15 @@ ASSUME LET S == 1..27
 ASSUME ChooseUnique({2, 3, 4, 5}, LAMBDA x : x % 3 = 1) = 4
 
 ASSUME AssertError(
-           "Attempted to compute the value of an expression of form\nCHOOSE x \\in S: P, but no element of S satisfied P.\nline 94, col 26 to line 95, col 64 of module FiniteSetsExt", 
+           "Attempted to compute the value of an expression of form\nCHOOSE x \\in S: P, but no element of S satisfied P.\nline 96, col 26 to line 97, col 64 of module FiniteSetsExt", 
            ChooseUnique({2, 3, 4, 5}, LAMBDA x : TRUE))
 
 ASSUME AssertError(
-           "Attempted to compute the value of an expression of form\nCHOOSE x \\in S: P, but no element of S satisfied P.\nline 94, col 26 to line 95, col 64 of module FiniteSetsExt", 
+           "Attempted to compute the value of an expression of form\nCHOOSE x \\in S: P, but no element of S satisfied P.\nline 96, col 26 to line 97, col 64 of module FiniteSetsExt", 
            ChooseUnique({}, LAMBDA x : TRUE))
 
 ASSUME AssertError(
-           "Attempted to compute the value of an expression of form\nCHOOSE x \\in S: P, but no element of S satisfied P.\nline 94, col 26 to line 95, col 64 of module FiniteSetsExt", 
+           "Attempted to compute the value of an expression of form\nCHOOSE x \\in S: P, but no element of S satisfied P.\nline 96, col 26 to line 97, col 64 of module FiniteSetsExt", 
            ChooseUnique({2, 3, 4, 5}, LAMBDA x : FALSE))
 
 -----------------------------------------------------------------------------

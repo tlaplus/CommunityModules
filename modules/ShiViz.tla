@@ -1,5 +1,8 @@
 ------------------------------- MODULE ShiViz -------------------------------
-EXTENDS Integers, Json, Toolbox, TLC
+LOCAL INSTANCE Integers
+LOCAL INSTANCE Json
+LOCAL INSTANCE Toolbox
+LOCAL INSTANCE TLC
 
 -----------------------------------------------------------------------------
 

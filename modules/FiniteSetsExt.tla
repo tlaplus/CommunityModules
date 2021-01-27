@@ -1,5 +1,7 @@
 --------------------------- MODULE FiniteSetsExt ---------------------------
-EXTENDS Naturals, FiniteSets, Functions
+LOCAL INSTANCE Naturals
+LOCAL INSTANCE FiniteSets
+LOCAL INSTANCE Functions
 
 
 ReduceSet(op(_, _), set, acc) ==
