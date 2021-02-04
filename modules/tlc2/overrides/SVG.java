@@ -71,7 +71,7 @@ public final class SVG {
 		String attrStr = "";
 		for (UniqueString us : attrs.names) {
 			attrStr += " ";
-			attrStr += us.toString();
+			attrStr += us.toString().replaceAll("_", "-");
 			attrStr += "=";
 			String v = ((StringValue) attrs.apply(new StringValue(us), 0)).getVal().toString();
 			// Quote all SVG attribute values. Technically, attribute values in HTML

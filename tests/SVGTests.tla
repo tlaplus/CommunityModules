@@ -108,6 +108,16 @@ ASSUME(LET
                       children |-> <<child>>, 
                       innerText |-> ""] IN
         AssertEq(elem, expected))
+        
+(******************************************************************************)
+(* Test replacement of '_' in SVG attributes with '-' because dashes are      *)
+(* invalid in TLA+ record names.                                              *)
+(******************************************************************************)
+
+ASSUME(LET 
+        elem == Line(0, 1, 2, 3, [fill |-> "red", stroke_dasharray |-> "42"]) 
+        expected == "<line fill='red' x1='0' y1='1' x2='2' y2='3' stroke-dasharray='42'></line>" IN
+        AssertEq(SVGElemToString(elem), expected))
 
 -----------------------------------------------------------------------------
 
