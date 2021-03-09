@@ -89,7 +89,7 @@
 
 			<classpath>
 				<pathelement location="${tlc}/tla2tools.jar" />
-                                <pathelement location="${lib}/gson-2.8.6.jar" />
+                <pathelement location="${lib}/gson-2.8.6.jar" />
 				<!-- The jar that has just been built by the dist target. -->
 				<pathelement location="${dist}/CommunityModules-${timestamp}.jar" />
 			</classpath>
@@ -103,6 +103,7 @@
 			<!-- Report execution statistics as azure-pipeline -->
 			<sysproperty key="tlc2.TLC.ide" value="azure-pipeline"/>
 			<sysproperty key="util.ExecutionStatisticsCollector.id" value="01ed03e40ba44f278a934849dd2b1038"/>
+			<sysproperty key="TLA-Library" value="${src}"/>
 			
 			<arg value="-metadir"/>
 			<arg value="${basedir}/build/states"/>
@@ -123,6 +124,7 @@
 			<!-- Report execution statistics as azure-pipeline -->
 			<sysproperty key="tlc2.TLC.ide" value="azure-pipeline"/>
 			<sysproperty key="util.ExecutionStatisticsCollector.id" value="01ed03e40ba44f278a934849dd2b1038"/>
+			<sysproperty key="TLA-Library" value="${src}"/>
 			
 			<arg value="-metadir"/>
 			<arg value="${basedir}/build/states"/>
@@ -153,7 +155,7 @@
 				<pathelement location="${tlc}/tla2tools.jar" />
 				<pathelement location="${lib}/hamcrest-core-1.3.jar" />
 				<pathelement location="${lib}/junit-4.13.jar" />
-                                <pathelement location="${lib}/gson-2.8.6.jar" />
+                <pathelement location="${lib}/gson-2.8.6.jar" />
 				<!-- The jar that has just been built by the dist target. -->
 				<pathelement location="${dist}/CommunityModules-${timestamp}.jar" />
 			</classpath>
