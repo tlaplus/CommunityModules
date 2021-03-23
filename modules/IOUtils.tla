@@ -16,7 +16,9 @@ IOExec(command) ==
   (*******************************************************************************)
   (* Spawns the given command as a sub-process of TLC.  The sequence of sequence *)
   (* of strings `command' signifies the external program file to be invoked and  *)
-  (* its arguments: IOExec(<<"ls", "-lah", "/tmp">>)                             *)
+  (* its arguments:                                                              *)
+  (*     IOExec(<<"ls", "-lah", "/tmp">>)                                        *)
+  (*     IOExec(<<"bash", "-c", "echo \"Col1#Col2\" > /tmp/out.csv">>            *)
   (* see https://docs.oracle.com/javase/7/docs/api/java/lang/ProcessBuilder.html *)
   (*******************************************************************************)
   CHOOSE r \in [exitValue : Int, stdout : STRING, stderr : STRING] : TRUE
@@ -25,7 +27,9 @@ IOExecTemplate(commandTemplate, parameters) ==
   (*************************************************************************)
   (* Spawns the given printf-style command as a sub-process of TLC.  The   *)
   (* n-th flag in `commandTemplate' is substituted with the n-th element   *)
-  (* of the sequence `parameters': IOExec("ls %s %s", <<"-lah", "/tmp">>)  *)
+  (* of the sequence `parameters':                                         *)
+  (*     IOExecTemplate(<<"ls", "%s" "%s">>, <<"-lah", "/tmp">>)           *)
+  (*     IOExecTemplate(<<"ls %1$s %2$s">>, <<"-lah", "/tmp">>)            *)
   (* see http://docs.oracle.com/javase/7/docs/api/java/util/Formatter.html *)
   (*************************************************************************)
   CHOOSE r \in [exitValue : Int, stdout : STRING, stderr : STRING] : TRUE

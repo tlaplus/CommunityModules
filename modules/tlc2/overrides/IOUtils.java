@@ -91,32 +91,24 @@ public class IOUtils {
 	@TLAPlusOperator(identifier = "IOExecTemplate", module = "IOUtils", minLevel = 1, warn = false)
 	public static Value ioExecTemplate(final Value commandTemplate, final Value parameter) throws IOException, InterruptedException {
 		// 1. Check parameters and covert.
-		if (!(commandTemplate instanceof StringValue)) {
+		if (!(parameter instanceof TupleValue)) {
 			throw new EvalException(EC.TLC_MODULE_ONE_ARGUMENT_ERROR,
-					new String[] { "IOExec", "string", Values.ppr(commandTemplate.toString()) });
+					new String[] { "IOExec", "sequence", Values.ppr(parameter.toString()) });
 		}
 		if (!(parameter instanceof TupleValue)) {
 			throw new EvalException(EC.TLC_MODULE_ONE_ARGUMENT_ERROR,
 					new String[] { "IOExec", "sequence", Values.ppr(parameter.toString()) });
 		}
-		final StringValue sv = (StringValue) commandTemplate;
+		final TupleValue sv = (TupleValue) commandTemplate;
 		final TupleValue tv = (TupleValue) parameter;
 
 		// 2. Build actual command-line by merging command and parameter.
-		// XXX does not support multiple %s inside a template part
-		final String[] command = sv.val.toString().split("\\s+");
-		int j = 0;
+		final String[] command = Arrays.asList(sv.getElems()).stream().map(IOUtils::convert)
+				.toArray(size -> new String[size]);
+		final Object[] params = Arrays.asList(tv.getElems()).stream().map(IOUtils::convert)
+				.toArray(size -> new Object[size]);
 		for (int i = 0; i < command.length; ++i) {
-			if (command[i].contains("%s")) {
-                if (j < tv.elems.length) {
-                    command[i] = String.format(command[i], ((StringValue) tv.elems[j++]).val.toString());
-                } else {
-                    // Too many %s
-                    // XXX throw proper exception
-                    throw new EvalException(EC.TLC_MODULE_ONE_ARGUMENT_ERROR,
-                            new String[] { "IOExec", "sequence", Values.ppr(parameter.toString()) });
-                }
-			}
+			command[i] = String.format(command[i], params);
 		}
 
 		return runProcess(command);
