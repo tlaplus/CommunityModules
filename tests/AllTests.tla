@@ -10,6 +10,7 @@ EXTENDS SequencesExtTests,
         BitwiseTests,
         IOUtilsTests,
         FiniteSetsExtTests,
-        FunctionsTests
+        FunctionsTests,
+        CSVTests
 
 ===========================================
