@@ -85,14 +85,7 @@ public class IOUtils {
 				.map(IOUtils::convert)
 				.toArray(size -> new String[size]);
 
-		// 3. Run command-line and receive its output.
-		final Process process = new ProcessBuilder(command)/*.inheritIO()*/.start();
-
-                final StringValue stdout = new StringValue(stringFromInputStream(process.getInputStream()));
-                final StringValue stderr = new StringValue(stringFromInputStream(process.getErrorStream()));
-		final IntValue exitCode = IntValue.gen(process.waitFor());
-
-		return new RecordValue(EXEC_NAMES, new Value[] {exitCode, stdout, stderr}, false);
+		return runProcess(command);
 	}
 
 	@TLAPlusOperator(identifier = "IOExecTemplate", module = "IOUtils", minLevel = 1, warn = false)
@@ -126,14 +119,18 @@ public class IOUtils {
 			}
 		}
 
-		// 3. Run command-line and receive its output.
-		final Process process = new ProcessBuilder(command)/*.inheritIO()*/.start();
+		return runProcess(command);
+	}
 
-                final StringValue stdout = new StringValue(stringFromInputStream(process.getInputStream()));
-                final StringValue stderr = new StringValue(stringFromInputStream(process.getErrorStream()));
+	private static Value runProcess(final String[] command) throws IOException, InterruptedException {
+		// 3. Run command-line and receive its output.
+		final Process process = new ProcessBuilder(command)/* .inheritIO() */.start();
+
+		final StringValue stdout = new StringValue(stringFromInputStream(process.getInputStream()));
+		final StringValue stderr = new StringValue(stringFromInputStream(process.getErrorStream()));
 		final IntValue exitCode = IntValue.gen(process.waitFor());
 
-		return new RecordValue(EXEC_NAMES, new Value[] {exitCode, stdout, stderr}, false);
+		return new RecordValue(EXEC_NAMES, new Value[] { exitCode, stdout, stderr }, false);
 	}
 
         private static String stringFromInputStream(InputStream inputStream) throws IOException {
