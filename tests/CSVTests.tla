@@ -1,11 +1,21 @@
 ---------------------------- MODULE CSVTests ----------------------------
-EXTENDS CSV, TLC
+EXTENDS CSV, TLC, Sequences, IOUtils
 
+Template ==
+	\* '#' symbol is probably best separator for TLA+.
+	"%1$s#%2$s#%3$s"
+
+Value ==
+	<< 42, "abc", [a |-> "a", b |-> "b"] >>
+
+ToFile == 
+	"build/tests/CSVWriteTest-" \o ToString(JavaTime) \o ".csv"
+
+\* Write Value to ToFile then check success by reading with IOExec. 
 ASSUME(
-  CSVWrite(
-    "%1$s#%2$s#%3$s", \* hash symbol is probably best separator for TLA+. 
-    << 42, "abc", [a |-> "a", b |-> "b"] >>,
-    "/tmp/out.csv"))
+  CSVWrite(Template, Value, ToFile) 
+  	=> 
+  	  IOExec(<< "cat", ToFile >>).stdout = "42#\"abc\"#[a |-> \"a\", b |-> \"b\"]\n")
 
 =============================================================================
                                                                     
