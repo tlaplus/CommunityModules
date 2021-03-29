@@ -23,7 +23,8 @@
 
 	<target name="download" depends="init" description="downloads tla2tools.jar" unless="skip.download">
 		<!--<get src="https://github.com/tlaplus/tlaplus/releases/download/v1.7.0/tla2tools.jar" dest="${tlc}"/>-->
-		<get src="https://nightly.tlapl.us/dist/tla2tools.jar" dest="${tlc}"/>
+<!--		<get src="https://nightly.tlapl.us/dist/tla2tools.jar" dest="${tlc}"/> -->
+		<get src="https://github.com/tlaplus/tlaplus/releases/download/v1.8.0/tla2tools.jar" dest="${tlc}"/>
 	</target>
 
 	<target name="compile" depends="download" description="compile the java module overwrites">
