@@ -117,6 +117,7 @@
 				<pathelement location="${dist}/CommunityModules-${timestamp}.jar" />
 			</classpath>
 		</java>
+		<!-- Above BFS, here simulation mode! -->
 		<java classname="tlc2.TLC" fork="true" failonerror="true">
 			<!-- Tell Java to use a garbage collector which makes TLC happy. -->
 			<jvmarg value="-XX:+UseParallelGC"/>
@@ -140,6 +141,41 @@
 				<pathelement location="${dist}/CommunityModules-${timestamp}.jar" />
 			</classpath>
 		</java>
+
+		<!-- Test if trace expressions involving the ShiViz module work correctly. -->
+		<!-- This test expects TLC to report a liveness violation, which is why    -->
+		<!-- failonerror is off.  Instead, the ant records TLC's return value in   -->
+		<!-- shiviz.return.value, which is cheked in the conditional below.        -->
+		<java classname="tlc2.TLC" fork="true" failonerror="false" resultproperty="shiviz.return.value">
+			<!-- Tell Java to use a garbage collector which makes TLC happy. -->
+			<jvmarg value="-XX:+UseParallelGC"/>
+
+			<!-- Report execution statistics as azure-pipeline -->
+			<sysproperty key="tlc2.TLC.ide" value="azure-pipeline"/>
+			<sysproperty key="util.ExecutionStatisticsCollector.id" value="01ed03e40ba44f278a934849dd2b1038"/>
+			<sysproperty key="TLA-Library" value="${src}"/>
+			
+			<arg value="-metadir"/>
+			<arg value="${basedir}/build/states"/>
+			<arg value="-cleanup"/>
+			<arg value="-deadlock"/>
+			<arg value="-noGenerateSpecTE"/>
+			<arg value="${basedir}/tests/GH037/ShiVizTests"/>
+
+			<classpath>
+				<pathelement location="${tlc}/tla2tools.jar" />
+				<!-- The jar that has just been built by the dist target. -->
+				<pathelement location="${dist}/CommunityModules-${timestamp}.jar" />
+			</classpath>
+		</java>
+	    <fail message="ERROR: ShiViz test failed">
+	        <condition>
+	            <not>
+	            	<!-- Assert that TLC's error code is 13, which is the code corresponding to a liveness violation. -->
+	                <equals arg1="${shiviz.return.value}" arg2="13"/>
+	            </not>
+	        </condition>
+	    </fail>
 
 		<junit dir="${build}" printsummary="yes" haltonfailure="yes" showoutput="no" haltonerror="yes"  forkmode="perTest" fork="yes">
 			<!-- enable all assertions -->

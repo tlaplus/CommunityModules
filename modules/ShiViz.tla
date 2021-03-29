@@ -1,8 +1,19 @@
 ------------------------------- MODULE ShiViz -------------------------------
 LOCAL INSTANCE Integers
 LOCAL INSTANCE Json
-LOCAL INSTANCE Toolbox
 LOCAL INSTANCE TLC
+
+\* Declaring instances local causes definition overrides to be hidden. In the
+\* case of Toolbox, this causes the definition override of `_TETrace` to be
+\* invisible.  In turn, TLC will then try to evaluate the TLA+ definition of
+\*
+\* `_TETrace` as defined in Tooblox.tla:
+\*   Attempted to enumerate S \ T when S:
+\*   Nat
+\*   is not enumerable.
+\*
+\* See: https://github.com/tlaplus/CommunityModules/issues/37
+INSTANCE Toolbox
 
 -----------------------------------------------------------------------------
 
