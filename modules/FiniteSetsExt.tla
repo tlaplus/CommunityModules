@@ -33,14 +33,14 @@ Product(set) ==
    (* Calculuate the product of the elements in set.                        *)
    (*                                                                       *)
    (* Example:                                                              *)
-   (*         Sum(0 .. 10) = 55                                             *)
+   (*         Product(0 .. 10) = 55                                         *)
    (*************************************************************************)
    FoldSet(LAMBDA x, y: x * y, set, 1)
 
 ReduceSet(op(_, _), set, acc) == 
    (*************************************************************************)
    (* An alias for FoldSet. ReduceSet was used instead of FoldSet in        *)
-   (* versions of the community modules.                                    *)
+   (* earlier versions of the community modules.                            *)
    (*************************************************************************)
   FoldSet(op, set, acc)
 
