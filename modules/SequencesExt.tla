@@ -1,10 +1,10 @@
 ---------------------------- MODULE SequencesExt ----------------------------
-
 LOCAL INSTANCE Sequences
 LOCAL INSTANCE Naturals
 LOCAL INSTANCE FiniteSets
 LOCAL INSTANCE FiniteSetsExt
 LOCAL INSTANCE Functions
+LOCAL INSTANCE Folds
   (*************************************************************************)
   (* Imports the definitions from the modules, but doesn't export them.    *)
   (*************************************************************************)
@@ -167,11 +167,50 @@ SeqMod(a, b) ==
   IF a % b = 0 THEN b ELSE a % b
 
 
-ReduceSeq(op(_, _), seq, acc) == 
+FoldSeq(op(_, _), base, seq) == 
   (***************************************************************************)
-  (* We can't just apply ReduceSet to the Range(seq) because the same        *)
-  (* element might appear twice in the sequence.                             *)
+  (* An alias of FoldFunction that op on all elements of seq an arbitrary    *)
+  (* order. The resulting function is:                                       *)
+  (*    op(f[i],op(f[j], ..., op(f[k],base) ...))                            *)
+  (*                                                                         *)
+  (* op must be associative and commutative, because we can not assume a     *)
+  (* particular ordering of i, j, and k                                      *)
+  (*                                                                         *)
+  (* Example:                                                                *)
+  (*  FoldSeq(LAMBDA x,y: {x} \cup y, {}, <<1,2,1>>) = {1,2}                 *)
   (***************************************************************************)
-  ReduceSet(LAMBDA i, a: op(seq[i], a), DOMAIN seq, acc)
+  FoldFunction(op, base, seq)
+
+FoldLeft(op(_, _), base, seq) == 
+  (***************************************************************************)
+  (* FoldLeft folds op on all elements of seq from left to right, starting   *)
+  (* with the first element and base. The resulting function is:             *)
+  (*    op(op(...op(base,f[0]), ...f[n-1]), f[n])                            *)
+  (*                                                                         *)
+  (*                                                                         *)
+  (* Example:                                                                *)
+  (*    LET cons(x,y) == <<x,y>>                                             *)
+  (*    IN FoldLeft(cons, 0, <<3,1,2>> = << << <<0,3>>, 1>>, 2>>             *) 
+  (***************************************************************************)
+  MapThenFoldSet(LAMBDA x,y : op(y,x), base,
+                 LAMBDA i : seq[i],
+                 LAMBDA s: CHOOSE i \in s : \A j \in s: i >= j,
+                 DOMAIN seq)
+
+FoldRight(op(_, _), seq, base) == 
+  (***************************************************************************)
+  (* FoldRight folds op on all elements of seq from right to left, starting  *)
+  (* with the last element and base. The resulting function is:              *)
+  (*    op(f[0],op(f[1], ..., op(f[n],base) ...))                            *)
+  (*                                                                         *)
+  (*                                                                         *)
+  (* Example:                                                                *)
+  (*    LET cons(x,y) == <<x,y>>                                             *)
+  (*    IN FoldRight(cons, <<3,1,2>>, 0 ) = << 3, << 1, <<2,0>> >> >>        *) 
+  (***************************************************************************)
+  MapThenFoldSet(op, base,
+                 LAMBDA i : seq[i],
+                 LAMBDA s: CHOOSE i \in s : \A j \in s: i <= j,
+                 DOMAIN seq)
 
 =============================================================================

@@ -2,26 +2,54 @@
 LOCAL INSTANCE Naturals
 LOCAL INSTANCE FiniteSets
 LOCAL INSTANCE Functions
+LOCAL INSTANCE Folds
+
+FoldSet(op(_,_), base, set) ==
+   (*************************************************************************)
+   (* Fold op over the elements of set using base as starting value.        *)
+   (*                                                                       *)
+   (* Example:                                                              *)
+   (*         FoldSet(LAMBA x,y : x + y, 0, 0 .. 10) = 55                   *)
+   (*************************************************************************)
+   MapThenFoldSet(op, base, LAMBDA x : x, LAMBDA s : CHOOSE x \in s : TRUE, set)
+
+Sum(set) ==
+   (*************************************************************************)
+   (* Calculuate the sum of the elements in set.                            *)
+   (*                                                                       *)
+   (* Example:                                                              *)
+   (*         Sum(0 .. 10) = 55                                             *)
+   (*************************************************************************)
+   FoldSet(LAMBDA x, y: x + y, set, 0)
+
+Product(set) ==
+   (*************************************************************************)
+   (* Calculuate the product of the elements in set.                        *)
+   (*                                                                       *)
+   (* Example:                                                              *)
+   (*         Product(1 .. 3) = 6                                           *)
+   (*************************************************************************)
+   FoldSet(LAMBDA x, y: x * y, set, 1)
+
+ReduceSet(op(_, _), set, acc) == 
+   (*************************************************************************)
+   (* An alias for FoldSet. ReduceSet was used instead of FoldSet in        *)
+   (* earlier versions of the community modules.                            *)
+   (*************************************************************************)
+  FoldSet(op, set, acc)
 
 
-ReduceSet(op(_, _), set, acc) ==
-  (***************************************************************************)
-  (* TLA+ forbids recursive higher-order operators, but it is fine with      *)
-  (* recursive functions.  ReduceSet generates a recursive function over the *)
-  (* subsets of a set, which can be used to recursively run a defined        *)
-  (* operator.  This can then be used to define other recursive operators.   *)
-  (* The op is assumed to be an abelian/commutative operation.               *)
-  (***************************************************************************)
-  LET f[s \in SUBSET set] ==
-    IF s = {} THEN acc
-    ELSE LET x == CHOOSE x \in s: TRUE
-         IN op(x, f[s \ {x}])
-  IN f[set]
+FlattenSet(S) ==
+(******************************************************************************)
+(* Starting from base, apply op to f(x), for all x \in S, in an arbitrary     *)
+(* order. It is assumed that op is associative and commutative.               *)
+(*                                                                            *)
+(* Example:                                                                   *)
+(*                                                                            *)
+(*  FlattenSet({{1},{2}}) = {1,2}                                                *)
+(******************************************************************************)
+  FoldSet(LAMBDA x,y: x \cup y, {}, S) 
 
-
-Sum(set) == ReduceSet(LAMBDA x, y: x + y, set, 0)
-
-Product(set) == ReduceSet(LAMBDA x, y: x * y, set, 1)
 
 -----------------------------------------------------------------------------
 

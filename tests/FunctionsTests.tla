@@ -16,4 +16,8 @@ ASSUME(AssertError("The argument of IsInjective should be a sequence, but instea
 ASSUME(AssertError("The argument of IsInjective should be a sequence, but instead it is:\n[a: 1, b: 2]", IsInjective([a: 1, b: 2])))
 ASSUME(AssertError("The argument of IsInjective should be a sequence, but instead it is:\n(0 :> 0 @@ 1 :> 1 @@ 2 :> 2)", IsInjective([i \in 0..2 |-> i])))
 
+ASSUME FoldFunction(LAMBDA x,y: {x} \cup y, {}, <<1,2,1>>) = {1,2}
+
+ASSUME FoldFunctionOnSet(LAMBDA x,y: {x} \cup y, {}, <<1,2>>, {}) = {}
+
 =============================================================================
