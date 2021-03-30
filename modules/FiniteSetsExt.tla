@@ -4,24 +4,59 @@ LOCAL INSTANCE FiniteSets
 LOCAL INSTANCE Functions
 
 
-ReduceSet(op(_, _), set, acc) ==
-  (***************************************************************************)
-  (* TLA+ forbids recursive higher-order operators, but it is fine with      *)
-  (* recursive functions.  ReduceSet generates a recursive function over the *)
-  (* subsets of a set, which can be used to recursively run a defined        *)
-  (* operator.  This can then be used to define other recursive operators.   *)
-  (* The op is assumed to be an abelian/commutative operation.               *)
-  (***************************************************************************)
-  LET f[s \in SUBSET set] ==
-    IF s = {} THEN acc
-    ELSE LET x == CHOOSE x \in s: TRUE
-         IN op(x, f[s \ {x}])
-  IN f[set]
 
+(***************************************************************************)
+(* Starting from base, apply op to f(x), for all x \in S, in an arbitrary  *)
+(* order. It is assumed that op is associative and commutative.            *)
+(***************************************************************************)
+FoldMap(op(_,_), base, f(_), S) ==
+  LET iter[s \in SUBSET S] ==
+        IF s = {} THEN base
+        ELSE LET x == CHOOSE x \in s : TRUE
+             IN  op(f(x), iter[s \ {x}])
+  IN  iter[S]
+
+(*
+   Intuitive semantics:
+
+   Initialize a temporary variable `accum` with the value of `base`.  Iterate
+   over the elements in set in a deterministic but unknown order, update the
+   value of `accum` to the value of `op(accum, x`), where `x` is the current
+   value of the iterator. The result of `FoldSet` is the computed value of
+   `accum`.
+ *)  
+FoldSet(op(_,_), base, set) ==
+  (*
+    This is an implementation in terms of previously defined operators.
+    A tool is free to define its own, more efficient, implementation.
+   *) 
+(*  ReduceSet(op, set, base) *)
+  (* sm: alternative, equivalent definition *)
+  FoldMap(op, base, LAMBDA x : x, set)
+
+(***************************************************************************)
+(* Fold over a function (or sequence).                                     *)
+(***************************************************************************)
+FoldFunction(op(_,_), base, fun) == 
+  FoldMap(op, base, LAMBDA i : fun[i], DOMAIN fun)
+
+
+
+(***************************************************************************)
+(* Fold over a subset of the domain of a function -- corresponds to Reduce *)
+(***************************************************************************)
+FoldFunctionOnSet(op(_,_), base, fun, set) ==
+  LET Squeeze(f, S) == [ s \in S |-> f[s]  ]
+  IN
+  FoldFunction(op, base, Squeeze(fun, set))
+
+
+ReduceSet(op(_, _), set, acc) == FoldSet(op, set, acc)
 
 Sum(set) == ReduceSet(LAMBDA x, y: x + y, set, 0)
 
 Product(set) == ReduceSet(LAMBDA x, y: x * y, set, 1)
+
 
 -----------------------------------------------------------------------------
 
