@@ -2,60 +2,59 @@
 LOCAL INSTANCE Naturals
 LOCAL INSTANCE FiniteSets
 LOCAL INSTANCE Functions
+LOCAL INSTANCE Folds
 
-
-
-(***************************************************************************)
-(* Starting from base, apply op to f(x), for all x \in S, in an arbitrary  *)
-(* order. It is assumed that op is associative and commutative.            *)
-(***************************************************************************)
-FoldMap(op(_,_), base, f(_), S) ==
-  LET iter[s \in SUBSET S] ==
-        IF s = {} THEN base
-        ELSE LET x == CHOOSE x \in s : TRUE
-             IN  op(f(x), iter[s \ {x}])
-  IN  iter[S]
-
-(*
-   Intuitive semantics:
-
-   Initialize a temporary variable `accum` with the value of `base`.  Iterate
-   over the elements in set in a deterministic but unknown order, update the
-   value of `accum` to the value of `op(accum, x`), where `x` is the current
-   value of the iterator. The result of `FoldSet` is the computed value of
-   `accum`.
- *)  
 FoldSet(op(_,_), base, set) ==
-  (*
-    This is an implementation in terms of previously defined operators.
-    A tool is free to define its own, more efficient, implementation.
-   *) 
-(*  ReduceSet(op, set, base) *)
-  (* sm: alternative, equivalent definition *)
-  FoldMap(op, base, LAMBDA x : x, set)
+   (*************************************************************************)
+   (* Fold op over the elements of set using base as starting value.        *)
+   (*                                                                       *)
+   (* Intuitive semantics:                                                  *)
+   (* Initialize a temporary variable `accum` with the value of `base`.     *)
+   (* Iterate over the elements in set in a deterministic but unknown       *)
+   (* order pdate the value of `accum` to the value of `op(accum, x`),      *)
+   (* where `x` s the current value of the iterator.                        *)
+   (*                                                                       *)
+   (* Example:                                                              *)
+   (*         FoldSet(LAMBA x,y : x + y, 0 .. 10, 0) = 55                   *)
+   (*************************************************************************)
+   MapThenFoldSet(op, base, LAMBDA x : x, set)
 
-(***************************************************************************)
-(* Fold over a function (or sequence).                                     *)
-(***************************************************************************)
-FoldFunction(op(_,_), base, fun) == 
-  FoldMap(op, base, LAMBDA i : fun[i], DOMAIN fun)
+Sum(set) ==
+   (*************************************************************************)
+   (* Calculuate the sum of the elements in set.                            *)
+   (*                                                                       *)
+   (* Example:                                                              *)
+   (*         Sum(0 .. 10) = 55                                             *)
+   (*************************************************************************)
+   FoldSet(LAMBDA x, y: x + y, set, 0)
+
+Product(set) ==
+   (*************************************************************************)
+   (* Calculuate the product of the elements in set.                        *)
+   (*                                                                       *)
+   (* Example:                                                              *)
+   (*         Sum(0 .. 10) = 55                                             *)
+   (*************************************************************************)
+   FoldSet(LAMBDA x, y: x * y, set, 1)
+
+ReduceSet(op(_, _), set, acc) == 
+   (*************************************************************************)
+   (* An alias for FoldSet. ReduceSet was used instead of FoldSet in        *)
+   (* versions of the community modules.                                    *)
+   (*************************************************************************)
+  FoldSet(op, set, acc)
 
 
-
-(***************************************************************************)
-(* Fold over a subset of the domain of a function -- corresponds to Reduce *)
-(***************************************************************************)
-FoldFunctionOnSet(op(_,_), base, fun, set) ==
-  LET Squeeze(f, S) == [ s \in S |-> f[s]  ]
-  IN
-  FoldFunction(op, base, Squeeze(fun, set))
-
-
-ReduceSet(op(_, _), set, acc) == FoldSet(op, set, acc)
-
-Sum(set) == ReduceSet(LAMBDA x, y: x + y, set, 0)
-
-Product(set) == ReduceSet(LAMBDA x, y: x * y, set, 1)
+FlattenSet(S) ==
+(******************************************************************************)
+(* Starting from base, apply op to f(x), for all x \in S, in an arbitrary     *)
+(* order. It is assumed that op is associative and commutative.               *)
+(*                                                                            *)
+(* Example:                                                                   *)
+(*                                                                            *)
+(*  FlattenSet({{1},{2}}) = {1,2}                                                *)
+(******************************************************************************)
+  FoldSet(LAMBDA x,y: x \cup y, {}, S) 
 
 
 -----------------------------------------------------------------------------

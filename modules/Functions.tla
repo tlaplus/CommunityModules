@@ -6,6 +6,7 @@
 (*  \vspace{12pt}}^'                                                       *)
 (***************************************************************************)
 
+LOCAL INSTANCE Folds
 
 (***************************************************************************)
 (* Restriction of a function to a set (should be a subset of the domain).  *)
@@ -63,8 +64,25 @@ ExistsSurjection(S,T) == Surjection(S,T) # {}
 ExistsBijection(S,T)  == Bijection(S,T) # {}
 
 
+(***************************************************************************)
+(* Fold over a function (or sequence).                                     *)
+(* op must be commutative and associative                                  *)
+(***************************************************************************)
+FoldFunction(op(_,_), base, fun) ==
+  MapThenFoldSet(op, base, LAMBDA i : fun[i], DOMAIN fun)
+
+
+(***************************************************************************)
+(* Fold over a subset of the domain of a function.                         *)
+(* op must be commutative and associative, set must be a subset of the     *)
+(* domain of fun.                                                          *)
+(***************************************************************************)
+FoldFunctionOnSet(op(_,_), base, fun, set) ==
+  FoldFunction(op, base, Restrict(fun, set))
+
 =============================================================================
 \* Modification History
+\* Last modified Tue Mar 30 20:29:13 CEST 2021 by marty
 \* Last modified Sun Dec 27 09:38:06 CET 2020 by merz
 \* Last modified Wed Jun 05 12:14:19 CEST 2013 by bhargav
 \* Last modified Fri May 03 12:55:35 PDT 2013 by tomr
