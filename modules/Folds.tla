@@ -8,6 +8,7 @@ MapThenFoldSet(op(_,_), base, f(_), ord(_,_), S) ==
 (*                                                                            *)
 (* FoldSet, a simpler version for sets is contained in FiniteSetsEx.          *)
 (* FoldFunction, a simpler version for functions is contained in Functions.   *)
+(* FoldSequence, a simpler version for sequences is contained in SequencesExt.*)
 (*                                                                            *)
 (* Example:                                                                   *)
 (*                                                                            *)
@@ -24,5 +25,5 @@ MapThenFoldSet(op(_,_), base, f(_), ord(_,_), S) ==
 
 =============================================================================
 \* Modification History
-\* Last modified Tue Mar 30 21:06:35 CEST 2021 by marty
+\* Last modified Wed Mar 31 00:40:51 CEST 2021 by marty
 \* Created Tue Mar 30 19:20:49 CEST 2021 by marty

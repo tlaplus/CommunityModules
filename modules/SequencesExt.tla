@@ -170,8 +170,18 @@ SeqMod(a, b) ==
 
 FoldSeq(op(_, _), base, seq) == 
   (***************************************************************************)
-  (* FoldSeq folds op on all elements of seq in the order of the sequence.   *)
+  (* FoldSeq folds op on all elements of seq an arbitrary order.             *)
+  (***************************************************************************)
+  MapThenFoldSet(op, base, LAMBDA i : seq[i], LAMBDA x,y: TRUE, DOMAIN seq)
+FoldLeft(op(_, _), base, seq) == 
+  (***************************************************************************)
+  (* FoldSeq folds op on all elements of seq from left to right.             *)
   (***************************************************************************)
   MapThenFoldSet(op, base, LAMBDA i : seq[i], LAMBDA x,y: x < y, DOMAIN seq)
+FoldRight(op(_, _), base, seq) == 
+  (***************************************************************************)
+  (* FoldRight folds op on all elements of seq from right to left.           *)
+  (***************************************************************************)
+  MapThenFoldSet(op, base, LAMBDA i : seq[i], LAMBDA x,y: x > y, DOMAIN seq)
 
 =============================================================================
