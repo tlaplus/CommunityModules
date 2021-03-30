@@ -27,7 +27,7 @@ Product(set) ==
    (* Calculuate the product of the elements in set.                        *)
    (*                                                                       *)
    (* Example:                                                              *)
-   (*         Product(0 .. 10) = 55                                         *)
+   (*         Product(1 .. 3) = 6                                           *)
    (*************************************************************************)
    FoldSet(LAMBDA x, y: x * y, set, 1)
 
