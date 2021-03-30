@@ -5,6 +5,7 @@ LOCAL INSTANCE Naturals
 LOCAL INSTANCE FiniteSets
 LOCAL INSTANCE FiniteSetsExt
 LOCAL INSTANCE Functions
+LOCAL INSTANCE Folds
   (*************************************************************************)
   (* Imports the definitions from the modules, but doesn't export them.    *)
   (*************************************************************************)
@@ -167,11 +168,10 @@ SeqMod(a, b) ==
   IF a % b = 0 THEN b ELSE a % b
 
 
-ReduceSeq(op(_, _), seq, acc) == 
+FoldSeq(op(_, _), base, seq) == 
   (***************************************************************************)
-  (* We can't just apply ReduceSet to the Range(seq) because the same        *)
-  (* element might appear twice in the sequence.                             *)
+  (* FoldSeq folds op on all elements of seq in the order of the sequence.   *)
   (***************************************************************************)
-  ReduceSet(LAMBDA i, a: op(seq[i], a), DOMAIN seq, acc)
+  MapThenFoldSet(op, base, LAMBDA i : seq[i], LAMBDA x,y: x < y, DOMAIN seq)
 
 =============================================================================

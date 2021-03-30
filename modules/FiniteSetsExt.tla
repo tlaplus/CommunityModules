@@ -11,7 +11,7 @@ FoldSet(op(_,_), base, set) ==
    (* Example:                                                              *)
    (*         FoldSet(LAMBA x,y : x + y, 0 .. 10, 0) = 55                   *)
    (*************************************************************************)
-   MapThenFoldSet(op, base, LAMBDA x : x, set)
+   MapThenFoldSet(op, base, LAMBDA x : x, LAMBDA x,y : TRUE, set)
 
 Sum(set) ==
    (*************************************************************************)
