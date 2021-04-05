@@ -63,13 +63,21 @@ ExistsInjection(S,T)  == Injection(S,T) # {}
 ExistsSurjection(S,T) == Surjection(S,T) # {}
 ExistsBijection(S,T)  == Bijection(S,T) # {}
 
+--------------------------------------------------------------------------------
 
-(***************************************************************************)
-(* Fold over a function (or sequence).                                     *)
-(* op must be commutative and associative                                  *)
-(***************************************************************************)
 FoldFunction(op(_,_), base, fun) ==
-  MapThenFoldSet(op, base, LAMBDA i : fun[i], LAMBDA x,y: TRUE, DOMAIN fun)
+  (***************************************************************************)
+  (* Applies the binary function op on all elements of seq an arbitrary      *)
+  (* order starting with op(f[k], base). The resulting function is:          *)
+  (*    op(f[i],op(f[j], ..., op(f[k],base) ...))                            *)
+  (*                                                                         *)
+  (* op must be associative and commutative, because we can not assume a     *)
+  (* particular ordering of i, j, and k                                      *)
+  (*                                                                         *)
+  (* Example:                                                                *)
+  (*  FoldFunction(LAMBDA x,y: {x} \cup y, {}, <<1,2,1>>) = {1,2}            *)
+  (***************************************************************************)
+  MapThenFoldSet(op, base, LAMBDA i : fun[i], LAMBDA s: CHOOSE x \in s : TRUE, DOMAIN fun)
 
 
 (***************************************************************************)
@@ -82,7 +90,7 @@ FoldFunctionOnSet(op(_,_), base, fun, set) ==
 
 =============================================================================
 \* Modification History
-\* Last modified Tue Mar 30 20:54:51 CEST 2021 by marty
+\* Last modified Mon Apr 05 02:56:39 CEST 2021 by marty
 \* Last modified Sun Dec 27 09:38:06 CET 2020 by merz
 \* Last modified Wed Jun 05 12:14:19 CEST 2013 by bhargav
 \* Last modified Fri May 03 12:55:35 PDT 2013 by tomr

@@ -1,6 +1,6 @@
 ------------------------------- MODULE Folds -------------------------------
 
-MapThenFoldSet(op(_,_), base, f(_), ord(_,_), S) ==
+MapThenFoldSet(op(_,_), base, f(_), choose(_), S) ==
 (******************************************************************************)
 (* Starting from base, apply op to f(x), for all x \in S, in an ordered by    *)
 (* ord. If there is no ordering, ord can be always true but then op must be   *)
@@ -16,7 +16,7 @@ MapThenFoldSet(op(_,_), base, f(_), ord(_,_), S) ==
 (******************************************************************************)
   LET iter[s \in SUBSET S] ==
         IF s = {} THEN base
-        ELSE LET x == CHOOSE x \in s : \A y \in s \ {x} : ord(x,s)
+        ELSE LET x == choose(s)
              IN  op(f(x), iter[s \ {x}])
   IN  iter[S]
 
@@ -25,5 +25,5 @@ MapThenFoldSet(op(_,_), base, f(_), ord(_,_), S) ==
 
 =============================================================================
 \* Modification History
-\* Last modified Wed Mar 31 00:40:51 CEST 2021 by marty
+\* Last modified Fri Apr 02 13:54:18 CEST 2021 by marty
 \* Created Tue Mar 30 19:20:49 CEST 2021 by marty
