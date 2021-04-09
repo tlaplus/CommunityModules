@@ -80,17 +80,25 @@ FoldFunction(op(_,_), base, fun) ==
   MapThenFoldSet(op, base, LAMBDA i : fun[i], LAMBDA s: CHOOSE x \in s : TRUE, DOMAIN fun)
 
 
-(***************************************************************************)
-(* Fold over a subset of the domain of a function.                         *)
-(* op must be commutative and associative, set must be a subset of the     *)
-(* domain of fun.                                                          *)
-(***************************************************************************)
-FoldFunctionOnSet(op(_,_), base, fun, set) ==
-  FoldFunction(op, base, Restrict(fun, set))
+FoldFunctionOnSet(op(_,_), base, fun, indices) ==
+  (***************************************************************************)
+  (* Applies the binary function op on the given indices of seq an arbitrary *)
+  (* order starting with op(f[k], base). The resulting function is:          *)
+  (*    op(f[i],op(f[j], ..., op(f[k],base) ...))                            *)
+  (*                                                                         *)
+  (* op must be associative and commutative, because we can not assume a     *)
+  (* particular ordering of i, j, and k                                      *)
+  (*                                                                         *)
+  (* indices must be a subset of DOMAIN(fun)                                 *)
+  (*                                                                         *)
+  (* Example:                                                                *)
+  (*  FoldFunctionOnSet(LAMBDA x,y: {x} \cup y, {}, <<1,2>>, {}) = {}        *)
+  (***************************************************************************)
+  MapThenFoldSet(op, base, LAMBDA i : fun[i], LAMBDA s: CHOOSE x \in s : TRUE, indices)
 
 =============================================================================
 \* Modification History
-\* Last modified Mon Apr 05 02:56:39 CEST 2021 by marty
+\* Last modified Mon Apr 05 03:25:53 CEST 2021 by marty
 \* Last modified Sun Dec 27 09:38:06 CET 2020 by merz
 \* Last modified Wed Jun 05 12:14:19 CEST 2013 by bhargav
 \* Last modified Fri May 03 12:55:35 PDT 2013 by tomr
