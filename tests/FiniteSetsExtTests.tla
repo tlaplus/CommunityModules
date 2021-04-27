@@ -41,6 +41,11 @@ ASSUME LET S == {"a","b","c","c"} \* Make sure value normalization works.
 ASSUME LET S == 1..27
        IN kSubset(Cardinality(S), S) = {S}
 
+
+-----------------------------------------------------------------------------
+
+ASSUME FoldSet(LAMBDA x,y : x + y, 0, 0 .. 10) = 55
+
 -----------------------------------------------------------------------------
 
 ASSUME ChooseUnique({2, 3, 4, 5}, LAMBDA x : x % 3 = 1) = 4

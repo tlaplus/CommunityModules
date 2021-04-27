@@ -213,9 +213,4 @@ FoldRight(op(_, _), seq, base) ==
                  LAMBDA s: CHOOSE i \in s : \A j \in s: i <= j,
                  DOMAIN seq)
 
-
-FT == LET cons(x,y) == <<x, y>> IN
-     << FoldLeft(cons, 10, <<13,11,12>> ),
-        FoldRight(cons, <<23,21,22>>, 20 ) >>
-
 =============================================================================

@@ -9,7 +9,7 @@ FoldSet(op(_,_), base, set) ==
    (* Fold op over the elements of set using base as starting value.        *)
    (*                                                                       *)
    (* Example:                                                              *)
-   (*         FoldSet(LAMBA x,y : x + y, 0 .. 10, 0) = 55                   *)
+   (*         FoldSet(LAMBA x,y : x + y, 0, 0 .. 10) = 55                   *)
    (*************************************************************************)
    MapThenFoldSet(op, base, LAMBDA x : x, LAMBDA s : CHOOSE x \in s : TRUE, set)
 
