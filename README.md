@@ -1,9 +1,8 @@
 Community Repository
 ====================
 
-[This is an open repository](https://github.com/tlaplus/CommunityModules/) dedicated to **contributions from the TLA+ commmunity**.
-Here you are able to submit the snippets, operators, and modules that you wrote for
-your specifications and that you want to share with the rest of the TLA+ community.
+[This is an open repository](https://github.com/tlaplus/CommunityModules/) dedicated to **contributions from the TLA+ community**.
+Here you can submit the snippets, operators, and modules that you wrote for your specifications and that you want to share with the rest of the TLA+ community.
 
 (For us to gauge demand, please star (`eyes up and right`) this repository if you use the CommunityModules.)
 
@@ -31,19 +30,21 @@ How to use it
 
 You must be running [Java 9 or higher](https://github.com/tlaplus/CommunityModules/issues/34#issuecomment-756571840).
 
-Just copy & paste the snippet, the operators or the set of modules you are interested in.
+Just copy & paste the snippet, the operators, or the set of modules you are interested in.
 
 Alternatively, you can download a [library archive](https://github.com/tlaplus/CommunityModules/releases) and add it to TLC's or the Toolbox's *TLA+ library path*.  The advantage of the library archive is that TLC will evaluate an operator faster if the operator comes with a (Java) implementation (see e.g. [SequencesExt.Java](https://github.com/tlaplus/CommunityModules/blob/master/modules/tlc2/overrides/SequencesExt.java)).  Run TLC with ```-DTLA-Library=/path/to/lib/archive``` or add the library archive to the Toolbox (```File > Preferences > TLA+ Preferences > TLA+ library path locations```).  The latest release is at the stable URL https://github.com/tlaplus/CommunityModules/releases/latest/download/CommunityModules.jar.
 [![Screencast how to install the CommunityModules into the TLA+ Toolbox](https://img.youtube.com/vi/w9t6JnmxV2E/0.jpg)](https://www.youtube.com/watch?v=w9t6JnmxV2E)
 
-Being a community-driven repository puts the community in charge to check the validity and correctness of submissions. The maintainers of this repository will try to keep this place in order, but we can't guarantee the quality of the
-modules and therefore cannot provide any assistance on eventual malfunctions.
+Being a community-driven repository puts the community in charge of checking the validity and correctness of submissions. The maintainers of this repository will try to keep this place in order. Still, we can't guarantee the quality of the modules and, therefore, cannot provide any assistance on eventual malfunctions.
 
 Contributing
 ------------
 
 If you have one or more snippets, operators, or modules you'd like to share, please open an issue or create
 a pull request.  Before submitting your operator or module, please consider adding documentation.  The more documentation there is, the more likely it is that someone will find it useful.
+
+If you change an existing module and tests start failing, check all tests that assert (usually `AssertError` operator) specific error messages, i.e., line numbers and module names.
+Note that even an unrelated change further up in the file might have changed the line number and could lead to a failing test case.
 
 Test
 ------------
