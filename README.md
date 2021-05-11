@@ -45,6 +45,9 @@ Contributing
 If you have one or more snippets, operators, or modules you'd like to share, please open an issue or create
 a pull request.  Before submitting your operator or module, please consider adding documentation.  The more documentation there is, the more likely it is that someone will find it useful.
 
+If you change an existing module please check all tests that check for an `AssertError`. An assertion contains the line in which the original operator was defined.
+Even an unrelated change further up in the file might have changed the line number and could lead to a failing test case.
+
 Test
 ------------
 Run
