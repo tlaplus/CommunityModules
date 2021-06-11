@@ -35,7 +35,7 @@ public class TLCOverrides implements ITLCOverrides {
 		try {
                         // Remove `Json.resolves();` call when this Class is moved to `TLC`.
 			Json.resolves();
-			return new Class[] { TLCExt.class, IOUtils.class, SVG.class, SequencesExt.class, Json.class, Bitwise.class,
+			return new Class[] { IOUtils.class, SVG.class, SequencesExt.class, Json.class, Bitwise.class,
 					FiniteSetsExt.class, Functions.class, CSV.class };
 		} catch (NoClassDefFoundError e) {
                         // Remove this catch when this Class is moved to `TLC`.
@@ -43,7 +43,7 @@ public class TLCOverrides implements ITLCOverrides {
 					"gson dependencies of Json overrides not found, Json module won't work unless "
 					+ "the libraries in the lib/ folder of the CommunityModules have been added to the classpath of TLC.");
 		}
-		return new Class[] { TLCExt.class, IOUtils.class, SVG.class, SequencesExt.class, Bitwise.class,
+		return new Class[] { IOUtils.class, SVG.class, SequencesExt.class, Bitwise.class,
 				FiniteSetsExt.class, Functions.class, CSV.class };
 	}
 }
