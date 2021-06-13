@@ -91,9 +91,9 @@ public class IOUtils {
 	@TLAPlusOperator(identifier = "IOExecTemplate", module = "IOUtils", minLevel = 1, warn = false)
 	public static Value ioExecTemplate(final Value commandTemplate, final Value parameter) throws IOException, InterruptedException {
 		// 1. Check parameters and covert.
-		if (!(parameter instanceof TupleValue)) {
+		if (!(commandTemplate instanceof TupleValue)) {
 			throw new EvalException(EC.TLC_MODULE_ONE_ARGUMENT_ERROR,
-					new String[] { "IOExec", "sequence", Values.ppr(parameter.toString()) });
+					new String[] { "IOExec", "sequence", Values.ppr(commandTemplate.toString()) });
 		}
 		if (!(parameter instanceof TupleValue)) {
 			throw new EvalException(EC.TLC_MODULE_ONE_ARGUMENT_ERROR,
