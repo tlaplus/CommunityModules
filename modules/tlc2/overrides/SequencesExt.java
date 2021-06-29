@@ -61,7 +61,7 @@ public final class SequencesExt {
 		final TupleValue tv = (TupleValue) s.toTuple();
 		if (tv == null) {
 			throw new EvalException(EC.TLC_MODULE_ONE_ARGUMENT_ERROR,
-					new String[] { "IsInjective", "sequence", Values.ppr(s.toString()) });
+					new String[] { "Contains", "sequence", Values.ppr(s.toString()) });
 		}
 		for (int i = 0; i < tv.elems.length; i++) {
 			if (tv.elems[i].equals(e)) {
