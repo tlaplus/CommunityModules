@@ -40,6 +40,15 @@ ASSUME(LET ret == IOExec(<<"/bin/sh", "-c", "echo $SOME_TEST_ENV_VAR">>)
                                                                     /\ ret.stdout = "TLCFTW\n"
                                                                     /\ ret.stderr = "")
 
+ASSUME(LET ret == IOEnvExec({<<"SOME_VAR_42","42">>}, <<"/bin/sh", "-c", "echo $SOME_VAR_42">>) 
+                                                                 IN /\ ret.exitValue = 0
+                                                                    /\ ret.stdout = "42\n"
+                                                                    /\ ret.stderr = "")
+
+ASSUME(LET ret == IOEnvExecTemplate({<<"SOME_VAR_42","42">>}, <<"/bin/sh", "-c", "echo $SOME_VAR_42">>, <<>>) 
+                                                                 IN /\ ret.exitValue = 0
+                                                                    /\ ret.stdout = "42\n"
+                                                                    /\ ret.stderr = "")
 
 ---------------------------------------------------------------------------------------------------------------------------
 
@@ -65,16 +74,11 @@ ASSUME(LET ret == IOExec(<<"java", "-jar", "tlc/tla2tools.jar", "tests/nested/Co
                                                                  IN /\ ret.exitValue = 0
                                                                     /\ ret.stderr = "")
 
-\* Run TLC with some basic spec that passes.
-ASSUME(LET ret == IOExec(<<"java", "-jar", "tlc/tla2tools.jar", "tests/nested/Counter">>)
-                                                                 IN /\ ret.exitValue = 0
-                                                                    /\ ret.stderr = "")
-
-
 \* Run TLC with some spec depending on CommunityModules and CM on the classpath.
-ASSUME(LET ret == IOExec(<<"java", "-cp", "build/modules:tlc/tla2tools.jar", "tlc2.TLC",
+\* Pass an environment variable to the nested spec.
+ASSUME(LET ret == IOEnvExec({<<"SOME_NESTED_VAR", "SOME_VAL">>, <<"B", "23">>},
+                            <<"java", "-cp", "modules:build/modules:tlc/tla2tools.jar", "tlc2.TLC",
                                           "-config", "Counter.cfg", "tests/nested/CounterCM">>)
                                                                  IN /\ ret.exitValue = 0
                                                                     /\ ret.stderr = "")
-
 =============================================================================

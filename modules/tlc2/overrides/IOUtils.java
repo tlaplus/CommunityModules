@@ -30,6 +30,9 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import tlc2.output.EC;
 import tlc2.tool.EvalException;
@@ -40,6 +43,7 @@ import tlc2.value.Values;
 import tlc2.value.impl.BoolValue;
 import tlc2.value.impl.IntValue;
 import tlc2.value.impl.RecordValue;
+import tlc2.value.impl.SetEnumValue;
 import tlc2.value.impl.StringValue;
 import tlc2.value.impl.TupleValue;
 import tlc2.value.impl.Value;
@@ -88,6 +92,29 @@ public class IOUtils {
 		return runProcess(command);
 	}
 
+	@TLAPlusOperator(identifier = "IOEnvExec", module = "IOUtils", minLevel = 1, warn = false)
+	public static Value ioEnvExec(final Value env, final Value parameter) throws IOException, InterruptedException {
+		// Check env and parameters and covert.
+		final SetEnumValue environment = (SetEnumValue) env.toSetEnum();
+		if (environment == null) {
+			throw new EvalException(EC.TLC_MODULE_ONE_ARGUMENT_ERROR,
+					new String[] { "IOExecVars", "set", Values.ppr(env.toString()) });
+		}
+		if (!(parameter instanceof TupleValue)) {
+			throw new EvalException(EC.TLC_MODULE_ONE_ARGUMENT_ERROR,
+					new String[] { "IOExecVars", "sequence", Values.ppr(parameter.toString()) });
+		}
+		final TupleValue tv = (TupleValue) parameter;
+
+		// Build actual command by converting each parameter element to a string.
+		// No escaping or quoting is done so the process receives the exact string.
+		final String[] command = Arrays.asList(tv.getElems()).stream()
+				.map(IOUtils::convert)
+				.toArray(size -> new String[size]);
+
+		return runProcess(getEnv(environment), command);
+	}
+
 	@TLAPlusOperator(identifier = "IOExecTemplate", module = "IOUtils", minLevel = 1, warn = false)
 	public static Value ioExecTemplate(final Value commandTemplate, final Value parameter) throws IOException, InterruptedException {
 		// 1. Check parameters and covert.
@@ -113,10 +140,69 @@ public class IOUtils {
 
 		return runProcess(command);
 	}
+	
+	@TLAPlusOperator(identifier = "IOEnvExecTemplate", module = "IOUtils", minLevel = 1, warn = false)
+	public static Value ioEnvExecTemplate(final Value env, final Value commandTemplate, final Value parameter) throws IOException, InterruptedException {
+		// Check env and parameters and covert.
+		final SetEnumValue environment = (SetEnumValue) env.toSetEnum();
+		if (environment == null) {
+			throw new EvalException(EC.TLC_MODULE_ONE_ARGUMENT_ERROR,
+					new String[] { "ioEnvExecTemplate", "set of tuples", Values.ppr(env.toString()) });
+		}
+		// 1. Check parameters and covert.
+		if (!(commandTemplate instanceof TupleValue)) {
+			throw new EvalException(EC.TLC_MODULE_ONE_ARGUMENT_ERROR,
+					new String[] { "ioEnvExecTemplate", "sequence", Values.ppr(commandTemplate.toString()) });
+		}
+		if (!(parameter instanceof TupleValue)) {
+			throw new EvalException(EC.TLC_MODULE_ONE_ARGUMENT_ERROR,
+					new String[] { "ioEnvExecTemplate", "sequence", Values.ppr(parameter.toString()) });
+		}
+		final TupleValue sv = (TupleValue) commandTemplate;
+		final TupleValue tv = (TupleValue) parameter;
+
+		// 2. Build actual command-line by merging command and parameter.
+		final String[] command = Arrays.asList(sv.getElems()).stream().map(IOUtils::convert)
+				.toArray(size -> new String[size]);
+		final Object[] params = Arrays.asList(tv.getElems()).stream().map(IOUtils::convert)
+				.toArray(size -> new Object[size]);
+		for (int i = 0; i < command.length; ++i) {
+			command[i] = String.format(command[i], params);
+		}
+
+		return runProcess(getEnv(environment), command);
+	}
+
+	private static Map<String, String> getEnv(final SetEnumValue environment) {
+		// Convert set of environment variables to what PB works with.
+		final Map<String, String> penv = new HashMap<>(); 
+		final List<Value> elements = environment.elements().all();
+		for (Value value : elements) {
+			if (!(value instanceof TupleValue) || ((TupleValue) value).size() != 2) {
+				throw new EvalException(EC.TLC_MODULE_ONE_ARGUMENT_ERROR,
+						new String[] { "IOEEnvExec", "tuple", Values.ppr(value.toString()) });
+			}
+			final TupleValue pair = (TupleValue) value;
+			penv.put(pair.getElem(0).toUnquotedString(), pair.getElem(1).toUnquotedString());
+		}
+		return penv;
+	}
 
 	private static Value runProcess(final String[] command) throws IOException, InterruptedException {
+		return runProcess(new ProcessBuilder(command));
+	}
+
+	private static Value runProcess(final Map<String, String> env, final String[] command)
+			throws IOException, InterruptedException {
+		final ProcessBuilder processBuilder = new ProcessBuilder(command);
+		processBuilder.environment().putAll(env);
+		return runProcess(processBuilder);
+	}
+	
+	private static Value runProcess(final ProcessBuilder processBuilder)
+			throws IOException, InterruptedException {
 		// 3. Run command-line and receive its output.
-		final Process process = new ProcessBuilder(command)/* .inheritIO() */.start();
+		final Process process = processBuilder/* .inheritIO() */.start();
 
 		final StringValue stdout = new StringValue(stringFromInputStream(process.getInputStream()));
 		final StringValue stderr = new StringValue(stringFromInputStream(process.getErrorStream()));

@@ -23,6 +23,14 @@ IOExec(command) ==
   (*******************************************************************************)
   CHOOSE r \in [exitValue : Int, stdout : STRING, stderr : STRING] : TRUE
 
+IOEnvExec(env, command) ==
+  (*******************************************************************************)
+  (* See IOExec                                                                  *)
+  (*     LET ENV = {<<"Var1", "SomeVal">>, <<"Var2", 42>>}                       *)
+  (*     IN IOEnvExec(ENV, <<"ls", "-lah", "/tmp">>)                            *)
+  (*******************************************************************************)
+  CHOOSE r \in [exitValue : Int, stdout : STRING, stderr : STRING] : TRUE
+
 IOExecTemplate(commandTemplate, parameters) ==
   (*************************************************************************)
   (* Spawns the given printf-style command as a sub-process of TLC.  The   *)
@@ -32,6 +40,14 @@ IOExecTemplate(commandTemplate, parameters) ==
   (*     IOExecTemplate(<<"ls %1$s %2$s">>, <<"-lah", "/tmp">>)            *)
   (* see http://docs.oracle.com/javase/7/docs/api/java/util/Formatter.html *)
   (*************************************************************************)
+  CHOOSE r \in [exitValue : Int, stdout : STRING, stderr : STRING] : TRUE
+
+IOEnvExecTemplate(env, commandTemplate, parameters) ==
+  (*******************************************************************************)
+  (* See IOExecTemplate                                                          *)
+  (*     LET ENV = {<<"Var1", "SomeVal">>, <<"Var2", 42>>}                       *)
+  (*     IN IOEnvExecTemplate(ENV, <<"ls", "-lah", "/tmp">>)                     *)
+  (*******************************************************************************)
   CHOOSE r \in [exitValue : Int, stdout : STRING, stderr : STRING] : TRUE
 
 ============================================================================
