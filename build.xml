@@ -76,6 +76,7 @@
 			<jvmarg value="-XX:+UseParallelGC"/>
 			
 			<env key="SOME_TEST_ENV_VAR" value="TLCFTW"/>
+			<env key="SOME-TEST-ENV-VAR" value="TLCFTW"/>
 			
 			<!-- Report execution statistics as azure-pipelien -->
 			<sysproperty key="tlc2.TLC.ide" value="azure-pipeline"/>

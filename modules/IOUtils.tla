@@ -50,4 +50,10 @@ IOEnvExecTemplate(env, commandTemplate, parameters) ==
   (*******************************************************************************)
   CHOOSE r \in [exitValue : Int, stdout : STRING, stderr : STRING] : TRUE
 
+IOEnv ==
+  (*************************************************************************)
+  (* The process' environment variables.                                   *)
+  (*************************************************************************)
+  CHOOSE r \in [STRING -> STRING] : TRUE
+
 ============================================================================
