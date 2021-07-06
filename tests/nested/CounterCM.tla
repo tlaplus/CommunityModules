@@ -4,7 +4,7 @@ EXTENDS IOUtils, TLC
 VARIABLE x
 
 \* SOME_TEST_ENV_VAR comes from the outermost build.xml.
-ASSUME(LET ret == IOExec(<<"/bin/bash", "-c", "echo $SOME_TEST_ENV_VAR">>)
+ASSUME(LET ret == IOExec(<<"/bin/sh", "-c", "echo $SOME_TEST_ENV_VAR">>)
                                         IN /\ ret.stdout = "TLCFTW\n"
                                            /\ ret.exitValue = 0
                                            /\ ret.stderr = "")

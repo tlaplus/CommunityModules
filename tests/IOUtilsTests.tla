@@ -35,7 +35,7 @@ ASSUME(LET ret == IOExecTemplate(<<"cat", "/does/not/exist">>, <<>>)
 (***********************************************************************)
 
 \* SOME_TEST_ENV_VAR is set in Ant's build.xml file.
-ASSUME(LET ret == IOExec(<<"/bin/bash", "-c", "echo $SOME_TEST_ENV_VAR">>) 
+ASSUME(LET ret == IOExec(<<"/bin/sh", "-c", "echo $SOME_TEST_ENV_VAR">>) 
                                                                  IN /\ ret.exitValue = 0
                                                                     /\ ret.stdout = "TLCFTW\n"
                                                                     /\ ret.stderr = "")
