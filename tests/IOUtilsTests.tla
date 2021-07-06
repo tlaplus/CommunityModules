@@ -1,5 +1,5 @@
 ---------------------------- MODULE IOUtilsTests ----------------------------
-EXTENDS IOUtils, TLC
+EXTENDS IOUtils, TLC, Naturals
 
 \* Spaces and quotes should be passed directly to the program.
 ASSUME(LET ret == IOExec(<<"echo", "'foo' ", " \"bar\"">>) IN /\ ret.exitValue = 0
@@ -35,6 +35,7 @@ ASSUME(LET ret == IOExecTemplate(<<"cat", "/does/not/exist">>, <<>>)
 (***********************************************************************)
 
 \* SOME_TEST_ENV_VAR is set in Ant's build.xml file.
+
 ASSUME(LET ret == IOExec(<<"/bin/sh", "-c", "echo $SOME_TEST_ENV_VAR">>) 
                                                                  IN /\ ret.exitValue = 0
                                                                     /\ ret.stdout = "TLCFTW\n"
@@ -49,6 +50,28 @@ ASSUME(LET ret == IOEnvExecTemplate({<<"SOME_VAR_42","42">>}, <<"/bin/sh", "-c",
                                                                  IN /\ ret.exitValue = 0
                                                                     /\ ret.stdout = "42\n"
                                                                     /\ ret.stderr = "")
+
+ASSUME(LET ret == IOEnvExecTemplate({<<"SOME_VAR_42","42">>}, <<"/bin/sh", "-c", "echo $SOME_VAR_42">>, <<>>) 
+                                                                 IN /\ ret.exitValue = 0
+                                                                    /\ ret.stdout = "42\n"
+                                                                    /\ ret.stderr = "")
+
+
+\* Contrary to the /bin/sh -c echo $SOME_VAR technique above, the IOEnv operator does *not* append a dangling
+\* newline to the value.  Environment variable names made out of non-legal chars for TLA+ records can fall
+\* back to ordinary function application.
+
+ASSUME(IOEnv.SOME_TEST_ENV_VAR = "TLCFTW")
+ASSUME(IOEnv["SOME_TEST_ENV_VAR"] = "TLCFTW")
+ASSUME(IOEnv["SOME-TEST-ENV-VAR"] = "TLCFTW")
+
+\* Test/show how to convert (the set) "23" to (the set) 23.
+ASSUME LET n  == CHOOSE n \in 0..2^16 : \* TLC won't choose from *unbounded*  Nat  , thus restricting to 0..2^16 (which should be sufficient for most use cases).
+			                  IOEnv.SOME_TEST_ENV_VAR_N23 = ToString(n)
+       IN n = 23
+
+ASSUME(DOMAIN IOEnv \subseteq STRING)
+ASSUME(\A var \in DOMAIN IOEnv: IOEnv[var] \in STRING)
 
 ---------------------------------------------------------------------------------------------------------------------------
 

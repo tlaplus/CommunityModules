@@ -29,6 +29,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -72,6 +73,29 @@ public class IOUtils {
 			vos.close();
 		}
 		return BoolValue.ValTrue;
+	}
+
+	// The legal syntax for names/keys of environment variables appears undefined.
+	// On Unix, the names are commonly upper-case characters and underscore. On
+	// Windows, there are names that contain parentheses.  For those names that are
+	// no legal record keys in TLA+, a user cannot use the  Record.key()  syntax but
+	// has to revert to  Record["key()"]  .
+	// IOEnv  doesn't take the name/key as an argument because we don't want to deal
+	// with unset names.
+	@TLAPlusOperator(identifier = "IOEnv", module = "IOUtils", minLevel = 1, warn = false)
+	public static Value ioEnv() throws IOException, InterruptedException {
+		final Map<String, String> env = System.getenv();
+		
+		final UniqueString[] names = new UniqueString[env.size()];
+		final StringValue[] values = new StringValue[env.size()];
+		
+		final List<Map.Entry<String, String>> entries = new ArrayList<>(env.entrySet());
+		for (int i = 0; i < entries.size(); i++) {
+			names[i] = UniqueString.of(entries.get(i).getKey());
+			values[i] = new StringValue(entries.get(i).getValue());
+		}
+
+		return new RecordValue(names, values, false);
 	}
 
 	@TLAPlusOperator(identifier = "IOExec", module = "IOUtils", minLevel = 1, warn = false)
