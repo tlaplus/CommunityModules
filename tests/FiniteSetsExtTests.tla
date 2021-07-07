@@ -41,6 +41,46 @@ ASSUME LET S == {"a","b","c","c"} \* Make sure value normalization works.
 ASSUME LET S == 1..27
        IN kSubset(Cardinality(S), S) = {S}
 
+ASSUME {} \notin kSubset(1, {1,2,3})
+
+ASSUME LET T == 1..3
+       IN \A k \in (1..Cardinality(T)):
+            /\ \A e \in { ss \in (SUBSET T) : Cardinality(ss) = k} :
+                     e \in kSubset(k, T)
+            /\ \A e \in { ss \in (SUBSET T) : Cardinality(ss) # k} :
+            		 e \notin kSubset(k, T)
+            		 
+ASSUME LET T == {"a","b","c"}
+           kSubsetPure(k, S) == { s \in SUBSET S : Cardinality(s) = k }
+       IN \A k \in 1..Cardinality(T):
+       			/\ kSubset(k, T) = kSubsetPure(k, T)
+				/\ kSubsetPure(k, T) = kSubset(k, T)
+				
+ASSUME LET T == {"a","b","c"}
+       IN /\ kSubset(1, T) = {{"a"},{"b"},{"c"}}
+		  /\ kSubset(2, T) = {{"a","b"}, {"a","c"}, {"b","c"}}
+		  /\ kSubset(3, T) = {{"a","b","c"}}
+          /\ {{"a"},{"b"},{"c"}} = kSubset(1, T)
+		  /\ {{"a","b"}, {"a","c"}, {"b","c"}} = kSubset(2, T)
+		  /\ {{"a","b","c"}} = kSubset(3, T)
+				
+ASSUME LET T == {"a","b","c"}
+           kSubsetPure(k, S) == { s \in SUBSET S : Cardinality(s) = k }
+       IN /\ {kSubset(k, T) : k \in 2..3} = {kSubsetPure(k, T) : k \in 2..3}
+          /\ {kSubsetPure(k, T) : k \in 2..3} = {kSubset(k, T) : k \in 2..3}
+          /\ {kSubsetPure(k, T) : k \in 2..3} = {kSubset(k, T) : k \in {3,2}}
+          /\ (kSubset(2, T) \cup kSubset(3, T)) = (kSubsetPure(2, T) \cup kSubsetPure(3, T))
+          /\ (kSubset(3, T) \cup kSubset(2, T)) = (kSubsetPure(2, T) \cup kSubsetPure(3, T))
+          /\ (kSubset(1, T) \cup kSubset(2, T) \cup kSubset(3, T)) = (kSubsetPure(2, T) \cup kSubsetPure(3, T) \cup kSubsetPure(1, T))
+          /\ (kSubset(3, T) \cup kSubset(1, T) \cup kSubset(2, T)) = (kSubsetPure(1, T) \cup kSubsetPure(2, T) \cup kSubsetPure(3, T) \cup kSubsetPure(3, T))
+          /\ (kSubset(3, T) \cup kSubset(1, T) \cup kSubset(2, T)\cup kSubset(2, T)) = (kSubsetPure(1, T) \cup kSubsetPure(2, T) \cup kSubsetPure(3, T) \cup kSubsetPure(3, T))
+          /\ (kSubset(3, T) \cup kSubset(1, T) \cup kSubset(2, T) \cup kSubset(0, T)) = (kSubsetPure(1, T) \cup kSubsetPure(2, T) \cup kSubsetPure(3, T) \cup kSubsetPure(0, T))
+
+ASSUME LET T == 1..3
+           kSubsetPure(k, S) == { s \in SUBSET S : Cardinality(s) = k }
+       IN \A k \in 1..Cardinality(T):
+       			/\ ((SUBSET T) \subseteq kSubsetPure(k, T)) <=> ((SUBSET T) \subseteq kSubset(k, T))
+       			/\ kSubsetPure(k, T) \subseteq (SUBSET T) <=> kSubset(k, T) \subseteq (SUBSET T)
 
 -----------------------------------------------------------------------------
 
