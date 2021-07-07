@@ -31,7 +31,8 @@ import tlc2.output.EC;
 import tlc2.tool.EvalException;
 import tlc2.value.Values;
 import tlc2.value.impl.BoolValue;
-import tlc2.value.impl.SetEnumValue;
+import tlc2.value.impl.FcnRcdValue;
+import tlc2.value.impl.SetOfRcdsValue;
 import tlc2.value.impl.TupleValue;
 import tlc2.value.impl.Value;
 
@@ -47,11 +48,19 @@ public final class Functions {
 			return isInjectiveNonDestructive(((TupleValue) val).elems);
 		} else {
 			final Value conv = val.toTuple();
-			if (conv == null) {
-				throw new EvalException(EC.TLC_MODULE_ONE_ARGUMENT_ERROR,
-						new String[] { "IsInjective", "sequence", Values.ppr(val.toString()) });
+			if (conv != null) {
+				// toTuple creates a new instance that we can safely mutate!
+				return isInjectiveDestructive(((TupleValue) conv).elems);
 			}
-			return isInjectiveDestructive(((TupleValue) conv).elems);
+			if (val instanceof SetOfRcdsValue) {
+				// Input e.g. [a: 1, b: 2]
+				return isInjectiveNonDestructive(((SetOfRcdsValue) val).values);
+			} else if (val instanceof FcnRcdValue) {
+				// Input e.g. [a |-> 1, b |-> 2]
+				return isInjectiveNonDestructive(((FcnRcdValue) val).values);
+			}
+			throw new EvalException(EC.TLC_MODULE_ONE_ARGUMENT_ERROR,
+					new String[] { "IsInjective", "function", Values.ppr(val.toString()) });
 		}
 	}
 	
