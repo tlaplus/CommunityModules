@@ -11,6 +11,7 @@ EXTENDS SequencesExtTests,
         IOUtilsTests,
         FiniteSetsExtTests,
         FunctionsTests,
-        CSVTests
+        CSVTests,
+        CombinatoricsTests
 
 ===========================================
