@@ -134,7 +134,7 @@ IsPrefix(s, t) ==
   (* \E u \in Seq(Range(t)) : t = s \o u. In other words, there exists      *)
   (* a suffix u that with s prepended equals t.                             *)
   (**************************************************************************)
-  DOMAIN s \subseteq DOMAIN t /\ \A i \in DOMAIN s: s[i] = t[i]
+  Len(s) <= Len(t) /\ SubSeq(s, 1, Len(s)) = SubSeq(t, 1, Len(s))
 
 IsStrictPrefix(s,t) ==
   (**************************************************************************)
@@ -162,7 +162,7 @@ Prefixes(s) ==
   (**************************************************************************)
   (* The set of prefixes of the sequence s, including the empty sequence.   *)
   (**************************************************************************)
-  { SubSeq(s, 1, l) : l \in (DOMAIN s) \cup {0} } \* \cup {0} for <<>>
+  { SubSeq(s, 1, l) : l \in 0..Len(s) } \* 0.. for <<>>
 
 CommonPrefixes(S) ==
   (**************************************************************************)
@@ -177,7 +177,7 @@ LongestCommonPrefix(S) ==
   (**************************************************************************)
   CHOOSE longest \in CommonPrefixes(S):  \* there can only be one LCP => CHOOSE
           \A other \in CommonPrefixes(S):
-              DOMAIN other \subseteq DOMAIN longest
+              Len(other) <= Len(longest)
 
 -----------------------------------------------------------------------------
 

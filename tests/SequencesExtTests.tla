@@ -93,4 +93,10 @@ ASSUME LongestCommonPrefix({<<2,3,3>>, <<2,2,3>>, <<2,3,3,4>>}) = <<2>>
 ASSUME LongestCommonPrefix({<<2,3,3>>, <<2,3,3>>, <<2,3,3,4>>}) = <<2,3,3>>
 ASSUME LongestCommonPrefix({<<2,3,3>>, <<2,3,3>>, <<1,3,3,4>>}) = <<>>
 
+ASSUME LongestCommonPrefix({""}) = ""
+ASSUME LongestCommonPrefix({"a", "b"}) = ""
+ASSUME LongestCommonPrefix({"abc", "abd"}) = "ab"
+ASSUME LongestCommonPrefix({"abc", "abcc", "abcd"}) = "abc"
+ASSUME LongestCommonPrefix({"ab \"c", "ab \"cc", "ab \"cd"}) = "ab \"c"
+
 =============================================================================
