@@ -92,11 +92,37 @@ ASSUME LongestCommonPrefix({<<1>>,<<1>>,<<3>>}) = <<>>
 ASSUME LongestCommonPrefix({<<2,3,3>>, <<2,2,3>>, <<2,3,3,4>>}) = <<2>>
 ASSUME LongestCommonPrefix({<<2,3,3>>, <<2,3,3>>, <<2,3,3,4>>}) = <<2,3,3>>
 ASSUME LongestCommonPrefix({<<2,3,3>>, <<2,3,3>>, <<1,3,3,4>>}) = <<>>
+ASSUME LongestCommonPrefix({<<1,3,3,4>>, <<2,3,3>>, <<2,3,3>>}) = <<>>
 
+ASSUME LongestCommonPrefix({<<[i \in 1..3|-> i], [i \in 1..3|-> i]>>, <<[i \in 1..3|-> i]>>}) = <<[i \in 1..3|-> i]>>
+ASSUME LongestCommonPrefix({<<[i \in 1..3|-> i], [i \in 1..3|-> i]>>, <<[i \in 1..3|-> i+1]>>}) = <<>>
+
+
+LOCAL LongestCommonPrefixPure(S) ==
+	LET PrefixesPure(s) == { SubSeq(s, 1, l) : l \in 0..Len(s) }
+        CommonPrefixesPure(T) == LET P == UNION { PrefixesPure(seq) : seq \in T }
+                                 IN { prefix \in P : \A t \in S: IsPrefix(prefix, t) }
+    IN CHOOSE longest \in CommonPrefixesPure(S):
+          \A other \in CommonPrefixesPure(S):
+              Len(other) <= Len(longest)
+
+ASSUME LongestCommonPrefixPure(BoundedSeq({1,2,3}, 5)) = LongestCommonPrefix(BoundedSeq({1,2,3}, 5))
+
+ASSUME \A s \in SUBSET BoundedSeq({0,1}, 3):
+    \* For the empty set, the pure variant fails when choosing from the empty set.
+    \* The Java module override throws an EvalException.
+	s # {} => LongestCommonPrefix(s) = LongestCommonPrefixPure(s)
+
+ASSUME LongestCommonPrefix({"abc", "abd"}) = "ab"
+ASSUME LongestCommonPrefix({"abc", "a"}) = "a"
 ASSUME LongestCommonPrefix({""}) = ""
 ASSUME LongestCommonPrefix({"a", "b"}) = ""
-ASSUME LongestCommonPrefix({"abc", "abd"}) = "ab"
 ASSUME LongestCommonPrefix({"abc", "abcc", "abcd"}) = "abc"
 ASSUME LongestCommonPrefix({"ab \"c", "ab \"cc", "ab \"cd"}) = "ab \"c"
+
+ASSUME \A s \in SUBSET {"a","b","ab","ba","aa","bb"}:
+    \* For the empty set, the pure variant fails when choosing from the empty set.
+    \* The Java module override throws an EvalException.
+	s # {} => LongestCommonPrefix(s) = LongestCommonPrefixPure(s)
 
 =============================================================================

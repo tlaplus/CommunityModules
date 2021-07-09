@@ -30,8 +30,10 @@ import tlc2.tool.EvalException;
 import tlc2.value.Values;
 import tlc2.value.impl.BoolValue;
 import tlc2.value.impl.SetEnumValue;
+import tlc2.value.impl.StringValue;
 import tlc2.value.impl.TupleValue;
 import tlc2.value.impl.Value;
+import tlc2.value.impl.ValueVec;
 
 public final class SequencesExt {
 	
@@ -69,5 +71,90 @@ public final class SequencesExt {
 			}
 		}
 		return BoolValue.ValFalse;
+	}
+
+	
+	 public String longestCommonPrefix(String[] strs) {
+		    if (strs.length == 0) return "";
+		    String prefix = strs[0];
+		    for (int i = 1; i < strs.length; i++)
+		        while (strs[i].indexOf(prefix) != 0) {
+		            prefix = prefix.substring(0, prefix.length() - 1);
+		            if (prefix.isEmpty()) return "";
+		        }        
+		    return prefix;
+		}
+	/*
+	 */
+	@TLAPlusOperator(identifier = "LongestCommonPrefix", module = "SequencesExt", warn = false)
+	public static Value longestCommonPrefix(final Value val) {
+		final SetEnumValue set = (SetEnumValue) val.toSetEnum();
+		if (set == null) {
+			throw new EvalException(EC.TLC_MODULE_ONE_ARGUMENT_ERROR,
+					new String[] { "LongestCommonPrefix", "non-empty set", Values.ppr(val.toString()) });
+		}
+		
+		// Never iterate over non-normalized values. Convenient side-effect:
+		// Normalization moves the shortest element to the front: {"ab", "a"} becomes
+		// {"a", "ab"}. This guards against OutOfBoundsExceptions later when other is
+		// shorter than prefix.
+		set.normalize();
+		
+		final ValueVec elems = set.elems;
+		if (set.elems.isEmpty()) {
+			throw new EvalException(EC.TLC_MODULE_ONE_ARGUMENT_ERROR,
+					new String[] { "LongestCommonPrefix", "non-empty set", Values.ppr(val.toString()) });
+		}
+		
+		try {
+			final Value shortest = elems.elementAt(0);
+			if (shortest instanceof StringValue) {
+				return longestCommonPrefix((StringValue) shortest, elems);
+			}
+			Value[] prefix = ((TupleValue) shortest.toTuple()).elems;
+			int upper = prefix.length;
+			
+			for (int i = 1; i < elems.size(); i++) {
+				Value[] other = ((TupleValue) elems.elementAt(i).toTuple()).elems;
+				for (int idx = 0; idx < upper; idx++) {
+					if (!prefix[idx].equals(other[idx])) {
+						upper = idx;
+						if (upper == 0) {
+							return TupleValue.EmptyTuple;
+						}
+					}
+				}
+			}
+			if (upper == 0) {
+				return TupleValue.EmptyTuple;
+			}
+			final Value[] res = new Value[upper];
+			System.arraycopy(prefix, 0, res, 0, upper);
+			return new TupleValue(res);
+		} catch (ClassCastException | NullPointerException e) {
+			throw new EvalException(EC.TLC_MODULE_ONE_ARGUMENT_ERROR, new String[] { "LongestCommonPrefix",
+					"sequence", Values.ppr(val.toString()) });
+		}
+	}
+	
+	private static Value longestCommonPrefix(final StringValue first, final ValueVec elems) {
+		String prefix = first.val.toString();
+		int upper = prefix.length();
+		
+		for (int i = 1; i < elems.size(); i++) {
+			String other = ((StringValue) elems.elementAt(i)).val.toString();
+			for (int idx = 0; idx < upper; idx++) {
+				if (prefix.charAt(idx) != other.charAt(idx)) {
+					upper = idx;
+					if (upper == 0) {
+						return new StringValue("");
+					}
+				}
+			}
+		}
+		if (upper == 0) {
+			return new StringValue("");
+		}
+		return new StringValue(prefix.substring(0, upper));
 	}
 }
