@@ -155,6 +155,29 @@ IsStrictSuffix(s, t) ==
   (* TRUE iff the sequence s is a suffix of the sequence t and s # t        *)
   (**************************************************************************)
   IsSuffix(s,t) /\ s # t
+  
+-----------------------------------------------------------------------------
+
+Prefixes(s) ==
+  (**************************************************************************)
+  (* The set of prefixes of the sequence s, including the empty sequence.   *)
+  (**************************************************************************)
+  { SubSeq(s, 1, l) : l \in (DOMAIN s) \cup {0} } \* \cup {0} for <<>>
+
+CommonPrefixes(S) ==
+  (**************************************************************************)
+  (* The set of all sequences that are prefixes of the set of sequences S.  *)
+  (**************************************************************************)
+  LET P == UNION { Prefixes(seq) : seq \in S }
+  IN { prefix \in P : \A t \in S: IsPrefix(prefix, t) }
+
+LongestCommonPrefix(S) ==
+  (**************************************************************************)
+  (* The longest common prefix of the sequences in the set S.               *)
+  (**************************************************************************)
+  CHOOSE longest \in CommonPrefixes(S):  \* there can only be one LCP => CHOOSE
+          \A other \in CommonPrefixes(S):
+              DOMAIN other \subseteq DOMAIN longest
 
 -----------------------------------------------------------------------------
 

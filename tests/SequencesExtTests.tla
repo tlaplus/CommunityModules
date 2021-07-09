@@ -84,5 +84,13 @@ ASSUME LET cons(x,y) == <<x, y>>
 ASSUME LET cons(x,y) == <<x, y>>
        IN FoldRight(cons, <<23,21,22>>, 20 ) = <<23, <<21, <<22, 20>> >> >>
 
+-----------------------------------------------------------------------------
+
+ASSUME LongestCommonPrefix({<<>>}) = <<>>
+ASSUME LongestCommonPrefix({<<1>>,<<2>>,<<3>>}) = <<>>
+ASSUME LongestCommonPrefix({<<1>>,<<1>>,<<3>>}) = <<>>
+ASSUME LongestCommonPrefix({<<2,3,3>>, <<2,2,3>>, <<2,3,3,4>>}) = <<2>>
+ASSUME LongestCommonPrefix({<<2,3,3>>, <<2,3,3>>, <<2,3,3,4>>}) = <<2,3,3>>
+ASSUME LongestCommonPrefix({<<2,3,3>>, <<2,3,3>>, <<1,3,3,4>>}) = <<>>
 
 =============================================================================
