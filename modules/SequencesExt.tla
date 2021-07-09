@@ -71,11 +71,7 @@ ReplaceAll(s, old, new) ==
   (* Equals the sequence s except that all occurrences of element old are  *)
   (* replaced with the element new.                                        *)
   (*************************************************************************)
-  LET F[i \in 0..Len(s)] == 
-        IF i = 0 THEN << >>
-                 ELSE IF s[i] = old THEN Append(F[i-1], new)
-                                    ELSE Append(F[i-1], s[i])
-  IN F[Len(s)]
+  [i \in 1 .. Len(s) |-> IF s[i] = old THEN new ELSE s[i]]
 
 -----------------------------------------------------------------------------
 
