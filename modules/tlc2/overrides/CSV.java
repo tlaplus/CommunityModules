@@ -26,12 +26,17 @@
 package tlc2.overrides;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.Arrays;
+import java.util.stream.Stream;
 
+import tlc2.output.EC;
+import tlc2.tool.EvalException;
 import tlc2.value.impl.BoolValue;
+import tlc2.value.impl.IntValue;
 import tlc2.value.impl.StringValue;
 import tlc2.value.impl.TupleValue;
 import tlc2.value.impl.Value;
@@ -47,5 +52,18 @@ public class CSV {
 				(String.format(template.val.toString(), params) + System.lineSeparator()).getBytes("UTF-8"),
 				StandardOpenOption.CREATE, StandardOpenOption.APPEND);
 		return BoolValue.ValTrue;
+	}
+
+	@TLAPlusOperator(identifier = "CSVRecords", module = "CSV", minLevel = 1, warn = false)
+	public static Value records(final StringValue absolutePath)
+			throws IOException {
+		try (Stream<String> stream = Files.lines(Paths.get(absolutePath.val.toString()), StandardCharsets.UTF_8)) {
+			try {
+				return IntValue.gen(Math.toIntExact(stream.count()));
+			} catch (ArithmeticException e) {
+				throw new EvalException(EC.TLC_MODULE_OVERFLOW,
+						Long.toString(stream.count()));
+			}
+		}
 	}
 }

@@ -13,4 +13,8 @@ CSVWrite(template, val, file) ==
     *)
    TRUE
 
+CSVRecords(file) == 
+   (* The number of records in the given file (including headers if any). *)
+   CHOOSE n : n \in Nat
+
 ============================================================================
