@@ -44,7 +44,6 @@ import tlc2.value.Values;
 import tlc2.value.impl.BoolValue;
 import tlc2.value.impl.IntValue;
 import tlc2.value.impl.RecordValue;
-import tlc2.value.impl.SetEnumValue;
 import tlc2.value.impl.StringValue;
 import tlc2.value.impl.TupleValue;
 import tlc2.value.impl.Value;
@@ -119,10 +118,10 @@ public class IOUtils {
 	@TLAPlusOperator(identifier = "IOEnvExec", module = "IOUtils", minLevel = 1, warn = false)
 	public static Value ioEnvExec(final Value env, final Value parameter) throws IOException, InterruptedException {
 		// Check env and parameters and covert.
-		final SetEnumValue environment = (SetEnumValue) env.toSetEnum();
+		final RecordValue environment = (RecordValue) env.toRcd();
 		if (environment == null) {
 			throw new EvalException(EC.TLC_MODULE_ONE_ARGUMENT_ERROR,
-					new String[] { "IOExecVars", "set", Values.ppr(env.toString()) });
+					new String[] { "IOExecVars", "record", Values.ppr(env.toString()) });
 		}
 		if (!(parameter instanceof TupleValue)) {
 			throw new EvalException(EC.TLC_MODULE_ONE_ARGUMENT_ERROR,
@@ -168,10 +167,10 @@ public class IOUtils {
 	@TLAPlusOperator(identifier = "IOEnvExecTemplate", module = "IOUtils", minLevel = 1, warn = false)
 	public static Value ioEnvExecTemplate(final Value env, final Value commandTemplate, final Value parameter) throws IOException, InterruptedException {
 		// Check env and parameters and covert.
-		final SetEnumValue environment = (SetEnumValue) env.toSetEnum();
+		final RecordValue environment = (RecordValue) env.toRcd();
 		if (environment == null) {
 			throw new EvalException(EC.TLC_MODULE_ONE_ARGUMENT_ERROR,
-					new String[] { "ioEnvExecTemplate", "set of tuples", Values.ppr(env.toString()) });
+					new String[] { "ioEnvExecTemplate", "record", Values.ppr(env.toString()) });
 		}
 		// 1. Check parameters and covert.
 		if (!(commandTemplate instanceof TupleValue)) {
@@ -197,17 +196,13 @@ public class IOUtils {
 		return runProcess(getEnv(environment), command);
 	}
 
-	private static Map<String, String> getEnv(final SetEnumValue environment) {
-		// Convert set of environment variables to what PB works with.
-		final Map<String, String> penv = new HashMap<>(); 
-		final List<Value> elements = environment.elements().all();
-		for (Value value : elements) {
-			if (!(value instanceof TupleValue) || ((TupleValue) value).size() != 2) {
-				throw new EvalException(EC.TLC_MODULE_ONE_ARGUMENT_ERROR,
-						new String[] { "IOEEnvExec", "tuple", Values.ppr(value.toString()) });
-			}
-			final TupleValue pair = (TupleValue) value;
-			penv.put(pair.getElem(0).toUnquotedString(), pair.getElem(1).toUnquotedString());
+	private static Map<String, String> getEnv(final RecordValue environment) {
+		// Convert record of environment variables to what ProcessBuilder works with.
+		final Map<String, String> penv = new HashMap<>();
+		for (int i = 0; i < environment.size(); i++) {
+			final UniqueString name = environment.names[i];
+			final Value value = environment.values[i];
+			penv.put(name.toString(), value.toUnquotedString());
 		}
 		return penv;
 	}

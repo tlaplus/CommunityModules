@@ -41,21 +41,30 @@ ASSUME(LET ret == IOExec(<<"/bin/sh", "-c", "echo $SOME_TEST_ENV_VAR">>)
                                                                     /\ ret.stdout = "TLCFTW\n"
                                                                     /\ ret.stderr = "")
 
-ASSUME(LET ret == IOEnvExec({<<"SOME_VAR_42","42">>}, <<"/bin/sh", "-c", "echo $SOME_VAR_42">>) 
+ASSUME(LET ret == IOEnvExec([SOME_VAR_42 |-> "42"], <<"/bin/sh", "-c", "echo $SOME_VAR_42">>) 
                                                                  IN /\ ret.exitValue = 0
                                                                     /\ ret.stdout = "42\n"
                                                                     /\ ret.stderr = "")
 
-ASSUME(LET ret == IOEnvExecTemplate({<<"SOME_VAR_42","42">>}, <<"/bin/sh", "-c", "echo $SOME_VAR_42">>, <<>>) 
+ASSUME(LET ret == IOEnvExecTemplate([SOME_VAR_42 |-> "42"], <<"/bin/sh", "-c", "echo $SOME_VAR_42">>, <<>>) 
                                                                  IN /\ ret.exitValue = 0
                                                                     /\ ret.stdout = "42\n"
                                                                     /\ ret.stderr = "")
 
-ASSUME(LET ret == IOEnvExecTemplate({<<"SOME_VAR_42","42">>}, <<"/bin/sh", "-c", "echo $SOME_VAR_42">>, <<>>) 
+ASSUME(LET ret == IOEnvExecTemplate([SOME_VAR_42 |-> "42"], <<"/bin/sh", "-c", "echo $SOME_VAR_42">>, <<>>) 
                                                                  IN /\ ret.exitValue = 0
                                                                     /\ ret.stdout = "42\n"
                                                                     /\ ret.stderr = "")
 
+ASSUME(LET ret == IOEnvExecTemplate([A |-> 1, B |-> 2], <<"/bin/sh", "-c", "echo $A $B">>, <<>>) 
+                                                                 IN /\ ret.exitValue = 0
+                                                                    /\ ret.stdout = "1 2\n"
+                                                                    /\ ret.stderr = "")
+
+ASSUME(LET ret == IOEnvExec(IOEnv, <<"/bin/sh", "-c", "echo $SOME_TEST_ENV_VAR">>) 
+                                                                 IN /\ ret.exitValue = 0
+                                                                    /\ ret.stdout = "TLCFTW\n"
+                                                                    /\ ret.stderr = "")
 
 \* Contrary to the /bin/sh -c echo $SOME_VAR technique above, the IOEnv operator does *not* append a dangling
 \* newline to the value.  Environment variable names made out of non-legal chars for TLA+ records can fall
@@ -99,7 +108,7 @@ ASSUME(LET ret == IOExec(<<"java", "-jar", "tlc/tla2tools.jar", "tests/nested/Co
 
 \* Run TLC with some spec depending on CommunityModules and CM on the classpath.
 \* Pass an environment variable to the nested spec.
-ASSUME(LET ret == IOEnvExec({<<"SOME_NESTED_VAR", "SOME_VAL">>, <<"B", "23">>},
+ASSUME(LET ret == IOEnvExec([SOME_NESTED_VAR |-> "SOME_VAL", B |-> "23"],
                             <<"java", "-cp", "modules:build/modules:tlc/tla2tools.jar", "tlc2.TLC",
                                           "-config", "Counter.cfg", "tests/nested/CounterCM">>)
                                                                  IN /\ ret.exitValue = 0
