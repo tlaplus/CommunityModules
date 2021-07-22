@@ -73,16 +73,10 @@ public class IOUtils {
 		}
 		return BoolValue.ValTrue;
 	}
-
-	// The legal syntax for names/keys of environment variables appears undefined.
-	// On Unix, the names are commonly upper-case characters and underscore. On
-	// Windows, there are names that contain parentheses.  For those names that are
-	// no legal record keys in TLA+, a user cannot use the  Record.key()  syntax but
-	// has to revert to  Record["key()"]  .
-	// IOEnv  doesn't take the name/key as an argument because we don't want to deal
-	// with unset names.
-	@TLAPlusOperator(identifier = "IOEnv", module = "IOUtils", minLevel = 1, warn = false)
-	public static Value ioEnv() throws IOException, InterruptedException {
+	
+	static {
+		// Eagerly lookup the environment, which is not going to change while the Java
+		// process executes.
 		final Map<String, String> env = System.getenv();
 		
 		final UniqueString[] names = new UniqueString[env.size()];
@@ -94,9 +88,23 @@ public class IOUtils {
 			values[i] = new StringValue(entries.get(i).getValue());
 		}
 
-		return new RecordValue(names, values, false);
+		ENV = new RecordValue(names, values, false).normalize();
 	}
 
+	private static final Value ENV;
+
+	// The legal syntax for names/keys of environment variables appears undefined.
+	// On Unix, the names are commonly upper-case characters and underscore. On
+	// Windows, there are names that contain parentheses.  For those names that are
+	// no legal record keys in TLA+, a user cannot use the  Record.key()  syntax but
+	// has to revert to  Record["key()"]  .
+	// IOEnv doesn't take the name/key as an argument to lookup individual
+	// environment variables because we don't want to deal with unset names.
+	@TLAPlusOperator(identifier = "IOEnv", module = "IOUtils", minLevel = 0, warn = false)
+	public static Value ioEnv() throws IOException, InterruptedException {
+		return ENV;
+	}
+	
 	@TLAPlusOperator(identifier = "IOExec", module = "IOUtils", minLevel = 1, warn = false)
 	public static Value ioExec(final Value parameter) throws IOException, InterruptedException {
 		// 1. Check parameters and covert.
