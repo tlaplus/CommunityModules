@@ -76,7 +76,7 @@ ASSUME(IOEnv["SOME-TEST-ENV-VAR"] = "TLCFTW")
 
 \* Test/show how to convert (the set) "23" to (the set) 23.
 ASSUME LET n  == CHOOSE n \in 0..2^16 : \* TLC won't choose from *unbounded*  Nat  , thus restricting to 0..2^16 (which should be sufficient for most use cases).
-			                  IOEnv.SOME_TEST_ENV_VAR_N23 = ToString(n)
+                              IOEnv.SOME_TEST_ENV_VAR_N23 = ToString(n)
        IN n = 23
 
 ASSUME(DOMAIN IOEnv \subseteq STRING)

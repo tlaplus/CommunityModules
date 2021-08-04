@@ -99,7 +99,7 @@ ASSUME LongestCommonPrefix({<<[i \in 1..3|-> i], [i \in 1..3|-> i]>>, <<[i \in 1
 
 
 LOCAL LongestCommonPrefixPure(S) ==
-	LET PrefixesPure(s) == { SubSeq(s, 1, l) : l \in 0..Len(s) }
+    LET PrefixesPure(s) == { SubSeq(s, 1, l) : l \in 0..Len(s) }
         CommonPrefixesPure(T) == LET P == UNION { PrefixesPure(seq) : seq \in T }
                                  IN { prefix \in P : \A t \in S: IsPrefix(prefix, t) }
     IN CHOOSE longest \in CommonPrefixesPure(S):
@@ -111,7 +111,7 @@ ASSUME LongestCommonPrefixPure(BoundedSeq({1,2,3}, 5)) = LongestCommonPrefix(Bou
 ASSUME \A s \in SUBSET BoundedSeq({0,1}, 3):
     \* For the empty set, the pure variant fails when choosing from the empty set.
     \* The Java module override throws an EvalException.
-	s # {} => LongestCommonPrefix(s) = LongestCommonPrefixPure(s)
+    s # {} => LongestCommonPrefix(s) = LongestCommonPrefixPure(s)
 
 ASSUME LongestCommonPrefix({"abc", "abd"}) = "ab"
 ASSUME LongestCommonPrefix({"abc", "a"}) = "a"
@@ -123,6 +123,6 @@ ASSUME LongestCommonPrefix({"ab \"c", "ab \"cc", "ab \"cd"}) = "ab \"c"
 ASSUME \A s \in SUBSET {"a","b","ab","ba","aa","bb"}:
     \* For the empty set, the pure variant fails when choosing from the empty set.
     \* The Java module override throws an EvalException.
-	s # {} => LongestCommonPrefix(s) = LongestCommonPrefixPure(s)
+    s # {} => LongestCommonPrefix(s) = LongestCommonPrefixPure(s)
 
 =============================================================================

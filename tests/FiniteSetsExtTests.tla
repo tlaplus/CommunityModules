@@ -10,10 +10,10 @@ ASSUME LET S == {"a","b","c","c"}
        IN Quantify(S, LAMBDA s: s = "c") = Cardinality({s \in S : s = "c"})
 
 ASSUME \A S \in SUBSET {"a","b","c","c"} :
-		  Quantify(S, LAMBDA s: s = "c") = Cardinality({s \in S : s = "c"})
+          Quantify(S, LAMBDA s: s = "c") = Cardinality({s \in S : s = "c"})
 
 ASSUME \A S \in SUBSET {"a","b","c","c"} :
-		  Quantify(S, LAMBDA s: FALSE) = Cardinality({s \in S : FALSE})
+          Quantify(S, LAMBDA s: FALSE) = Cardinality({s \in S : FALSE})
 
 ASSUME LET S == 1..10
        IN Quantify(S, LAMBDA s: s = 3) = Cardinality({s \in S : s = 3})
@@ -48,22 +48,22 @@ ASSUME LET T == 1..3
             /\ \A e \in { ss \in (SUBSET T) : Cardinality(ss) = k} :
                      e \in kSubset(k, T)
             /\ \A e \in { ss \in (SUBSET T) : Cardinality(ss) # k} :
-            		 e \notin kSubset(k, T)
-            		 
+                     e \notin kSubset(k, T)
+                     
 ASSUME LET T == {"a","b","c"}
            kSubsetPure(k, S) == { s \in SUBSET S : Cardinality(s) = k }
        IN \A k \in 1..Cardinality(T):
-       			/\ kSubset(k, T) = kSubsetPure(k, T)
-				/\ kSubsetPure(k, T) = kSubset(k, T)
-				
+                /\ kSubset(k, T) = kSubsetPure(k, T)
+                /\ kSubsetPure(k, T) = kSubset(k, T)
+                
 ASSUME LET T == {"a","b","c"}
        IN /\ kSubset(1, T) = {{"a"},{"b"},{"c"}}
-		  /\ kSubset(2, T) = {{"a","b"}, {"a","c"}, {"b","c"}}
-		  /\ kSubset(3, T) = {{"a","b","c"}}
+          /\ kSubset(2, T) = {{"a","b"}, {"a","c"}, {"b","c"}}
+          /\ kSubset(3, T) = {{"a","b","c"}}
           /\ {{"a"},{"b"},{"c"}} = kSubset(1, T)
-		  /\ {{"a","b"}, {"a","c"}, {"b","c"}} = kSubset(2, T)
-		  /\ {{"a","b","c"}} = kSubset(3, T)
-				
+          /\ {{"a","b"}, {"a","c"}, {"b","c"}} = kSubset(2, T)
+          /\ {{"a","b","c"}} = kSubset(3, T)
+                
 ASSUME LET T == {"a","b","c"}
            kSubsetPure(k, S) == { s \in SUBSET S : Cardinality(s) = k }
        IN /\ {kSubset(k, T) : k \in 2..3} = {kSubsetPure(k, T) : k \in 2..3}
@@ -79,8 +79,8 @@ ASSUME LET T == {"a","b","c"}
 ASSUME LET T == 1..3
            kSubsetPure(k, S) == { s \in SUBSET S : Cardinality(s) = k }
        IN \A k \in 1..Cardinality(T):
-       			/\ ((SUBSET T) \subseteq kSubsetPure(k, T)) <=> ((SUBSET T) \subseteq kSubset(k, T))
-       			/\ kSubsetPure(k, T) \subseteq (SUBSET T) <=> kSubset(k, T) \subseteq (SUBSET T)
+                /\ ((SUBSET T) \subseteq kSubsetPure(k, T)) <=> ((SUBSET T) \subseteq kSubset(k, T))
+                /\ kSubsetPure(k, T) \subseteq (SUBSET T) <=> kSubset(k, T) \subseteq (SUBSET T)
 
 -----------------------------------------------------------------------------
 
