@@ -25,11 +25,6 @@ package tlc2.overrides;
  *   Markus Alexander Kuppe - initial API and implementation
  ******************************************************************************/
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import com.google.gson.JsonPrimitive;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -37,10 +32,16 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.google.gson.JsonPrimitive;
+
 import tlc2.value.IValue;
 import tlc2.value.impl.BoolValue;
 import tlc2.value.impl.FcnLambdaValue;
@@ -114,7 +115,7 @@ public class Json {
         line = reader.readLine();
       }
     }
-    return new TupleValue(values.toArray(new Value[0]));
+    return new TupleValue(values.toArray(new Value[values.size()]));
   }
 
   /**
@@ -430,7 +431,7 @@ public class Json {
     for (int i = 0; i < jsonArray.size(); i++) {
       values.add(getValue(jsonArray.get(i)));
     }
-    return new TupleValue(values.toArray(new Value[0]));
+    return new TupleValue(values.toArray(new Value[values.size()]));
   }
 
   /**
@@ -448,7 +449,8 @@ public class Json {
       keys.add(UniqueString.uniqueStringOf(entry.getKey()));
       values.add(getValue(entry.getValue()));
     }
-    return new RecordValue(keys.toArray(new UniqueString[0]), values.toArray(new Value[0]), false);
+	return new RecordValue(keys.toArray(new UniqueString[keys.size()]), values.toArray(new Value[values.size()]),
+			false);
   }
 
   /**
