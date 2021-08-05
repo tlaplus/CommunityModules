@@ -1,6 +1,8 @@
 ---------------------------- MODULE IOUtilsTests ----------------------------
 EXTENDS IOUtils, TLC, Naturals
 
+ASSUME PrintT("IOUtilsTests!A")
+
 \* Spaces and quotes should be passed directly to the program.
 ASSUME(LET ret == IOExec(<<"echo", "'foo' ", " \"bar\"">>) IN /\ ret.exitValue = 0
                                                               /\ ret.stdout = "'foo'   \"bar\"\n"
@@ -29,6 +31,8 @@ ASSUME(LET ret == IOExecTemplate(<<"cat", "/does/not/exist">>, <<>>)
                                                                  /\ ret.stderr = "cat: /does/not/exist: No such file or directory\n")
 
 ---------------------------------------------------------------------------------------------------------------------------
+
+ASSUME PrintT("IOUtilsTests!B")
 
 (***********************************************************************)
 (* Check that environment variables work with IOUtils!IOExec operator: *)
@@ -84,6 +88,8 @@ ASSUME(\A var \in DOMAIN IOEnv: IOEnv[var] \in STRING)
 
 ---------------------------------------------------------------------------------------------------------------------------
 
+ASSUME PrintT("IOUtilsTests!C")
+
 (***********************************************************************)
 (* Check that TLC can be launched through the IOUtils!IOExec operator: *)
 (***********************************************************************)
@@ -94,23 +100,30 @@ ASSUME(LET ret == IOExec(<<"ls", "tlc/tla2tools.jar">>)
                                                                     /\ ret.stdout = "tlc/tla2tools.jar\n"
                                                                     /\ ret.stderr = "")
 
+ASSUME PrintT("IOUtilsTests!C!b")
 
 \* Run TLC without any parameters.  TLC prints its version number, git commit, ... to stdout and sets RETVAL ($?) to 1.
 ASSUME(LET ret == IOExec(<<"java", "-jar", "tlc/tla2tools.jar">>)
-                                                                 IN /\ ret.exitValue = 1
+                                                                 IN /\ PrintT(ret)
+                                                                    /\ ret.exitValue = 1
                                                                     /\ ret.stderr = "")
 
+ASSUME PrintT("IOUtilsTests!C!c")
 
 \* Run TLC with some basic spec that passes.
 ASSUME(LET ret == IOExec(<<"java", "-jar", "tlc/tla2tools.jar", "tests/nested/Counter">>)
-                                                                 IN /\ ret.exitValue = 0
+                                                                 IN /\ PrintT(ret)
+                                                                    /\ ret.exitValue = 0
                                                                     /\ ret.stderr = "")
+
+ASSUME PrintT("IOUtilsTests!C!d")
 
 \* Run TLC with some spec depending on CommunityModules and CM on the classpath.
 \* Pass an environment variable to the nested spec.
 ASSUME(LET ret == IOEnvExec([SOME_NESTED_VAR |-> "SOME_VAL", B |-> "23"],
                             <<"java", "-cp", "modules:build/modules:tlc/tla2tools.jar", "tlc2.TLC",
                                           "-config", "Counter.cfg", "tests/nested/CounterCM">>)
-                                                                 IN /\ ret.exitValue = 0
+                                                                 IN /\ PrintT(ret)
+                                                                    /\ ret.exitValue = 0
                                                                     /\ ret.stderr = "")
 =============================================================================

@@ -6,6 +6,8 @@ NEXT Next
 ------------------------- MODULE FiniteSetsExtTests -------------------------
 EXTENDS Integers, TLC, TLCExt, FiniteSets, FiniteSetsExt
 
+ASSUME LET T == INSTANCE TLC IN T!PrintT("FiniteSetsExtTests")
+
 ASSUME LET S == {"a","b","c","c"}
        IN Quantify(S, LAMBDA s: s = "c") = Cardinality({s \in S : s = "c"})
 

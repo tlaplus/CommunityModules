@@ -1,6 +1,8 @@
 ------------------------- MODULE FunctionsTests -------------------------
 EXTENDS Functions, Naturals, TLC, TLCExt, FiniteSets
 
+ASSUME LET T == INSTANCE TLC IN T!PrintT("FunctionsTests")
+
 ASSUME(IsInjective(<<>>))
 ASSUME(IsInjective(<<1>>))
 ASSUME(IsInjective(<<1,2,3>>))

@@ -1,6 +1,8 @@
 ---------------------------- MODULE BitwiseTests ----------------------------
 EXTENDS Bitwise, TLCExt, Naturals
 
+ASSUME LET T == INSTANCE TLC IN T!PrintT("BitwiseTests")
+
 ZeroToM == 0..99
 
 LowBit(n) == IF n % 2 = 1 THEN 1 ELSE 0

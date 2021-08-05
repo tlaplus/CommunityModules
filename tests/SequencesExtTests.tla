@@ -1,6 +1,8 @@
 ------------------------- MODULE SequencesExtTests -------------------------
 EXTENDS Sequences, SequencesExt, Naturals, TLC, TLCExt, FiniteSets
 
+ASSUME LET T == INSTANCE TLC IN T!PrintT("SequencesExtTests")
+
 ASSUME(ToSet(<<>>) = {})
 ASSUME(ToSet(<<1>>) = {1})
 ASSUME(ToSet(<<1,1>>) = {1})

@@ -1,6 +1,8 @@
 ----- MODULE CounterCM -----
 EXTENDS IOUtils, TLC, Naturals
 
+ASSUME PrintT("IOUtilsTests!C!d!CounterCM")
+
 VARIABLE x
 
 \* SOME_TEST_ENV_VAR comes from the outermost build.xml.

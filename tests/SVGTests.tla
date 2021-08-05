@@ -1,6 +1,8 @@
 ------------------------- MODULE SVGTests -------------------------
 EXTENDS SVG, Sequences, Naturals, TLC, TLCExt
 
+ASSUME LET T == INSTANCE TLC IN T!PrintT("SVGTests")
+
 (******************************************************************************)
 (* Test conversion of SVG element records to strings.                         *)
 (*                                                                            *)

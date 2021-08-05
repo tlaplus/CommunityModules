@@ -1,6 +1,8 @@
 ---------------------------- MODULE CSVTests ----------------------------
 EXTENDS CSV, TLC, Sequences, IOUtils
 
+ASSUME LET T == INSTANCE TLC IN T!PrintT("CSVTests")
+
 Template ==
     \* '#' symbol is probably best separator for TLA+.
     "%1$s#%2$s#%3$s"

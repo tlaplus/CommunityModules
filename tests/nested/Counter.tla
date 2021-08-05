@@ -1,6 +1,8 @@
 ----- MODULE Counter -----
 EXTENDS Naturals
 
+ASSUME LET T == INSTANCE TLC IN T!PrintT("IOUtilsTests!C!b!Counter")
+
 CONSTANT UpperBound
 
 VARIABLE x

@@ -1,6 +1,8 @@
 ----------------------------- MODULE JsonTests -----------------------------
 EXTENDS Json, Integers, Sequences, TLC, TLCExt
 
+ASSUME LET T == INSTANCE TLC IN T!PrintT("JsonTests")
+
 CONSTANT ModelValueConstant
 
 \* Empty values

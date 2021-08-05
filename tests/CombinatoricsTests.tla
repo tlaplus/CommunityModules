@@ -1,6 +1,8 @@
 ------------------------- MODULE CombinatoricsTests -------------------------
 EXTENDS Combinatorics
 
+ASSUME LET T == INSTANCE TLC IN T!PrintT("CombinatoricsTests")
+
 ASSUME LET RECURSIVE factorialPure(_)
            factorialPure(n) == IF n = 0 THEN 1 ELSE n * factorialPure(n-1)
        IN \A n \in (0..12) : factorial[n] = factorialPure(n)
