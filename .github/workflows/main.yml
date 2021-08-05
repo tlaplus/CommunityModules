@@ -17,10 +17,6 @@ jobs:
       uses: mxschmitt/action-tmate@v3
       with:
         limit-access-to-actor: true
-    - name: Set up JDK 1.9
-      uses: actions/setup-java@v1
-      with:
-        java-version: 9.0.x
     - name: Get current date
       id: date
       run: echo "::set-output name=date::$(date +'%Y%m%d%H%M')"
