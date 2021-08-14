@@ -25,8 +25,16 @@
  ******************************************************************************/
 package tlc2.overrides;
 
-// tlc2.tool.impl.SpecProcessor's "api" only loads class
-// "tlc2.overrides.TLCOverrides".
+// tlc2.tool.impl.SpecProcessor's "api" loads class
+// "tlc2.overrides.TLCOverrides" by default if you don't
+// have the property "tlc2.overrides.TLCOverrides" set.
+// Example, let's say I have a `MyOverrides` class which implements
+// `ITLCOverrides`, you can pass it to the java CLI with 
+// "-Dtlc2.overrides.TLCOverrides=MyOverrides" and TLC will
+// call the `get` method of `MyOverrides`. You can also pass multiple
+// classes which implements `ITLCOverrides` by using, e.g.
+// "-Dtlc2.overrides.TLCOverrides=MyOverrides:MyOverrides2" (use
+// the correct separator (`:` or `;`) according to your OS).
 public class TLCOverrides implements ITLCOverrides {
 
 	@SuppressWarnings("rawtypes")
