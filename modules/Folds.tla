@@ -14,16 +14,21 @@ MapThenFoldSet(op(_,_), base, f(_), choose(_), S) ==
 (*                                                                            *)
 (*  MapThenFoldSet(LAMBDA x,y: x \cup y,{1,2},LAMBDA x: {{x}}, S) = {{1},{2}} *)
 (******************************************************************************)
-  LET iter[s \in SUBSET S] ==
+  \* By comparing S to {}, we help TLC in producing a reasonable error trace
+  IF S = {}
+  THEN base
+  ELSE
+    LET iter[s \in SUBSET S] ==
         IF s = {} THEN base
         ELSE LET x == choose(s)
              IN  op(f(x), iter[s \ {x}])
-  IN  iter[S]
+    IN  iter[S]
 
 
 
 
 =============================================================================
 \* Modification History
+\* Last modified Thu Aug 26 15:11:48 CEST 2021 by igor
 \* Last modified Fri Apr 02 13:54:18 CEST 2021 by marty
 \* Created Tue Mar 30 19:20:49 CEST 2021 by marty
