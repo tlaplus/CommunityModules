@@ -196,7 +196,7 @@ FoldSeq(op(_, _), base, seq) ==
   (* particular ordering of i, j, and k                                      *)
   (*                                                                         *)
   (* Example:                                                                *)
-  (*  FoldSeq(LAMBDA x,y: {x} \cup y, {}, <<1,2,1>>) = {1,2}                 *)
+  (*  FoldSeq(LAMBDA x,y: {x} \cup y, {}, <<1,2,1>>) = Range(<<1,2,1>>)      *)
   (***************************************************************************)
   FoldFunction(op, base, seq)
 
@@ -209,11 +209,11 @@ FoldLeft(op(_, _), base, seq) ==
   (*                                                                         *)
   (* Example:                                                                *)
   (*    LET cons(x,y) == <<x,y>>                                             *)
-  (*    IN FoldLeft(cons, 0, <<3,1,2>> = << << <<0,3>>, 1>>, 2>>             *) 
+  (*    IN FoldLeft(cons, 0, <<3,1,2>>) = << << <<0,3>>, 1>>, 2>>            *) 
   (***************************************************************************)
   MapThenFoldSet(LAMBDA x,y : op(y,x), base,
                  LAMBDA i : seq[i],
-                 LAMBDA s: CHOOSE i \in s : \A j \in s: i >= j,
+                 LAMBDA S : Max(S),
                  DOMAIN seq)
 
 FoldRight(op(_, _), seq, base) == 
@@ -229,7 +229,7 @@ FoldRight(op(_, _), seq, base) ==
   (***************************************************************************)
   MapThenFoldSet(op, base,
                  LAMBDA i : seq[i],
-                 LAMBDA s: CHOOSE i \in s : \A j \in s: i <= j,
+                 LAMBDA S : Min(S),
                  DOMAIN seq)
 
 =============================================================================
