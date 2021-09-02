@@ -28,13 +28,18 @@ package tlc2.overrides;
 import java.util.Arrays;
 
 import tlc2.output.EC;
+import tlc2.tool.EvalControl;
 import tlc2.tool.EvalException;
 import tlc2.value.Values;
+import tlc2.value.impl.Applicable;
 import tlc2.value.impl.BoolValue;
+import tlc2.value.impl.Enumerable;
 import tlc2.value.impl.FcnRcdValue;
+import tlc2.value.impl.OpValue;
 import tlc2.value.impl.SetOfRcdsValue;
 import tlc2.value.impl.TupleValue;
 import tlc2.value.impl.Value;
+import tlc2.value.impl.ValueEnumeration;
 
 public final class Functions {
 	
@@ -88,5 +93,27 @@ public final class Functions {
 			}
 		}
 		return BoolValue.ValTrue;
+	}
+
+	@TLAPlusOperator(identifier = "FoldFunction", module = "Functions", warn = false)
+	public static Value foldFunction(final OpValue op, final Value base, final Applicable fun) {
+		return foldFunctionOnSet(op, base, fun, (Enumerable) fun.getDomain());
+	}
+
+	@TLAPlusOperator(identifier = "FoldFunctionOnSet", module = "Functions", warn = false)
+	public static Value foldFunctionOnSet(final OpValue op, final Value base, final Applicable fun, final Enumerable subdomain) {
+		
+		final Value[] args = new Value[2];
+		args[1] = base;
+
+		final ValueEnumeration ve = subdomain.elements();
+
+		Value v = null;
+		while ((v = ve.nextElement()) != null) {
+			args[0] = fun.select(v);
+			args[1] = op.apply(args, EvalControl.Clear);
+		}
+		
+		return args[1];
 	}
 }

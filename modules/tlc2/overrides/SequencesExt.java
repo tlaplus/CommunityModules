@@ -26,13 +26,18 @@ package tlc2.overrides;
  ******************************************************************************/
 
 import tlc2.output.EC;
+import tlc2.tool.EvalControl;
 import tlc2.tool.EvalException;
 import tlc2.value.Values;
+import tlc2.value.impl.Applicable;
 import tlc2.value.impl.BoolValue;
+import tlc2.value.impl.Enumerable;
+import tlc2.value.impl.OpValue;
 import tlc2.value.impl.SetEnumValue;
 import tlc2.value.impl.StringValue;
 import tlc2.value.impl.TupleValue;
 import tlc2.value.impl.Value;
+import tlc2.value.impl.ValueEnumeration;
 import tlc2.value.impl.ValueVec;
 
 public final class SequencesExt {
@@ -86,6 +91,28 @@ public final class SequencesExt {
 		}
 	/*
 	 */
+		@TLAPlusOperator(identifier = "FoldFunction", module = "Functions", warn = false)
+		public static Value foldFunction(final OpValue op, final Value base, final Applicable fun) {
+			return foldFunctionOnSet(op, base, fun, (Enumerable) fun.getDomain());
+		}
+
+		@TLAPlusOperator(identifier = "FoldFunctionOnSet", module = "Functions", warn = false)
+		public static Value foldFunctionOnSet(final OpValue op, final Value base, final Applicable fun, final Enumerable subdomain) {
+			
+			final Value[] args = new Value[2];
+			args[1] = base;
+
+			final ValueEnumeration ve = subdomain.elements();
+
+			Value v = null;
+			while ((v = ve.nextElement()) != null) {
+				args[0] = fun.select(v);
+				args[1] = op.apply(args, EvalControl.Clear);
+			}
+			
+			return args[1];
+		}
+
 	@TLAPlusOperator(identifier = "LongestCommonPrefix", module = "SequencesExt", warn = false)
 	public static Value longestCommonPrefix(final Value val) {
 		final SetEnumValue set = (SetEnumValue) val.toSetEnum();
@@ -156,5 +183,52 @@ public final class SequencesExt {
 			return new StringValue("");
 		}
 		return new StringValue(prefix.substring(0, upper));
+	}
+	
+	@TLAPlusOperator(identifier = "FoldSeq", module = "SequencesExt", warn = false)
+	public static Value foldSeq(final OpValue op, final Value base, final TupleValue tv) {
+		return foldLeft(op, base, tv);
+	}
+
+	@TLAPlusOperator(identifier = "FoldLeft", module = "SequencesExt", warn = false)
+	public static Value foldLeft(final OpValue op, final Value base, final Value val) {
+
+		final TupleValue tv = (TupleValue) val.toTuple();
+		if (tv == null) {
+			throw new EvalException(EC.TLC_MODULE_ONE_ARGUMENT_ERROR,
+					new String[] { "FoldLeft", "sequence", Values.ppr(val.toString()) });
+		}
+
+		final Value[] args = new Value[2];
+		args[0] = base;
+
+		final Value[] elems = tv.elems;
+		for (int i = 0; i < elems.length; i++) {
+			args[1] = elems[i];
+			args[0] = op.apply(args, EvalControl.Clear);
+		}
+
+		return args[0];
+	}
+
+	@TLAPlusOperator(identifier = "FoldRight", module = "SequencesExt", warn = false)
+	public static Value foldRight(final OpValue op, final Value val, final Value base) {
+
+		final TupleValue tv = (TupleValue) val.toTuple();
+		if (tv == null) {
+			throw new EvalException(EC.TLC_MODULE_ONE_ARGUMENT_ERROR,
+					new String[] { "FoldRight", "sequence", Values.ppr(val.toString()) });
+		}
+
+		final Value[] args = new Value[2];
+		args[1] = base;
+
+		final Value[] elems = tv.elems;
+		for (int i = elems.length - 1; i >= 0; i--) {
+			args[0] = elems[i];
+			args[1] = op.apply(args, EvalControl.Clear);
+		}
+
+		return args[1];
 	}
 }

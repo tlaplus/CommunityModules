@@ -37,5 +37,11 @@ ASSUME FoldFunction(LAMBDA x,y: {x} \cup y, {}, <<1,2,1>>) = {1,2}
 
 ASSUME FoldFunctionOnSet(LAMBDA x,y: {x} \cup y, {}, <<1,2>>, {}) = {}
 
+ASSUME FoldFunction(LAMBDA x,y: {x} \cup y, {}, [n \in 1..9999 |-> n]) = 1..9999
+
+ASSUME FoldFunctionOnSet(LAMBDA x,y: {x} \cup y, {}, [n \in 1..9999 |-> n], {}) = {}
+
+ASSUME FoldFunctionOnSet(LAMBDA x,y: {x} \cup y, {}, [n \in 1..9999 |-> n], 2..9998) = 2..9998
+
 
 =============================================================================

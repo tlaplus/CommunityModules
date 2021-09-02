@@ -32,9 +32,11 @@ import tlc2.value.IBoolValue;
 import tlc2.value.Values;
 import tlc2.value.impl.Applicable;
 import tlc2.value.impl.BoolValue;
+import tlc2.value.impl.Enumerable;
 import tlc2.value.impl.EnumerableValue;
 import tlc2.value.impl.IntValue;
 import tlc2.value.impl.KSubsetValue;
+import tlc2.value.impl.OpValue;
 import tlc2.value.impl.SetEnumValue;
 import tlc2.value.impl.SubsetValue;
 import tlc2.value.impl.Value;
@@ -100,5 +102,22 @@ public class FiniteSetsExt {
 			return new SubsetValue(SetEnumValue.EmptySet);
 		}
 		return new KSubsetValue(k, set, set.cm);
+	}
+
+	@TLAPlusOperator(identifier = "FoldSet", module = "FiniteSetsExt", warn = false)
+	public static Value foldSet(final OpValue op, final Value base, final Enumerable set) {
+
+		final Value[] args = new Value[2];
+		args[1] = base;
+		
+		final ValueEnumeration ve = set.elements();
+
+		Value v = null;
+		while ((v = ve.nextElement()) != null) {
+			args[0] = v;
+			args[1] = op.apply(args, EvalControl.Clear);
+		}
+		
+		return args[1];
 	}
 }

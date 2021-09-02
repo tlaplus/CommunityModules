@@ -1,5 +1,5 @@
 ------------------------- MODULE SequencesExtTests -------------------------
-EXTENDS Sequences, SequencesExt, Naturals, TLC, TLCExt, FiniteSets
+EXTENDS Sequences, SequencesExt, Integers, TLC, TLCExt, FiniteSets
 
 ASSUME LET T == INSTANCE TLC IN T!PrintT("SequencesExtTests")
 
@@ -83,8 +83,21 @@ ASSUME(~Contains(<<{3},{4}>>, {2}))
 
 ASSUME LET cons(x,y) == <<x, y>>
        IN FoldLeft(cons, 10, <<13,11,12>> ) = << << <<10, 13>>, 11 >>, 12>>
+
+ASSUME FoldLeft(+, 1, [n \in 1..25 |-> n]) =  326
+ASSUME FoldLeft(-, 1, [n \in 1..25 |-> n]) = -324
+
+ASSUME FoldLeft(+, 1, [n \in 1..250 |-> n]) =  31376
+ASSUME FoldLeft(-, 1, [n \in 1..250 |-> n]) = -31374
+
 ASSUME LET cons(x,y) == <<x, y>>
        IN FoldRight(cons, <<23,21,22>>, 20 ) = <<23, <<21, <<22, 20>> >> >>
+
+ASSUME FoldRight(+, [n \in 1..25 |-> n], 1) = 326
+ASSUME FoldRight(-, [n \in 1..25 |-> n], 1) =  12
+
+ASSUME FoldRight(+, [n \in 1..250 |-> n], 1) = 31376
+ASSUME FoldRight(-, [n \in 1..250 |-> n], 1) =  -124
 
 -----------------------------------------------------------------------------
 
