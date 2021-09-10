@@ -91,6 +91,21 @@ public class IOUtils {
 		ENV = new RecordValue(names, values, false).normalize();
 	}
 
+	@TLAPlusOperator(identifier = "atoi", module = "IOUtils", minLevel = 0, warn = false)
+	public static Value atoi(final Value v) {
+		if (v instanceof StringValue) {
+			final StringValue sv = (StringValue) v;
+			try {
+				final int i = Integer.parseInt(sv.val.toString());
+				return IntValue.gen(i);
+			} catch (Exception e) {
+				// "fall-through" to eval exception below.
+			}
+		}
+		throw new EvalException(EC.TLC_MODULE_ONE_ARGUMENT_ERROR,
+				new String[] { "atoi", "string", Values.ppr(v.toString()) });
+	}
+	
 	private static final Value ENV;
 
 	// The legal syntax for names/keys of environment variables appears undefined.
