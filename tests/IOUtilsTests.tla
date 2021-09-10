@@ -1,5 +1,5 @@
 ---------------------------- MODULE IOUtilsTests ----------------------------
-EXTENDS IOUtils, TLC, Naturals
+EXTENDS IOUtils, TLC, TLCExt, Integers
 
 ASSUME PrintT("IOUtilsTests!A")
 
@@ -85,6 +85,18 @@ ASSUME LET n  == CHOOSE n \in 0..2^16 : \* TLC won't choose from *unbounded*  Na
 
 ASSUME(DOMAIN IOEnv \subseteq STRING)
 ASSUME(\A var \in DOMAIN IOEnv: IOEnv[var] \in STRING)
+
+ASSUME(atoi("1") = 1)
+ASSUME(atoi("0") = 0)
+ASSUME(atoi("-0") = 0)
+ASSUME(atoi("-1") = -1)
+
+ASSUME AssertError(
+           "The argument of atoi should be a string, but instead it is:\n\"\"", 
+           atoi(""))
+ASSUME AssertError(
+           "The argument of atoi should be a string, but instead it is:\n\"foo\"", 
+           atoi("foo"))
 
 ---------------------------------------------------------------------------------------------------------------------------
 
