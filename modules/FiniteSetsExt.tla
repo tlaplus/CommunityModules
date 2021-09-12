@@ -50,6 +50,14 @@ FlattenSet(S) ==
 (******************************************************************************)
   FoldSet(LAMBDA x,y: x \cup y, {}, S) 
 
+(***************************************************************************)
+(* The symmetric difference of two sets.                                   *)
+(*                                                                         *)
+(* The symmetric difference of sets A and B is the set containing all      *)
+(* elements that are present in either A or B but not in their             *)
+(* intersection.                                                           *)
+(***************************************************************************)
+SymDiff(A, B) == (A \ B) \cup (B \ A)
 
 -----------------------------------------------------------------------------
 
