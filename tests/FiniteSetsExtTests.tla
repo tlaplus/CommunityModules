@@ -96,16 +96,28 @@ ASSUME FoldSet(LAMBDA x,y : x + y, 0, 0 .. 10000) = 50005000
 ASSUME ChooseUnique({2, 3, 4, 5}, LAMBDA x : x % 3 = 1) = 4
 
 ASSUME AssertError(
-           "Attempted to compute the value of an expression of form\nCHOOSE x \\in S: P, but no element of S satisfied P.\nline 124, col 26 to line 125, col 64 of module FiniteSetsExt", 
+           "Attempted to compute the value of an expression of form\nCHOOSE x \\in S: P, but no element of S satisfied P.\nline 132, col 26 to line 133, col 64 of module FiniteSetsExt", 
            ChooseUnique({2, 3, 4, 5}, LAMBDA x : TRUE))
 
 ASSUME AssertError(
-           "Attempted to compute the value of an expression of form\nCHOOSE x \\in S: P, but no element of S satisfied P.\nline 124, col 26 to line 125, col 64 of module FiniteSetsExt", 
+           "Attempted to compute the value of an expression of form\nCHOOSE x \\in S: P, but no element of S satisfied P.\nline 132, col 26 to line 133, col 64 of module FiniteSetsExt", 
            ChooseUnique({}, LAMBDA x : TRUE))
 
 ASSUME AssertError(
-           "Attempted to compute the value of an expression of form\nCHOOSE x \\in S: P, but no element of S satisfied P.\nline 124, col 26 to line 125, col 64 of module FiniteSetsExt", 
+           "Attempted to compute the value of an expression of form\nCHOOSE x \\in S: P, but no element of S satisfied P.\nline 132, col 26 to line 133, col 64 of module FiniteSetsExt", 
            ChooseUnique({2, 3, 4, 5}, LAMBDA x : FALSE))
+
+-----------------------------------------------------------------------------
+
+ASSUME SymDiff({}, {}) = {}
+ASSUME SymDiff({1}, {}) = {1}
+ASSUME SymDiff({}, {1}) = {1}
+ASSUME SymDiff({}, {1,2}) = {1,2}
+ASSUME SymDiff({1,2}, {}) = {1,2}
+ASSUME SymDiff({1,2}, {2,3}) = {1,3}
+ASSUME SymDiff({1,2,3}, {2,3,4}) = {1,4}
+ASSUME SymDiff({1,2,3}, {2,3}) = {1}
+ASSUME SymDiff({2,3}, {2,3,4}) = {4}
 
 -----------------------------------------------------------------------------
 
