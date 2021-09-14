@@ -17,7 +17,11 @@ ToFile ==
 ASSUME(
   CSVWrite(Template, Value, ToFile) 
     => 
-      IOExec(<< "cat", ToFile >>).stdout = "42#\"abc\"#[a |-> \"a\", b |-> \"b\"]\n")
+      /\ IOExec(<< "cat", ToFile >>).stdout = "42#\"abc\"#[a |-> \"a\", b |-> \"b\"]\n")
+      /\ CSVRecords(ToFile) = 1
 
+ASSUME
+  CSVRecords("DoesNotExistNowhere.tla") = 0
+  
 =============================================================================
                                                                     
