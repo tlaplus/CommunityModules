@@ -28,6 +28,7 @@ package tlc2.overrides;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
 import java.util.Arrays;
@@ -57,7 +58,12 @@ public class CSV {
 	@TLAPlusOperator(identifier = "CSVRecords", module = "CSV", minLevel = 1, warn = false)
 	public static Value records(final StringValue absolutePath)
 			throws IOException {
-		try (Stream<String> stream = Files.lines(Paths.get(absolutePath.val.toString()), StandardCharsets.UTF_8)) {
+		final Path path = Paths.get(absolutePath.val.toString());
+		if (path.toFile().exists()) {
+			// There are zero records in a file that doesn't exist.
+			return IntValue.ValZero;
+		}
+		try (Stream<String> stream = Files.lines(path, StandardCharsets.UTF_8)) {
 			try {
 				return IntValue.gen(Math.toIntExact(stream.count()));
 			} catch (ArithmeticException e) {
