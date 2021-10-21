@@ -36,6 +36,7 @@ import java.util.stream.Stream;
 
 import tlc2.output.EC;
 import tlc2.tool.EvalException;
+import tlc2.value.Values;
 import tlc2.value.impl.BoolValue;
 import tlc2.value.impl.IntValue;
 import tlc2.value.impl.StringValue;
@@ -45,9 +46,14 @@ import tlc2.value.impl.Value;
 public class CSV {
 
 	@TLAPlusOperator(identifier = "CSVWrite", module = "CSV", minLevel = 1, warn = false)
-	public static Value write(final StringValue template, final TupleValue parameter, final StringValue absolutePath)
+	public static Value write(final StringValue template, final Value parameter, final StringValue absolutePath)
 			throws IOException {
-		final Object[] params = Arrays.asList(parameter.getElems()).stream().map(v -> v.toString())
+		final TupleValue tv = (TupleValue) parameter.toTuple();
+		if (tv == null) {
+			throw new EvalException(EC.TLC_MODULE_ONE_ARGUMENT_ERROR,
+					new String[] { "CSVWrite", "sequence", Values.ppr(parameter.toString()) });
+		}
+		final Object[] params = Arrays.asList(tv.getElems()).stream().map(v -> v.toString())
 				.toArray(size -> new Object[size]);
 		Files.write(Paths.get(absolutePath.val.toString()),
 				(String.format(template.val.toString(), params) + System.lineSeparator()).getBytes("UTF-8"),
