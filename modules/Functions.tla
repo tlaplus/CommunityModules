@@ -34,6 +34,10 @@ Range(f) == { f[x] : x \in DOMAIN f }
 (***************************************************************************)
 Inverse(f,S,T) == [t \in T |-> CHOOSE s \in S : t \in Range(f) => f[s] = t]
 
+(***************************************************************************)
+(* The inverse of a function.                                              *)
+(***************************************************************************)
+AntiFunction(f) == Inverse(f, DOMAIN f, Range(f))
 
 (***************************************************************************)
 (* A function is injective iff it maps each element in its domain to a     *)

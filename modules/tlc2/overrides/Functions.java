@@ -94,6 +94,17 @@ public final class Functions {
 		}
 		return BoolValue.ValTrue;
 	}
+	
+	@TLAPlusOperator(identifier = "AntiFunction", module = "Functions", warn = false)
+	public static Value antiFunction(final Value f) {
+		// AntiFunction(f) == [t \in Range(f) |-> CHOOSE s \in DOMAIN f : t \in Range(f) => f[s] = t]
+		final FcnRcdValue frc = (FcnRcdValue) f.normalize().toFcnRcd();
+		if (frc == null) {
+			throw new EvalException(EC.TLC_MODULE_ONE_ARGUMENT_ERROR,
+					new String[] { "AntiFunction", "functions", Values.ppr(f.toString()) });
+		}
+		return new FcnRcdValue(frc.values, frc.getDomainAsValues(), false).normalize();
+	}
 
 	@TLAPlusOperator(identifier = "FoldFunction", module = "Functions", warn = false)
 	public static Value foldFunction(final OpValue op, final Value base, final Applicable fun) {

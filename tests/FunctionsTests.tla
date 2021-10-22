@@ -43,5 +43,14 @@ ASSUME FoldFunctionOnSet(LAMBDA x,y: {x} \cup y, {}, [n \in 1..9999 |-> n], {}) 
 
 ASSUME FoldFunctionOnSet(LAMBDA x,y: {x} \cup y, {}, [n \in 1..9999 |-> n], 2..9998) = 2..9998
 
+\* AntiFunction
+ASSUME AntiFunction(<<"a", "b", "c">>) = [a |-> 1, b |-> 2, c |-> 3]
+
+ASSUME 
+    LET InversePure(f, S, T) == [t \in T |-> CHOOSE s \in S : t \in Range(f) => f[s] = t] \* "Pure" as in no Java module override.
+    IN /\ \A f \in [{0,1,2} -> {0,1,2,3}] : IsInjective(f) => InversePure(f, DOMAIN f, Range(f)) = AntiFunction(f)
+       /\ \A f \in [{"a","b","c"} -> {0,1,2,3}] : IsInjective(f) => InversePure(f, DOMAIN f, Range(f)) = AntiFunction(f)
+       /\ \A f \in [{0,1,2,3} -> {"a","b","c"}] : IsInjective(f) => InversePure(f, DOMAIN f, Range(f)) = AntiFunction(f)
+      
 
 =============================================================================
