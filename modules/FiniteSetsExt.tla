@@ -15,12 +15,12 @@ FoldSet(op(_,_), base, set) ==
 
 Sum(set) ==
    (*************************************************************************)
-   (* Calculuate the sum of the elements in set.                            *)
+   (* Calculate the sum of the elements in set.                             *)
    (*                                                                       *)
    (* Example:                                                              *)
    (*         Sum(0 .. 10) = 55                                             *)
    (*************************************************************************)
-   FoldSet(LAMBDA x, y: x + y, set, 0)
+   FoldSet(+, 0, set)
 
 Product(set) ==
    (*************************************************************************)
@@ -29,14 +29,14 @@ Product(set) ==
    (* Example:                                                              *)
    (*         Product(1 .. 3) = 6                                           *)
    (*************************************************************************)
-   FoldSet(LAMBDA x, y: x * y, set, 1)
+   FoldSet(LAMBDA x, y: x * y, 1, set)
 
 ReduceSet(op(_, _), set, acc) == 
    (*************************************************************************)
    (* An alias for FoldSet. ReduceSet was used instead of FoldSet in        *)
    (* earlier versions of the community modules.                            *)
    (*************************************************************************)
-  FoldSet(op, set, acc)
+   FoldSet(op, set, acc)
 
 
 FlattenSet(S) ==
