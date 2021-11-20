@@ -29,14 +29,24 @@ import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import tla2sany.semantic.ExprOrOpArgNode;
 import tlc2.output.EC;
+import tlc2.tool.EvalControl;
 import tlc2.tool.EvalException;
+import tlc2.tool.TLCState;
+import tlc2.tool.coverage.CostModel;
+import tlc2.tool.impl.Tool;
+import tlc2.util.Context;
 import tlc2.value.IValue;
 import tlc2.value.ValueInputStream;
 import tlc2.value.ValueOutputStream;
@@ -52,7 +62,7 @@ import util.UniqueString;
 public class IOUtils {
 
 	@TLAPlusOperator(identifier = "IODeserialize", module = "IOUtils", warn = false)
-	public static final IValue deserialize(final StringValue absolutePath, final BoolValue compress)
+	public static final IValue ioDeserialize(final StringValue absolutePath, final BoolValue compress)
 			throws IOException {
 		final ValueInputStream vis = new ValueInputStream(new File(absolutePath.val.toString()), compress.val);
 		try {
@@ -63,7 +73,7 @@ public class IOUtils {
 	}
 
 	@TLAPlusOperator(identifier = "IOSerialize", module = "IOUtils", warn = false)
-	public static final IValue serialize(final IValue value, final StringValue absolutePath, final BoolValue compress)
+	public static final IValue ioSerialize(final IValue value, final StringValue absolutePath, final BoolValue compress)
 			throws IOException {
 		final ValueOutputStream vos = new ValueOutputStream(new File(absolutePath.val.toString()), compress.val);
 		try {
@@ -74,14 +84,131 @@ public class IOUtils {
 		return BoolValue.ValTrue;
 	}
 	
+	/* Writes a String as plain text to file.
+	 * Operator should be called as Serialize(payload, filepath, [ser |-> "TXT", openOption |-> openOption, charset |-> charset])
+	 *		String payload: is the string that will be written
+	 *      String filepath: is the file where the string will be written
+	 *      String openOptions: sequence of strings of java StandardOpenOptions
+	 *      String charset: string with a java standard charset
+	 *      
+	 * Example:
+	 * 		Serialize("test payload", "test.txt", [ser |-> "TXT", charset |-> "UTF-8", openOption |-> <<"WRITEA", "CREATE", "TRUNCATE_EXISTING">>])
+	 */
+	@Evaluation(definition = "Serialize", module = "IOUtils", warn = false, silent = true, priority = 50)
+	public synchronized static Value textSerialize(final Tool tool, final ExprOrOpArgNode[] args, final Context c,
+			final TLCState s0, final TLCState s1, final int control, final CostModel cm) {
+		
+		final String msgInvalidParam = "Serialize error invalid parameters: ";
+		final String successmsg = "Finish writting to the file with success!";
+		
+		final RecordValue opts;	
+		
+		try {
+			opts = (RecordValue) tool.eval(args[2]);
+		} catch (Exception e){
+			return new RecordValue(EXEC_NAMES, new Value[] { IntValue.ValOne, new StringValue(""), new StringValue(msgInvalidParam + e.toString()) }, false);
+		}
+		
+		final StringValue serializer = (StringValue) opts.apply(new StringValue("ser"), EvalControl.Clear);
+		if("TXT".equals(serializer.getVal().toString())) {
+			
+			final StringValue payload;
+			final StringValue filepath;
+			final StringValue[] openOptions;
+			final StringValue charset;
+			
+			try {
+				payload = (StringValue) tool.eval(args[0]);
+				filepath = (StringValue) tool.eval(args[1]);
+				final TupleValue openOptionstv = (TupleValue) opts.apply(new StringValue("openOptions"), EvalControl.Clear);
+				charset = (StringValue) opts.apply(new StringValue("charset"), EvalControl.Clear);
+				
+				openOptions = Arrays.asList(openOptionstv.getElems()).stream()
+						.map(e -> (StringValue) e)
+						.toArray(size -> new StringValue[size]);
+			} catch(Exception e) {
+				return new RecordValue(EXEC_NAMES, new Value[] { IntValue.ValOne, new StringValue(""), new StringValue(msgInvalidParam + e.toString()) }, false);
+			}
+			
+			try {
+				Files.writeString(
+						Paths.get(filepath.getVal().toString()),
+						payload.getVal().toString(),
+						Charset.forName(charset.getVal().toString()),
+						Arrays.asList(openOptions).stream()
+							.map(e -> StandardOpenOption.valueOf(e.getVal().toString()) )
+							.toArray(size -> new StandardOpenOption[size]));
+				
+				return new RecordValue(EXEC_NAMES, new Value[] { IntValue.ValZero, new StringValue(successmsg), new StringValue("") }, false);
+				
+			} catch(Exception e) {
+				final StringValue errormsg = new StringValue("Serialize error writting to the file: "+e.toString());
+				return new RecordValue(EXEC_NAMES, new Value[] { IntValue.ValOne, new StringValue(""), errormsg }, false);
+			}
+		}
+
+		return null;
+	}
+
+	/* Reads a String from a plain text file.
+	 * Operator should be called as Deserialize(filepath, [ser |-> "TXT", charset |-> charset])
+	 *      String filepath: is the file to be read
+	 *      String charset: string with a java standard charset
+	 *      
+	 * Example:
+	 * 		Deserialize("test.txt", [ser |-> "TXT", charset |-> "UTF-8"])
+	 */
+	@Evaluation(definition = "Deserialize", module = "IOUtils", warn = false, silent = true, priority = 50)
+	public synchronized static Value textDeserialize(final Tool tool, final ExprOrOpArgNode[] args, final Context c,
+					final TLCState s0, final TLCState s1, final int control, final CostModel cm) {
+		
+		final String msgInvalidParam = "Deserialize error invalid parameters: ";
+		
+		final RecordValue opts;	
+		
+		try {
+			opts = (RecordValue) tool.eval(args[1]);
+		} catch (Exception e){
+			return new RecordValue(EXEC_NAMES, new Value[] { IntValue.ValOne, new StringValue(""), new StringValue(msgInvalidParam + e.toString()) }, false);
+		}
+		
+		final StringValue serializer = (StringValue) opts.apply(new StringValue("ser"), EvalControl.Clear);
+		if("TXT".equals(serializer.getVal().toString())) {
+			
+			final StringValue filepath;
+			final StringValue charset;
+			
+			try {
+				filepath = (StringValue) tool.eval(args[0]);
+				charset = (StringValue) opts.apply(new StringValue("charset"), EvalControl.Clear);
+			} catch(Exception e) {
+				return new RecordValue(EXEC_NAMES, new Value[] { IntValue.ValOne, new StringValue(""), new StringValue(msgInvalidParam + e.toString()) }, false);
+			}
+			
+			try {
+				final String result = Files.readString(
+						Paths.get(filepath.getVal().toString()),
+						Charset.forName(charset.getVal().toString()));
+				
+				return new RecordValue(EXEC_NAMES, new Value[] { IntValue.ValZero, new StringValue(result), new StringValue("") }, false);
+				
+			} catch(Exception e) {
+				final StringValue errormsg = new StringValue("Deserialize error reading from the file: "+e.toString());
+				return new RecordValue(EXEC_NAMES, new Value[] { IntValue.ValOne, new StringValue(""), errormsg }, false);
+			}
+		}
+		
+		return null;
+	}
+
 	static {
 		// Eagerly lookup the environment, which is not going to change while the Java
 		// process executes.
 		final Map<String, String> env = System.getenv();
-		
+
 		final UniqueString[] names = new UniqueString[env.size()];
 		final StringValue[] values = new StringValue[env.size()];
-		
+
 		final List<Map.Entry<String, String>> entries = new ArrayList<>(env.entrySet());
 		for (int i = 0; i < entries.size(); i++) {
 			names[i] = UniqueString.of(entries.get(i).getKey());

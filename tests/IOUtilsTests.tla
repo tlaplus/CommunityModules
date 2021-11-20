@@ -138,4 +138,23 @@ ASSUME(LET ret == IOEnvExec([SOME_NESTED_VAR |-> "SOME_VAL", B |-> "23"],
                                                                  IN /\ PrintT(ret)
                                                                     /\ ret.exitValue = 0
                                                                     /\ ret.stderr = "")
+
+---------------------------------------------------------------------------------------------------------------------------
+
+ASSUME PrintT("IOUtilsTests!D")
+
+ASSUME PrintT("IOUtilsTests!D!A")
+
+file == "/tmp/txt-serialize-test.txt"
+payloadTXT == "Some text with \" escapes \" \\"
+
+TXTSerializeResult == Serialize(payloadTXT, file, [ser |-> "TXT", charset |-> "UTF-8", openOptions |-> <<"WRITE", "CREATE", "TRUNCATE_EXISTING">>])
+ASSUME(LET ret == TXTSerializeResult IN /\ ret.exitValue = 0
+                                        /\ ret.stderr = "")
+
+TXTDeserializeResult == Deserialize(file, [ser |-> "TXT", charset |-> "UTF-8"])
+ASSUME(LET ret == TXTDeserializeResult IN /\ ret.exitValue = 0
+                                          /\ ret.stdout = payloadTXT
+                                          /\ ret.stderr = "")
+
 =============================================================================
