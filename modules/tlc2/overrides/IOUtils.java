@@ -84,15 +84,15 @@ public class IOUtils {
 		return BoolValue.ValTrue;
 	}
 	
-	/* Writes a String as plain text to file.
-	 * Operator should be called as Serialize(payload, filepath, [ser |-> "TXT", openOption |-> openOption, charset |-> charset])
+	/* Writes a String as plain text to a file.
+	 * Operator should be called as Serialize(payload, filepath, [ser |-> "TXT", openOptions |-> openOptions, charset |-> charset])
 	 *		String payload: is the string that will be written
 	 *      String filepath: is the file where the string will be written
 	 *      String openOptions: sequence of strings of java StandardOpenOptions
 	 *      String charset: string with a java standard charset
 	 *      
 	 * Example:
-	 * 		Serialize("test payload", "test.txt", [ser |-> "TXT", charset |-> "UTF-8", openOption |-> <<"WRITEA", "CREATE", "TRUNCATE_EXISTING">>])
+	 * 		Serialize("test payload", "test.txt", [ser |-> "TXT", charset |-> "UTF-8", openOptions |-> <<"WRITEA", "CREATE", "TRUNCATE_EXISTING">>])
 	 */
 	@Evaluation(definition = "Serialize", module = "IOUtils", warn = false, silent = true, priority = 50)
 	public synchronized static Value textSerialize(final Tool tool, final ExprOrOpArgNode[] args, final Context c,
