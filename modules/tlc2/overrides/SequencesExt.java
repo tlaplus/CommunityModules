@@ -25,9 +25,17 @@ package tlc2.overrides;
  *   Markus Alexander Kuppe - initial API and implementation
  ******************************************************************************/
 
+import java.util.regex.Pattern;
+
+import tla2sany.semantic.ExprOrOpArgNode;
 import tlc2.output.EC;
 import tlc2.tool.EvalControl;
 import tlc2.tool.EvalException;
+import tlc2.tool.TLCState;
+import tlc2.tool.coverage.CostModel;
+import tlc2.tool.impl.Tool;
+import tlc2.util.Context;
+import tlc2.value.IValue;
 import tlc2.value.Values;
 import tlc2.value.impl.Applicable;
 import tlc2.value.impl.BoolValue;
@@ -230,5 +238,23 @@ public final class SequencesExt {
 		}
 
 		return args[1];
+	}
+	
+	@Evaluation(definition = "ReplaceFirstSubSeq", module = "SequencesExt", warn = false, silent = true)
+	public static Value replaceFirstSubSeq(final Tool tool, final ExprOrOpArgNode[] args, final Context c,
+			final TLCState s0, final TLCState s1, final int control, final CostModel cm) {
+		final IValue r = tool.eval(args[0], c, s0, s1, control, cm);
+		final IValue s = tool.eval(args[1], c, s0, s1, control, cm);
+		final IValue t = tool.eval(args[2], c, s0, s1, control, cm);
+		
+		if (r instanceof StringValue && s instanceof StringValue && t instanceof StringValue) {
+			final String st = ((StringValue) t).toUnquotedString();
+			final String ss = ((StringValue) s).toUnquotedString();
+			final String sr = ((StringValue) r).toUnquotedString();
+			
+			return new StringValue(st.replaceFirst(Pattern.quote(ss), sr));
+		}
+		
+		return null; // Non-string functions handled by pure TLA+ definition of operator.
 	}
 }

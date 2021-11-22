@@ -192,4 +192,39 @@ ASSUME \A seq \in BoundedSeq(1..5, 5) :
                    /\ Len(s) <= Len(seq)
                    /\ Range(s) \subseteq Range(seq)
 
+-----------------------------------------------------------------------------
+
+ASSUME ReplaceFirstSubSeq(<<>>,<<>>,<<>>) = <<>>
+ASSUME ReplaceFirstSubSeq(<<4>>,<<>>,<<>>) = <<4>>
+ASSUME ReplaceFirstSubSeq(<<4>>,<<4>>,<<>>) = <<>>
+ASSUME ReplaceFirstSubSeq(<<>>,<<>>,<<3,2,3,4>>) = <<3,2,3,4>>
+ASSUME ReplaceFirstSubSeq(<<4,4>>,<<3,2,3,4>>,<<3,2,3,4>>) = <<4,4>>
+ASSUME ReplaceFirstSubSeq(<<4,4>>,<<>>,<<3,2,3,4>>) = <<4,4,3,2,3,4>>
+
+ASSUME ReplaceFirstSubSeq(<<4,4>>,<<4>>,<<3,2,3,4>>) = <<3,2,3,4,4>>
+ASSUME ReplaceFirstSubSeq(<<>>,<<4>>,<<3,2,3,4>>) = <<3,2,3>>
+ASSUME ReplaceFirstSubSeq(<<>>,<<4>>,<<3,2,3,4,4>>) = <<3,2,3,4>>
+ASSUME ReplaceFirstSubSeq(<<4,4>>,<<3>>,<<3,2,3,4>>) = <<4,4,2,3,4>>
+ASSUME ReplaceFirstSubSeq(<<4>>, <<1,2>>, <<1,2,1,2>>) = <<4,1,2>>
+ASSUME ReplaceFirstSubSeq(<<4,4>>, <<1,2>>, <<1,2,1,2>>) = <<4,4,1,2>>
+ASSUME ReplaceFirstSubSeq(<<4,4,4>>, <<1,2>>, <<1,2,1,2>>) = <<4,4,4,1,2>>
+
+ASSUME ReplaceFirstSubSeq(<<1,2>>, <<1,2>>, <<1,2,2,1>>) = <<1,2,2,1>>
+ASSUME ReplaceFirstSubSeq(<<2,1>>, <<1,2>>, <<1,2,2,1>>) = <<2,1,2,1>>
+
+ASSUME \A seq \in (BoundedSeq(1..5, 5) \ {<<>>}):
+    /\ ReplaceFirstSubSeq(<<6>>, <<>>, seq) = <<6>> \o seq
+    /\ ReplaceFirstSubSeq(<<6>>, <<Head(seq)>>, seq) = <<6>> \o Tail(seq)
+
+ASSUME ReplaceFirstSubSeq("", "", "") = ""
+ASSUME ReplaceFirstSubSeq("a", "", "") = "a"
+ASSUME ReplaceFirstSubSeq("a", "b", "") = ""
+ASSUME ReplaceFirstSubSeq("a", "d", "abc") = "abc"
+ASSUME ReplaceFirstSubSeq("ddd", "ab", "abab") = "dddab"
+ASSUME ReplaceFirstSubSeq("ddd", "aa", "aaa") = "ddda"
+ASSUME ReplaceFirstSubSeq("ddd", "abab", "abab") = "ddd"
+
+ASSUME ReplaceFirstSubSeq("\\\\", "\\", "Properly escape the \\quotes") = "Properly escape the \\\\quotes"
+ASSUME ReplaceFirstSubSeq("replaces", "%pattern%", "This %pattern% the pattern") = "This replaces the pattern"
+
 =============================================================================

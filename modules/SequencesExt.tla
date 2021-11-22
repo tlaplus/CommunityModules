@@ -288,4 +288,34 @@ SubSeqs(s) ==
   (**************************************************************************)
   { SubSeq(s, i+1, j) : i, j \in 0..Len(s) }
 
+
+IndexFirstSubSeq(s, t) ==
+  (**************************************************************************)
+  (* The (1-based) index of the beginning of the subsequence  s  of the     *)
+  (* sequence  t  .  If  s  appears in  t  multiple times, this equals the  *)
+  (* lowest index.                                                          *)
+  (* For example:  IndexFirstSubSeq(<<1>>, <<1,1,1>>) = 1                   *)
+  (**************************************************************************)
+  LET last == CHOOSE i \in 0..Len(t) :
+                /\ s \in SubSeqs(SubSeq(t, 1, i))
+                /\ \A j \in 0..i-1 : s \notin SubSeqs(SubSeq(t, 1, j))
+  IN last - (Len(s) - 1)
+
+ReplaceSubSeqAt(i, r, s, t) ==
+  (**************************************************************************)
+  (* The sequence  t  with its subsequence  s  at position  i  replaced by  *)
+  (* the sequence  r  .                                                     *)
+  (**************************************************************************)
+  LET prefix == SubSeq(t, 1, i - 1)
+      suffix == SubSeq(t, i + Len(s), Len(t))
+  IN prefix \o r \o suffix 
+
+ReplaceFirstSubSeq(r, s, t) ==
+  (**************************************************************************)
+  (* The sequence  t  with its subsequence  s  replaced by the sequence  r  *)
+  (**************************************************************************)
+  IF s \in SubSeqs(t)
+  THEN ReplaceSubSeqAt(IndexFirstSubSeq(s, t), r, s, t)
+  ELSE t
+
 =============================================================================
