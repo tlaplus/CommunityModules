@@ -5,6 +5,7 @@ LOCAL INSTANCE FiniteSets
 LOCAL INSTANCE FiniteSetsExt
 LOCAL INSTANCE Functions
 LOCAL INSTANCE Folds
+LOCAL INSTANCE TLC
   (*************************************************************************)
   (* Imports the definitions from the modules, but doesn't export them.    *)
   (*************************************************************************)
@@ -24,6 +25,15 @@ SetToSeq(S) ==
   (* set exactly once, and contains no other elements.                      *)
   (**************************************************************************)
   CHOOSE f \in [1..Cardinality(S) -> S] : IsInjective(f)
+
+SetToSortSeq(S, op(_,_)) ==
+  (**************************************************************************)
+  (* Convert a set to a sorted sequence that contains all the elements of   *)
+  (* the set exactly once, and contains no other elements.                  *)
+  (**************************************************************************)
+  \* Not defined via CHOOSE like SetToSeq but with an additional conjunct,
+  \* because this variant works efficiently without a dedicated TLC override.
+  SortSeq(SetToSeq(S), op)
 
 TupleOf(set, n) == 
   (***************************************************************************)
