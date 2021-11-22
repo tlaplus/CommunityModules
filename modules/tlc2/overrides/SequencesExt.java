@@ -257,4 +257,22 @@ public final class SequencesExt {
 		
 		return null; // Non-string functions handled by pure TLA+ definition of operator.
 	}
+
+	@Evaluation(definition = "ReplaceAllSubSeqs", module = "SequencesExt", warn = false, silent = true)
+	public static Value replaceAllSubSeq(final Tool tool, final ExprOrOpArgNode[] args, final Context c,
+			final TLCState s0, final TLCState s1, final int control, final CostModel cm) {
+		final IValue r = tool.eval(args[0], c, s0, s1, control, cm);
+		final IValue s = tool.eval(args[1], c, s0, s1, control, cm);
+		final IValue t = tool.eval(args[2], c, s0, s1, control, cm);
+		
+		if (r instanceof StringValue && s instanceof StringValue && t instanceof StringValue) {
+			final String st = ((StringValue) t).toUnquotedString();
+			final String ss = ((StringValue) s).toUnquotedString();
+			final String sr = ((StringValue) r).toUnquotedString();
+			
+			return new StringValue(st.replaceAll(Pattern.quote(ss), sr));
+		}
+		
+		return null; // Non-string functions handled by pure TLA+ definition of operator.
+	}
 }

@@ -227,4 +227,44 @@ ASSUME ReplaceFirstSubSeq("ddd", "abab", "abab") = "ddd"
 ASSUME ReplaceFirstSubSeq("\\\\", "\\", "Properly escape the \\quotes") = "Properly escape the \\\\quotes"
 ASSUME ReplaceFirstSubSeq("replaces", "%pattern%", "This %pattern% the pattern") = "This replaces the pattern"
 
+-----------------------------------------------------------------------------
+
+ASSUME AssertEq(ReplaceAllSubSeqs(<<4>>,<<1>>,<<>>), <<>>)
+ASSUME AssertEq(ReplaceAllSubSeqs(<<4>>,<<2>>,<<1>>), <<1>>)
+ASSUME AssertEq(ReplaceAllSubSeqs(<<4>>,<<2>>,<<1,1>>), <<1,1>>)
+
+ASSUME AssertEq(ReplaceAllSubSeqs(<<>>,<<>>,<<>>), <<>>)
+ASSUME AssertEq(ReplaceAllSubSeqs(<<4>>,<<>>,<<>>), <<4>>)
+ASSUME AssertEq(ReplaceAllSubSeqs(<<4,4>>,<<>>,<<>>), <<4,4>>)
+
+ASSUME AssertEq(ReplaceAllSubSeqs(<<1>>, <<1>>, <<1>>), <<1>>)
+ASSUME AssertEq(ReplaceAllSubSeqs(<<2>>, <<3>>, <<1,3>>), <<1,2>>)
+ASSUME AssertEq(ReplaceAllSubSeqs(<<1,1>>, <<1>>, <<1,1>>), <<1,1,1,1>>)
+ASSUME AssertEq(ReplaceAllSubSeqs(<<1,1>>, <<1,1>>, <<1,1>>), <<1,1>>)
+ASSUME AssertEq(ReplaceAllSubSeqs(<<2,2>>, <<1,1>>, <<1,1,1>>), <<2,2,1>>)
+ASSUME AssertEq(ReplaceAllSubSeqs(<<>>, <<1,1>>, <<1,1,1>>), <<1>>)
+ASSUME AssertEq(ReplaceAllSubSeqs(<<2,2>>, <<1,1,1>>, <<1,1,1>>), <<2,2>>)
+ASSUME AssertEq(ReplaceAllSubSeqs(<<>>, <<1,1,1>>, <<1,1,1>>), <<>>)
+ASSUME AssertEq(ReplaceAllSubSeqs(<<2,2>>, <<1,1,1>>, <<1,1,1,1>>), <<2,2,1>>)
+
+ASSUME AssertEq(ReplaceAllSubSeqs(<<1,1>>, <<>>, <<2,2>>), <<1,1,2,1,1,2>>)
+
+ASSUME ReplaceAllSubSeqs("dd", "d", "dd") = "dddd"
+
+ASSUME ReplaceAllSubSeqs("ddd", "a", "") = ""
+ASSUME ReplaceAllSubSeqs("ddd", "", "") = "ddd"
+ASSUME ReplaceAllSubSeqs("ddd", "ab", "abab") = "dddddd"
+ASSUME ReplaceAllSubSeqs("ddd", "abab", "abab") = "ddd"
+
+ASSUME ReplaceAllSubSeqs("ddd", "aa", "aaa") = "ddda"
+ASSUME ReplaceAllSubSeqs("a", "a", "a") = "a"
+ASSUME ReplaceAllSubSeqs("aa", "aa", "aa") = "aa"
+ASSUME ReplaceAllSubSeqs("aa", "aa", "aaaa") = "aaaa"
+ASSUME ReplaceAllSubSeqs("aa", "aa", "bbbb") = "bbbb"
+
+ASSUME ReplaceAllSubSeqs("ddd", "", "abab") = "dddadddbdddadddbddd"
+
+ASSUME AssertEq(ReplaceAllSubSeqs("replaces", "%pattern%", "This %pattern% the pattern %pattern% multipe times"), "This replaces the pattern replaces multipe times")
+ASSUME AssertEq(ReplaceAllSubSeqs("\\\\", "\\", "Properly escape the \\quotes"), "Properly escape the \\\\quotes")
+
 =============================================================================

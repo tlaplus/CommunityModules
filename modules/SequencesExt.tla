@@ -318,4 +318,43 @@ ReplaceFirstSubSeq(r, s, t) ==
   THEN ReplaceSubSeqAt(IndexFirstSubSeq(s, t), r, s, t)
   ELSE t
 
+ReplaceAllSubSeqs(r, s, t) ==
+  (**************************************************************************)
+  (* The sequence  t  with all subsequences  s  replaced by the sequence  r *)
+  (* Overlapping replacements are disambiguated by choosing the occurrence  *)
+  (* closer to the beginning of the sequence.                               *)
+  (*                                                                        *)
+  (* Examples:                                                              *)
+  (*                                                                        *)
+  (*  ReplaceAllSubSeqs(<<>>,<<>>,<<>>) = <<>>                              *)
+  (*  ReplaceAllSubSeqs(<<4>>,<<>>,<<>>) = <<4>>                            *)
+  (*  ReplaceAllSubSeqs(<<2>>,<<3>>,<<1,3>>) = <<1,2>>                      *)
+  (*  ReplaceAllSubSeqs(<<2,2>>,<<1,1>>,<<1,1,1>>) = <<2,2,1>>              *)
+  (**************************************************************************)
+  CASE s = t -> r
+    [] r = s -> t  \* TLC optimization
+    [] s # t /\ Len(s) = 0 ->
+        LET z == Zip([i \in 1..Len(t) |-> r], [i \in 1..Len(t) |-> <<t[i]>>])
+        IN FlattenSeq(FlattenSeq(z))
+    [] s # t /\ Len(s) > 0 /\ s \in SubSeqs(t) ->
+        \* Not defined recursively to avoid infinite loops.
+        LET match(f) == { i \in 1..Len(f) : s = f[i] }
+            comp(p, q) == \A i \in 1..Len(p) : p[i] <= q[i]
+            \* TODO: Replace with Seq(Seq(Range(t))) once *total* Java module
+            \*       override in place. The current override handles only the
+            \*       case where the parameters are strings (hence Range("abc") 
+            \*       not a problem with TLC).
+            R == BoundedSeq(BoundedSeq(Range(t), Len(t)), Len(t))
+            \* A) Matches the input t.
+            S == { f \in R : FlattenSeq(f) = t }
+            \* B) Has the max number of matches...
+            T == { f \in S : \A g \in S : 
+                    Cardinality(match(g)) <= Cardinality(match(f)) }
+            \* C) ...of min (leftmost) matches.
+            u == CHOOSE f \in T : 
+                    \A g \in T : comp(
+                        SetToSortSeq(match(f), <), SetToSortSeq(match(g), <))
+        IN FlattenSeq([i \in 1..Len(u) |-> IF s = u[i] THEN r ELSE u[i]])
+    [] OTHER -> t
+
 =============================================================================
