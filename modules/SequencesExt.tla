@@ -280,4 +280,12 @@ Zip(s, t) ==
     [] Len(s) = Len(t) /\ Len(s) = 0 -> << <<>>, <<>> >>
     \* error "Zip: sequences must have same length"
 
+
+SubSeqs(s) ==
+  (**************************************************************************)
+  (* The set of all subsequences of the sequence  s  .  Note that the empty *)
+  (* sequence  <<>>  is defined to be a subsequence of any sequence.        *)
+  (**************************************************************************)
+  { SubSeq(s, i+1, j) : i, j \in 0..Len(s) }
+
 =============================================================================

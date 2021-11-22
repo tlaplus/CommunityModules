@@ -1,5 +1,5 @@
 ------------------------- MODULE SequencesExtTests -------------------------
-EXTENDS Sequences, SequencesExt, Integers, TLC, TLCExt, FiniteSets
+EXTENDS Sequences, SequencesExt, Integers, TLC, TLCExt, FiniteSets, FiniteSetsExt, Functions
 
 ASSUME LET T == INSTANCE TLC IN T!PrintT("SequencesExtTests")
 
@@ -162,5 +162,34 @@ ASSUME Zip(<<1,3>>,<<2,4>>) = <<<<1>>, <<2>>, <<3>>, <<4>>>>
 ASSUME AssertEq(FlattenSeq(Zip(<<1,3>>,<<2,4>>)), <<1, 2, 3, 4>>)
 ASSUME Zip(<<"a", "c">>, <<"b", "d">>) = <<<<"a">>, <<"b">>, <<"c">>, <<"d">>>>
 ASSUME AssertEq(FlattenSeq(Zip(<<"a", "c">>, <<"b", "d">>)), <<"a", "b", "c", "d">>)
+
+-----------------------------------------------------------------------------
+
+ASSUME SubSeqs(<<>>) = {<<>>}
+ASSUME SubSeqs(<<1>>) = {<<>>, <<1>>}
+ASSUME SubSeqs(<<1,1>>) = {<<>>, <<1>>, <<1,1>>}
+ASSUME SubSeqs(<<1,1,1>>) = {<<>>, <<1>>, <<1,1>>, <<1,1,1>>}
+ASSUME SubSeqs(<<1,2,3,2>>) = {<<>>, <<1>>, <<2>>, <<3>>, <<1, 2>>, <<2, 3>>, <<3, 2>>, <<1, 2, 3>>, <<2, 3, 2>>, <<1, 2, 3, 2>>}
+ASSUME SubSeqs([i \in 1..3 |-> i]) = {<<>>, <<1>>, <<2>>, <<3>>, <<1, 2>>, <<2, 3>>, <<1, 2, 3>>}
+
+LOCAL ToSeq(fun) ==
+    LET RECURSIVE toSeq(_,_)
+        toSeq(f, d) ==
+            IF d = {} THEN <<>> ELSE <<f[Min(d)]>> \o toSeq(f, d \ {Min(d)})
+    IN toSeq(fun, DOMAIN fun)
+
+LOCAL SubSeqsAlt(s) ==
+    LET IsConsecutive(S) == S # {} => S = Min(S)..Max(S)
+        DOMS == { sd \in SUBSET DOMAIN s : IsConsecutive(sd) }
+    IN { ToSeq([ i \in d |-> s[i] ]) : d \in DOMS }
+
+ASSUME \A seq \in BoundedSeq(1..5, 5) :
+        /\ SubSeqs(seq) = SubSeqsAlt(seq)
+        /\ LET ss == SubSeqs(seq)
+           IN /\ <<>> \in ss
+              /\ Cardinality(ss) \in 1..16
+              /\ \A s \in ss :
+                   /\ Len(s) <= Len(seq)
+                   /\ Range(s) \subseteq Range(seq)
 
 =============================================================================
