@@ -104,7 +104,7 @@ public class IOUtils {
 		final RecordValue opts;	
 		
 		try {
-			opts = (RecordValue) tool.eval(args[2]);
+			opts = (RecordValue) tool.eval(args[2], c, s0, s1, control, cm);
 		} catch (Exception e){
 			return new RecordValue(EXEC_NAMES, new Value[] { IntValue.ValOne, new StringValue(""), new StringValue(msgInvalidParam + e.toString()) }, false);
 		}
@@ -118,8 +118,8 @@ public class IOUtils {
 			final StringValue charset;
 			
 			try {
-				payload = (StringValue) tool.eval(args[0]);
-				filepath = (StringValue) tool.eval(args[1]);
+				payload = (StringValue) tool.eval(args[0], c, s0, s1, control, cm);
+				filepath = (StringValue) tool.eval(args[1], c, s0, s1, control, cm);
 				final TupleValue openOptionstv = (TupleValue) opts.apply(new StringValue("openOptions"), EvalControl.Clear);
 				charset = (StringValue) opts.apply(new StringValue("charset"), EvalControl.Clear);
 				
@@ -167,7 +167,7 @@ public class IOUtils {
 		final RecordValue opts;	
 		
 		try {
-			opts = (RecordValue) tool.eval(args[1]);
+			opts = (RecordValue) tool.eval(args[1], c, s0, s1, control, cm);
 		} catch (Exception e){
 			return new RecordValue(EXEC_NAMES, new Value[] { IntValue.ValOne, new StringValue(""), new StringValue(msgInvalidParam + e.toString()) }, false);
 		}
@@ -179,7 +179,7 @@ public class IOUtils {
 			final StringValue charset;
 			
 			try {
-				filepath = (StringValue) tool.eval(args[0]);
+				filepath = (StringValue) tool.eval(args[0], c, s0, s1, control, cm);
 				charset = (StringValue) opts.apply(new StringValue("charset"), EvalControl.Clear);
 			} catch(Exception e) {
 				return new RecordValue(EXEC_NAMES, new Value[] { IntValue.ValOne, new StringValue(""), new StringValue(msgInvalidParam + e.toString()) }, false);
