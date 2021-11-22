@@ -75,9 +75,9 @@ ReplaceAll(s, old, new) ==
 
 -----------------------------------------------------------------------------
 
-\* The operators below have been extracted from the TLAPS module 
-\* SequencesTheorems.tla as of 10/14/2019.  The original comments have been
-\* partially rewritten.
+\* The operators below up to including IsStrictSuffix have been extracted 
+\* from the TLAPS module SequencesTheorems.tla as of 10/14/2019.  The original
+\* comments have been partially rewritten.
 
 InsertAt(s, i, e) ==
   (**************************************************************************)
@@ -105,9 +105,9 @@ RemoveAt(s, i) ==
 -----------------------------------------------------------------------------
 
 Cons(elt, seq) == 
-    (***************************************************************************)
-    (* Cons prepends an element at the beginning of a sequence.                *)
-    (***************************************************************************)
+    (************************************************************************)
+    (* Cons prepends an element at the beginning of a sequence.             *)
+    (************************************************************************)
     <<elt>> \o seq
 
 Front(s) == 
