@@ -140,4 +140,12 @@ ASSUME \A s \in SUBSET {"a","b","ab","ba","aa","bb"}:
     \* The Java module override throws an EvalException.
     s # {} => LongestCommonPrefix(s) = LongestCommonPrefixPure(s)
 
+-----------------------------------------------------------------------------
+
+ASSUME FlattenSeq(<<>>) = <<>>
+ASSUME FlattenSeq(<< <<1,2>>, <<1>> >>) = << 1, 2, 1 >>
+ASSUME FlattenSeq(<< <<1,2>>, << << 1, 2 >> >> >>) = << 1, 2, << 1, 2 >> >>
+ASSUME FlattenSeq("") = ""
+ASSUME FlattenSeq(<< <<"a">>, <<"b">> >>) = <<"a", "b">>
+ASSUME FlattenSeq(<<"a", "b">>) = "ab"
 =============================================================================
