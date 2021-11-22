@@ -259,4 +259,25 @@ FlattenSeq(seqs) ==
     LET flatten[i \in 1..Len(seqs)] ==
         IF i = 1 THEN seqs[i] ELSE flatten[i-1] \o seqs[i]
     IN flatten[Len(seqs)]
+
+Zip(s, t) ==
+  (**************************************************************************)
+  (* A sequence where the i-th tuple contains the i-th element of  s  and   *)
+  (*   t  in this order.  Not defined for  Len(s) # Len(t)                  *)
+  (*                                                                        *)
+  (* Examples:                                                              *)
+  (*                                                                        *)
+  (*  Zip(<< >>, << >>) = << >>                                             *)
+  (*  Zip(<<"a">>, <<"b">>) = <<"a", "b">>                                  *)
+  (*  Zip(<<1,3>>, <<2,4>>) = <<<<1>>, <<2>>, <<3>>, <<4>>>>                *)
+  (*  FlattenSeq(Zip(<<1,3>>,<<2,4>>)) = <<1, 2, 3, 4>>                     *)
+  (**************************************************************************)
+  CASE Len(s) = Len(t) /\ Len(s) > 0 ->
+        LET u[ i \in 1..Len(s) ] == 
+                IF i = 1 THEN << <<s[i]>> >> \o << <<t[i]>> >>
+                ELSE u[i-1] \o << <<s[i]>> >> \o << <<t[i]>> >>
+        IN Last(u)
+    [] Len(s) = Len(t) /\ Len(s) = 0 -> << <<>>, <<>> >>
+    \* error "Zip: sequences must have same length"
+
 =============================================================================
