@@ -14,13 +14,13 @@ Serialize(value, dest, options) ==
     (* value: TLA+ value to be serialized. *)
     (* dest: Destination to serialize to such as a file or URL. *)
     (* options: Record of serializer-specific options. *)
-    (* options must include record "ser" with a String identifying the serializer. *)
+    (* options must include record "format" with a String identifying the serializer. *)
     CHOOSE r \in [exitValue : Int, stdout : STRING, stderr : STRING] : TRUE
 
 Deserialize(src, options) ==
     (* dest: Destination to serialize to such as a file or URL. *)
     (* options: Record of serializer-specific options. *)
-    (* options must include record "ser" with a String identifying the serializer. *)
+    (* options must include record "format" with a String identifying the serializer. *)
     CHOOSE val : TRUE
 
 ----------------------------------------------------------------------------

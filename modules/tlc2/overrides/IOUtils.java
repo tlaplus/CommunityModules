@@ -85,14 +85,14 @@ public class IOUtils {
 	}
 	
 	/* Writes a String as plain text to a file.
-	 * Operator should be called as Serialize(payload, filepath, [ser |-> "TXT", openOptions |-> openOptions, charset |-> charset])
-	 *		String payload: is the string that will be written
+	 * Operator should be called as Serialize(payload, filepath, [format |-> "TXT", charset |-> charset, openOptions |-> openOptions])
+	 *      String payload: is the string that will be written
 	 *      String filepath: is the file where the string will be written
-	 *      String openOptions: sequence of strings of java StandardOpenOptions
 	 *      String charset: string with a java standard charset
+	 *      String openOptions: sequence of strings of java StandardOpenOptions
 	 *      
 	 * Example:
-	 * 		Serialize("test payload", "test.txt", [ser |-> "TXT", charset |-> "UTF-8", openOptions |-> <<"WRITEA", "CREATE", "TRUNCATE_EXISTING">>])
+	 *      Serialize("test payload", "test.txt", [format |-> "TXT", charset |-> "UTF-8", openOptions |-> <<"WRITEA", "CREATE", "TRUNCATE_EXISTING">>])
 	 */
 	@Evaluation(definition = "Serialize", module = "IOUtils", warn = false, silent = true, priority = 50)
 	public synchronized static Value textSerialize(final Tool tool, final ExprOrOpArgNode[] args, final Context c,
@@ -109,7 +109,7 @@ public class IOUtils {
 			return new RecordValue(EXEC_NAMES, new Value[] { IntValue.ValOne, new StringValue(""), new StringValue(msgInvalidParam + e.toString()) }, false);
 		}
 		
-		final StringValue serializer = (StringValue) opts.apply(new StringValue("ser"), EvalControl.Clear);
+		final StringValue serializer = (StringValue) opts.apply(new StringValue("format"), EvalControl.Clear);
 		if("TXT".equals(serializer.getVal().toString())) {
 			
 			final StringValue payload;
@@ -151,12 +151,12 @@ public class IOUtils {
 	}
 
 	/* Reads a String from a plain text file.
-	 * Operator should be called as Deserialize(filepath, [ser |-> "TXT", charset |-> charset])
+	 * Operator should be called as Deserialize(filepath, [format |-> "TXT", charset |-> charset])
 	 *      String filepath: is the file to be read
 	 *      String charset: string with a java standard charset
 	 *      
 	 * Example:
-	 * 		Deserialize("test.txt", [ser |-> "TXT", charset |-> "UTF-8"])
+	 *      Deserialize("test.txt", [format |-> "TXT", charset |-> "UTF-8"])
 	 */
 	@Evaluation(definition = "Deserialize", module = "IOUtils", warn = false, silent = true, priority = 50)
 	public synchronized static Value textDeserialize(final Tool tool, final ExprOrOpArgNode[] args, final Context c,
@@ -172,7 +172,7 @@ public class IOUtils {
 			return new RecordValue(EXEC_NAMES, new Value[] { IntValue.ValOne, new StringValue(""), new StringValue(msgInvalidParam + e.toString()) }, false);
 		}
 		
-		final StringValue serializer = (StringValue) opts.apply(new StringValue("ser"), EvalControl.Clear);
+		final StringValue serializer = (StringValue) opts.apply(new StringValue("format"), EvalControl.Clear);
 		if("TXT".equals(serializer.getVal().toString())) {
 			
 			final StringValue filepath;

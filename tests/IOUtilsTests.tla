@@ -148,11 +148,11 @@ ASSUME PrintT("IOUtilsTests!D!A")
 file == "/tmp/txt-serialize-test.txt"
 payloadTXT == "Some text with \" escapes \" \\"
 
-TXTSerializeResult == Serialize(payloadTXT, file, [ser |-> "TXT", charset |-> "UTF-8", openOptions |-> <<"WRITE", "CREATE", "TRUNCATE_EXISTING">>])
+TXTSerializeResult == Serialize(payloadTXT, file, [format |-> "TXT", charset |-> "UTF-8", openOptions |-> <<"WRITE", "CREATE", "TRUNCATE_EXISTING">>])
 ASSUME(LET ret == TXTSerializeResult IN /\ ret.exitValue = 0
                                         /\ ret.stderr = "")
 
-TXTDeserializeResult == Deserialize(file, [ser |-> "TXT", charset |-> "UTF-8"])
+TXTDeserializeResult == Deserialize(file, [format |-> "TXT", charset |-> "UTF-8"])
 ASSUME(LET ret == TXTDeserializeResult IN /\ ret.exitValue = 0
                                           /\ ret.stdout = payloadTXT
                                           /\ ret.stderr = "")
