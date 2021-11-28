@@ -1,0 +1,22 @@
+{
+    "name": "TLA+ CommunityModules",
+  
+    // Install optional extension. If this fails, it just degrades the convenience factor.
+    "extensions": [
+      "alygin.vscode-tlaplus-nightly",
+      "mhutchie.git-graph",
+      "vscjava.vscode-java-pack"
+    ],
+  
+    // - Do not automatically update extensions (E.g. better-code ext is patched for TLA+)
+    // - Use Java GC that works best with TLC.
+    // - https://github.com/alygin/vscode-tlaplus/wiki/Automatic-Module-Parsing
+    "settings": {
+      "tlaplus.tlc.statisticsSharing": "share",
+      "tlaplus.java.options": "-XX:+UseParallelGC",
+      "tlaplus.java.home": "/home/codespace/.java/current/",
+      "[tlaplus]": {"editor.codeActionsOnSave": {"source": true} }
+      },
+  
+    "postCreateCommand": "bash -i .devcontainer/install.sh",
+  }
