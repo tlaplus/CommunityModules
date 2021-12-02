@@ -29,6 +29,22 @@ ASSUME \A n, m \in 0..32 : AssertEq(n & m, AndPure(n,m))
 
 -----------------------------------------------------------------------------
 
+OrPure(a, b) ==
+    LET RECURSIVE OrR(_,_,_,_)
+        OrR(x,y,n,m) == 
+            LET exp == 2^n
+                xdm == (x \div exp) % 2
+                ydm == (y \div exp) % 2
+            IN IF m = 0 
+                THEN 0
+                ELSE exp * (((xdm + ydm) + (xdm * ydm)) % 2)
+                            + OrR(x,y,n+1,m \div 2)
+    IN IF a >= b THEN OrR(a,b,0,a) ELSE OrR(b,a,0,b)
+
+ASSUME \A n, m \in 0..32 : AssertEq(n | m, OrPure(n,m))
+
+-----------------------------------------------------------------------------
+
 ASSUME(\A n \in ZeroToM : AssertEq(shiftR(n, 1), (n \div 2)))
 
 =============================================================================

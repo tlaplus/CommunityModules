@@ -32,6 +32,11 @@ public class Bitwise {
     public static IntValue And(IntValue x, IntValue y, IntValue n, IntValue m) {
         return IntValue.gen(x.val & y.val);
     }
+	
+	@TLAPlusOperator(identifier = "Or", module = "Bitwise", warn = false)
+    public static IntValue Or(IntValue x, IntValue y, IntValue n, IntValue m) {
+        return IntValue.gen(x.val | y.val);
+    }
 
 	@TLAPlusOperator(identifier = "shiftR", module = "Bitwise", warn = false)
 	public static IntValue shiftR(final IntValue n, final IntValue pos) {

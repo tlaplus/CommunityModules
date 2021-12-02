@@ -16,6 +16,25 @@ x & y ==
     (***************************************************************************)
     IF x >= y THEN And(x, y, 0, x) ELSE And(y, x, 0, y) \* Infix variant of And(x,y)
 
+-------------------------------------------------------------------------------
+
+RECURSIVE Or(_,_,_,_)
+LOCAL Or(x,y,n,m) == 
+        LET exp == 2^n
+            xdm == (x \div exp) % 2
+            ydm == (y \div exp) % 2
+        IN IF m = 0 
+           THEN 0
+           ELSE exp * (((xdm + ydm) + (xdm * ydm)) % 2)
+                        + Or(x,y,n+1,m \div 2)
+
+x | y == 
+    (***************************************************************************)
+    (* Bitwise OR of (non-negative) x and y (defined for Nat \cup {0}).        *)
+    (***************************************************************************)
+    IF x >= y THEN Or(x, y, 0, x) ELSE Or(y, x, 0, y) \* Infix variant of Or(x,y)
+
+-------------------------------------------------------------------------------
 
 RECURSIVE shiftR(_,_)
 shiftR(n,pos) == 
