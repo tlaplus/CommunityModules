@@ -38,6 +38,11 @@ public class Bitwise {
         return IntValue.gen(x.val | y.val);
     }
 
+	@TLAPlusOperator(identifier = "Xor", module = "Bitwise", warn = false)
+    public static IntValue Xor(IntValue x, IntValue y, IntValue n, IntValue m) {
+        return IntValue.gen(x.val ^ y.val);
+    }
+
 	@TLAPlusOperator(identifier = "shiftR", module = "Bitwise", warn = false)
 	public static IntValue shiftR(final IntValue n, final IntValue pos) {
 		return IntValue.gen(n.val >>> pos.val);
