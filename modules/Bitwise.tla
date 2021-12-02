@@ -14,7 +14,7 @@ x & y ==
     (***************************************************************************)
     (* Bitwise AND of (non-negative) x and y (defined for Nat \cup {0}).       *)
     (***************************************************************************)
-    And(x, y, 0, x) \* Infix variant of And(x,y)
+    IF x >= y THEN And(x, y, 0, x) ELSE And(y, x, 0, y) \* Infix variant of And(x,y)
 
 
 RECURSIVE shiftR(_,_)
