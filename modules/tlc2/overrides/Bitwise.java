@@ -43,6 +43,17 @@ public class Bitwise {
         return IntValue.gen(x.val ^ y.val);
     }
 
+	@TLAPlusOperator(identifier = "Not", module = "Bitwise", warn = false)
+    public static IntValue NotR(IntValue x) {
+        // The TLA+ definition of  Bitwise!Not  has no type to work with and, thus,
+        // only flips the bits in (Integer.numberOfLeadingZeros(x.val), 0].  Thus,
+        // correct Java's not (~) flipping the upper bits of an 32 bit integer
+        // by and'ing mask.  
+        final int mask = Integer.MAX_VALUE >> Integer.numberOfLeadingZeros(x.val) - 1;
+        final int tmp = ~x.val & mask;
+        return IntValue.gen(tmp);
+    }
+
 	@TLAPlusOperator(identifier = "shiftR", module = "Bitwise", warn = false)
 	public static IntValue shiftR(final IntValue n, final IntValue pos) {
 		return IntValue.gen(n.val >>> pos.val);

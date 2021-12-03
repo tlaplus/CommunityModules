@@ -114,6 +114,55 @@ ASSUME \A n, m \in 0..32 : AssertEq(n ^^ m, XorPure(n,m))
 
 -----------------------------------------------------------------------------
 
+ASSUME(AssertEq(Not(0), 0))
+ASSUME(AssertEq(Not(1), 0))
+ASSUME(AssertEq(Not(2), 1))
+ASSUME(AssertEq(Not(3), 0))
+ASSUME(AssertEq(Not(4), 3))
+ASSUME(AssertEq(Not(5), 2))
+ASSUME(AssertEq(Not(6), 1))
+ASSUME(AssertEq(Not(7), 0))
+ASSUME(AssertEq(Not(8), 7))
+ASSUME(AssertEq(Not(9), 6))
+ASSUME(AssertEq(Not(10), 5))
+ASSUME(AssertEq(Not(11), 4))
+ASSUME(AssertEq(Not(12), 3))
+ASSUME(AssertEq(Not(13), 2))
+ASSUME(AssertEq(Not(14), 1))
+ASSUME(AssertEq(Not(15), 0))
+ASSUME(AssertEq(Not(16), 15))
+ASSUME(AssertEq(Not(17), 14))
+ASSUME(AssertEq(Not(18), 13))
+ASSUME(AssertEq(Not(19), 12))
+ASSUME(AssertEq(Not(20), 11))
+ASSUME(AssertEq(Not(21), 10))
+ASSUME(AssertEq(Not(22), 9))
+ASSUME(AssertEq(Not(23), 8))
+ASSUME(AssertEq(Not(24), 7))
+ASSUME(AssertEq(Not(25), 6))
+ASSUME(AssertEq(Not(26), 5))
+ASSUME(AssertEq(Not(27), 4))
+ASSUME(AssertEq(Not(28), 3))
+ASSUME(AssertEq(Not(29), 2))
+ASSUME(AssertEq(Not(30), 1))
+ASSUME(AssertEq(Not(31), 0))
+ASSUME(AssertEq(Not(32), 31))
+
+NotPure(a) ==
+    LET RECURSIVE NotRPure(_,_,_)
+        NotRPure(x,n,m) == 
+            LET exp == 2^n
+                xdm == (x \div exp) % 2
+            IN IF m = 0 
+                THEN 0
+                ELSE exp * ((xdm + 1) % 2)
+                            + NotRPure(x,n+1,m \div 2)
+    IN NotRPure(a,0,a)
+
+ASSUME \A n \in 0..64 : AssertEq(Not(n), NotPure(n))
+
+-----------------------------------------------------------------------------
+
 ASSUME(\A n \in ZeroToM : AssertEq(shiftR(n, 1), (n \div 2)))
 
 =============================================================================
