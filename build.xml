@@ -28,7 +28,7 @@
 	</target>
 
 	<target name="compile" depends="download" description="compile the java module overwrites">
-		<javac srcdir="${src}" destdir="${build}/modules" classpath="${tlc}/tla2tools.jar:${lib}/gson-2.8.6.jar"
+		<javac srcdir="${src}" destdir="${build}/modules" classpath="${tlc}/tla2tools.jar:${lib}/gson-2.8.6.jar:${lib}/jgrapht-core-1.5.1.jar:${lib}/jungrapht-layout-1.4-SNAPSHOT.jar:${lib}/slf4j-api-1.7.30.jar"
            source="1.8"
            target="1.8"
            includeantruntime="false"/>
@@ -48,6 +48,21 @@
 
 		<!-- Extract gson xml into class directory to be packaged into CommunityModules-deps.jar. -->
 		<unzip src="lib/gson-2.8.6.jar" dest="${build}/deps">
+			<patternset>
+		        <include name="**/*.class"/>
+			</patternset>
+		</unzip>
+		<unzip src="lib/jgrapht-core-1.5.1.jar" dest="${build}/deps">
+			<patternset>
+		        <include name="**/*.class"/>
+			</patternset>
+		</unzip>
+		<unzip src="lib/jungrapht-layout-1.4-SNAPSHOT.jar" dest="${build}/deps">
+			<patternset>
+		        <include name="**/*.class"/>
+			</patternset>
+		</unzip>
+		<unzip src="lib/slf4j-api-1.7.30.jar" dest="${build}/deps">
 			<patternset>
 		        <include name="**/*.class"/>
 			</patternset>
@@ -91,6 +106,9 @@
 			<classpath>
 				<pathelement location="${tlc}/tla2tools.jar" />
                 <pathelement location="${lib}/gson-2.8.6.jar" />
+                <pathelement location="${lib}/jgrapht-core-1.5.1.jar" />
+                <pathelement location="${lib}/jungrapht-layout-1.4-SNAPSHOT.jar" />
+				<pathelement location="${lib}/slf4j-api-1.7.30.jar" />
 				<!-- The jar that has just been built by the dist target. -->
 				<pathelement location="${dist}/CommunityModules-${timestamp}.jar" />
 			</classpath>
@@ -119,7 +137,7 @@
 			<classpath>
 				<pathelement location="${tlc}/tla2tools.jar" />
 				<!-- The jar that has just been built by the dist target. -->
-				<pathelement location="${dist}/CommunityModules-${timestamp}.jar" />
+				<pathelement location="${dist}/CommunityModules-${timestamp}-deps.jar" />
 			</classpath>
 		</java>
 	    <fail message="ERROR: ShiViz test failed">

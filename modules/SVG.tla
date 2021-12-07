@@ -155,4 +155,23 @@ NodeOfRingNetwork(cx, cy, r, n, m) ==
     (**************************************************************************)
     [ x |-> 0, y |-> 0 ]
 
+NodesOfDirectedMultiGraph(nodes, edges, width, height) ==
+    (**************************************************************************)
+    (* Example to layout a graph with the given Nodes and Edges:              *)
+    (*                                                                        *)
+    (*      Nodes == {"v1", "v2", "v3"}  \* v3 is not connected               *)
+    (*      Edges == {<<"v1", "v2">>, <<"v2", "v1">>}                         *)
+    (*      Graph == NodesOfDirectedMultiGraph(Nodes, Edges, 23, 42)          *)
+    (*                                                                        *)
+    (*      RN[ n \in Nodes ] ==                                              *)
+    (*           LET c == Graph[n]                                            *)
+    (*               node == Rect(c.x, c.y, 23, 42, <<>>)                     *)
+    (*           IN Group(<<node>>,  <<>>)                                    *)
+    (*                                                                        *)
+    (* For this operator's actual definition, please consult the Java module  *)
+    (* override at:                                                           *)
+    (*         modules/tlc2/overrides/SVG.java#directedMultiGraph             *)
+    (**************************************************************************)
+    CHOOSE f \in [ nodes -> [x: Int, y: Int] ]: TRUE
+
 =============================================================================
