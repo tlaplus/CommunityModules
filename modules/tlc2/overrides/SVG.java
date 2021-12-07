@@ -25,12 +25,26 @@
  ******************************************************************************/
 package tlc2.overrides;
 
+import java.util.Map;
+import java.util.stream.Collectors;
+
+import org.jgrapht.Graph;
+import org.jgrapht.graph.DefaultGraphType;
+import org.jgrapht.graph.builder.GraphTypeBuilder;
+import org.jgrapht.util.SupplierUtil;
+import org.jungrapht.visualization.layout.algorithms.TreeLayoutAlgorithm;
+import org.jungrapht.visualization.layout.model.LayoutModel;
+import org.jungrapht.visualization.layout.model.Point;
+import org.jungrapht.visualization.layout.model.Rectangle;
+
 import tlc2.value.impl.FcnRcdValue;
 import tlc2.value.impl.IntValue;
 import tlc2.value.impl.RecordValue;
+import tlc2.value.impl.SetEnumValue;
 import tlc2.value.impl.StringValue;
 import tlc2.value.impl.TupleValue;
 import tlc2.value.impl.Value;
+import tlc2.value.impl.ValueVec;
 import util.UniqueString;
 
 public final class SVG {
@@ -134,5 +148,40 @@ public final class SVG {
 		final int x = (int) (cx.val + r.val * Math.cos(angle));
 		final int y = (int) (cy.val + r.val * Math.sin(angle));
 		return new RecordValue(new UniqueString[] {UniqueString.of("x"), UniqueString.of("y")}, new Value[] {IntValue.gen(x), IntValue.gen(y)}, false);
+	}
+	
+	@TLAPlusOperator(identifier = "NodesOfDirectedMultiGraph", module = "SVG", warn = false)
+	public static Value directedMultiGraph(final SetEnumValue nodes, final SetEnumValue edges, final IntValue width, final IntValue height) throws Exception {
+		// https://jgrapht.org/guide/UserOverview#graph-structures
+		final Graph<Value, Integer> graph = GraphTypeBuilder.<Value, Integer>forGraphType(DefaultGraphType.directedMultigraph())
+				.edgeSupplier(SupplierUtil.createIntegerSupplier()).allowingSelfLoops(false).buildGraph();
+		
+		ValueVec elems = nodes.elems;
+		for (int i = 0; i < elems.size(); i++) {
+			graph.addVertex(elems.elementAt(i));
+		}
+		elems = edges.elems;
+		for (int i = 0; i < elems.size(); i++) {
+			TupleValue tuple = (TupleValue) elems.elementAt(i);
+			graph.addEdge(tuple.elems[0], tuple.elems[1]);
+		}
+
+		final LayoutModel<Value> layoutModel = LayoutModel.<Value>builder().size(1000, 1000).graph(graph).build();
+		TreeLayoutAlgorithm<Value> layoutAlgo = TreeLayoutAlgorithm.<Value>builder()
+				.vertexBoundsFunction(v -> Rectangle.of(-5, -5, width.val, height.val)).build();
+		layoutAlgo.visit(layoutModel);
+		final Map<Value, Point> locations = layoutModel.getLocations();
+		
+		return new FcnRcdValue(locations.entrySet().stream()
+				.collect(Collectors.toMap(
+						entry -> entry.getKey(), 
+						entry -> point2Value(entry.getValue()))));
+	}
+	
+	private static Value point2Value(final Point p) {
+		final int x = ((Double) p.x).intValue();
+		final int y = ((Double) p.y).intValue();
+		return new RecordValue(new UniqueString[] { UniqueString.of("x"), UniqueString.of("y") },
+				new Value[] { IntValue.gen(x), IntValue.gen(y) }, false);
 	}
 }
