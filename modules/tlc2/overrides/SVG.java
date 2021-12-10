@@ -32,11 +32,16 @@ import org.jgrapht.Graph;
 import org.jgrapht.graph.DefaultGraphType;
 import org.jgrapht.graph.builder.GraphTypeBuilder;
 import org.jgrapht.util.SupplierUtil;
+import org.jungrapht.visualization.layout.algorithms.EiglspergerLayoutAlgorithm;
+import org.jungrapht.visualization.layout.algorithms.LayoutAlgorithm;
+import org.jungrapht.visualization.layout.algorithms.SugiyamaLayoutAlgorithm;
 import org.jungrapht.visualization.layout.algorithms.TreeLayoutAlgorithm;
+import org.jungrapht.visualization.layout.algorithms.sugiyama.Layering;
 import org.jungrapht.visualization.layout.model.LayoutModel;
 import org.jungrapht.visualization.layout.model.Point;
 import org.jungrapht.visualization.layout.model.Rectangle;
 
+import tlc2.tool.EvalControl;
 import tlc2.value.impl.FcnRcdValue;
 import tlc2.value.impl.IntValue;
 import tlc2.value.impl.RecordValue;
@@ -151,11 +156,13 @@ public final class SVG {
 	}
 	
 	@TLAPlusOperator(identifier = "NodesOfDirectedMultiGraph", module = "SVG", warn = false)
-	public static Value directedMultiGraph(final SetEnumValue nodes, final SetEnumValue edges, final IntValue width, final IntValue height) throws Exception {
+	public static Value directedMultiGraph(final SetEnumValue nodes, final SetEnumValue edges, final RecordValue opts)
+			throws Exception {
 		// https://jgrapht.org/guide/UserOverview#graph-structures
-		final Graph<Value, Integer> graph = GraphTypeBuilder.<Value, Integer>forGraphType(DefaultGraphType.directedMultigraph())
+		final Graph<Value, Integer> graph = GraphTypeBuilder
+				.<Value, Integer>forGraphType(DefaultGraphType.directedMultigraph())
 				.edgeSupplier(SupplierUtil.createIntegerSupplier()).allowingSelfLoops(false).buildGraph();
-		
+
 		ValueVec elems = nodes.elems;
 		for (int i = 0; i < elems.size(); i++) {
 			graph.addVertex(elems.elementAt(i));
@@ -166,22 +173,50 @@ public final class SVG {
 			graph.addEdge(tuple.elems[0], tuple.elems[1]);
 		}
 
-		final LayoutModel<Value> layoutModel = LayoutModel.<Value>builder().size(1000, 1000).graph(graph).build();
-		TreeLayoutAlgorithm<Value> layoutAlgo = TreeLayoutAlgorithm.<Value>builder()
-				.vertexBoundsFunction(v -> Rectangle.of(-5, -5, width.val, height.val)).build();
-		layoutAlgo.visit(layoutModel);
-		final Map<Value, Point> locations = layoutModel.getLocations();
+		// Layout
+		final IntValue viewH = (IntValue) opts.apply(new StringValue("view_width"), EvalControl.Clear);
+		final IntValue viewW = (IntValue) opts.apply(new StringValue("view_height"), EvalControl.Clear);
+		final LayoutModel<Value> layoutModel = LayoutModel.<Value>builder().size(viewW.val, viewH.val).graph(graph)
+				.build();
+
+		// Algorithm
+		final StringValue algo = (StringValue) opts.apply(new StringValue("algo"), EvalControl.Clear);
+		getAlgo(algo.val.toString(), opts).visit(layoutModel);
+
+		// Get the node's coordinates from the algorithm.
+		final Map <Value, Point> locations = layoutModel.getLocations();
 		
+		// convert to TLC values.
 		return new FcnRcdValue(locations.entrySet().stream()
-				.collect(Collectors.toMap(
-						entry -> entry.getKey(), 
-						entry -> point2Value(entry.getValue()))));
+				.collect(Collectors.toMap(entry -> entry.getKey(), entry -> point2Value(entry.getValue()))));
 	}
-	
+
 	private static Value point2Value(final Point p) {
 		final int x = ((Double) p.x).intValue();
 		final int y = ((Double) p.y).intValue();
 		return new RecordValue(new UniqueString[] { UniqueString.of("x"), UniqueString.of("y") },
 				new Value[] { IntValue.gen(x), IntValue.gen(y) }, false);
+	}
+
+	private static LayoutAlgorithm<Value> getAlgo(final String algo, final RecordValue opts) {
+		final IntValue nodeH = (IntValue) opts.apply(new StringValue("node_width"), EvalControl.Clear);
+		final IntValue nodeW = (IntValue) opts.apply(new StringValue("node_height"), EvalControl.Clear);
+
+		switch (algo) {
+		case "Sugiyama":
+			// https://github.com/tomnelson/jungrapht-visualization/blob/afd155bf0246e5185f054ba1429bbcfbd429292a/jungrapht-layout/src/main/java/org/jungrapht/visualization/layout/algorithms/sugiyama/Layering.java#L4-L7
+			String l = ((StringValue) opts.apply(new StringValue("layering"), EvalControl.Clear)).val.toString();
+			return SugiyamaLayoutAlgorithm.<Value, Integer>edgeAwareBuilder()
+					.layering(Layering.valueOf(l)).vertexBoundsFunction(v -> Rectangle.of(-5, -5, nodeW.val, nodeH.val)).threaded(false)
+					.build();
+		case "Eiglsperger":
+			l = ((StringValue) opts.apply(new StringValue("layering"), EvalControl.Clear)).val.toString();
+			return EiglspergerLayoutAlgorithm.<Value, Integer>edgeAwareBuilder()
+					.layering(Layering.valueOf(l)).vertexBoundsFunction(v -> Rectangle.of(-5, -5, nodeW.val, nodeH.val)).threaded(false)
+					.build();
+		default:
+			return TreeLayoutAlgorithm.<Value>builder()
+					.vertexBoundsFunction(v -> Rectangle.of(-5, -5, nodeW.val, nodeH.val)).build();
+		}
 	}
 }
