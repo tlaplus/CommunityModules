@@ -219,4 +219,18 @@ public final class SVG {
 					.vertexBoundsFunction(v -> Rectangle.of(-5, -5, nodeW.val, nodeH.val)).build();
 		}
 	}
+	
+	@TLAPlusOperator(identifier = "PointOnLine", module = "SVG", warn = false)
+	public static Value pointOnLine(final RecordValue from, final RecordValue to, final IntValue idx) throws Exception {
+		int fx = ((IntValue) from.select(new StringValue("x"))).val;
+		int fy = ((IntValue) from.select(new StringValue("y"))).val;
+		
+		int tx = ((IntValue) to.select(new StringValue("x"))).val;
+		int ty = ((IntValue) to.select(new StringValue("y"))).val;
+
+		int x = (int) (fx + ((tx - fx) / (idx.val * 1d)));
+		int y = (int) (fy + ((ty - fy) / (idx.val * 1d)));
+		
+		return new RecordValue(new UniqueString[] {UniqueString.of("x"), UniqueString.of("y")}, new Value[] {IntValue.gen(x), IntValue.gen(y)}, false);
+	}
 }

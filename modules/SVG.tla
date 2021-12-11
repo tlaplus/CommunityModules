@@ -174,4 +174,8 @@ NodesOfDirectedMultiGraph(nodes, edges, options) ==
     (**************************************************************************)
     CHOOSE f \in [ nodes -> [x: Int, y: Int] ]: TRUE
 
+PointOnLine(from, to, segment) ==
+    [x |-> from.x + ((to.x - from.x) \div segment), 
+     y |-> from.y + ((to.y - from.y) \div segment)]
+
 =============================================================================
