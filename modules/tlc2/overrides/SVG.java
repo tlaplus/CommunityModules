@@ -133,6 +133,8 @@ public final class SVG {
 		// explicitly disallow it.
 		StringValue innerTextVal = (StringValue) frv.apply(new StringValue("innerText"), 0);
 		String innerText = innerTextVal.getVal().toString();
+		// Make sure TLA+ tuples such as <<1,2,3>> get properly rendered.
+		innerText = innerText.replaceAll("<<", "&lt;&lt;").replaceAll(">>", "&gt;&gt;");
 
 		// Produce the SVG element string.
 		String svg = String.format("<%s%s>", name, attrStr);

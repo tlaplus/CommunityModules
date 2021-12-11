@@ -133,4 +133,10 @@ ASSUME(
               3 :> [x |-> 16, y |-> 9 ] )
 )
 
+ASSUME(LET 
+		elem == Text(0, 0, ToString(<<1,2,3>>), <<>>)
+      IN
+        AssertEq(SVGElemToString(elem), "<text x='0' y='0'>&lt;&lt;1, 2, 3&gt;&gt;</text>"))
+
+
 =============================================================================
