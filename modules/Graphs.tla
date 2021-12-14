@@ -9,6 +9,12 @@ IsDirectedGraph(G) ==
 DirectedSubgraph(G) ==    
   {H \in [node : SUBSET G.node, edge : SUBSET (G.node \X G.node)] :
      IsDirectedGraph(H) /\ H.edge \subseteq G.edge}
+
+Transpose(G) ==
+    \* https://en.wikipedia.org/wiki/Transpose_graph
+    [ edge |-> { <<e[2], e[1]>> : e \in G.edge }, 
+      node |-> G.node] 
+
 -----------------------------------------------------------------------------
 IsUndirectedGraph(G) ==
    /\ IsDirectedGraph(G)
