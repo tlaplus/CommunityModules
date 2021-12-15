@@ -11,7 +11,7 @@ The Modules
 
 | Name  | Short description | Module Override? | Contributors |
 | :--: | ---- | ---- | ---- |
-| <a href="https://github.com/tlaplus/CommunityModules/blob/master/modules/Functions.tla">Functions.tla</a> | Notions about functions including injection, surjection, and bijection. | | [@muenchnerkindl](https://github.com/muenchnerkindl), [@quicquid](https://github.com/quicquid) | 
+| <a href="https://github.com/tlaplus/CommunityModules/blob/master/modules/Functions.tla">Functions.tla</a> | Notions about functions including injection, surjection, and bijection. |[&#10004;](https://github.com/tlaplus/CommunityModules/blob/master/modules/tlc2/overrides/Functions.java) | [@muenchnerkindl](https://github.com/muenchnerkindl), [@quicquid](https://github.com/quicquid),[@lemmy](https://github.com/lemmy) | 
 | <a href="https://github.com/tlaplus/CommunityModules/blob/master/modules/Folds.tla">Folds.tla</a> | Basic Fold operator. | | [@quicquid](https://github.com/quicquid), [@muenchnerkindl](https://github.com/muenchnerkindl) | 
 | <a href="https://github.com/tlaplus/CommunityModules/blob/master/modules/Graphs.tla">Graphs.tla</a> | Common operators on directed and undirected graphs. | | Leslie Lamport | 
 | <a href="https://github.com/tlaplus/CommunityModules/blob/master/modules/SequencesExt.tla">SequencesExt.tla</a> | Various operators to manipulate sequences. | [&#10004;](https://github.com/tlaplus/CommunityModules/blob/master/modules/tlc2/overrides/SequencesExt.java)| [@muenchnerkindl](https://github.com/muenchnerkindl),[@lemmy](https://github.com/lemmy), [@hwayne](https://github.com/hwayne), [@quicquid](https://github.com/quicquid) | 
