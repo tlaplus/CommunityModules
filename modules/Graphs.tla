@@ -1,6 +1,7 @@
 ------------------------------- MODULE Graphs ------------------------------- 
 LOCAL INSTANCE Naturals
 LOCAL INSTANCE Sequences
+LOCAL INSTANCE SequencesExt
 
 IsDirectedGraph(G) ==
    /\ G = [node |-> G.node, edge |-> G.edge]
@@ -24,6 +25,13 @@ UndirectedSubgraph(G) == {H \in DirectedSubgraph(G) : IsUndirectedGraph(H)}
 -----------------------------------------------------------------------------
 Path(G) == {p \in Seq(G.node) :
              /\ p # << >>
+             /\ \A i \in 1..(Len(p)-1) : <<p[i], p[i+1]>> \in G.edge}
+
+SimplePath(G) ==
+    \* A simple path is a path with no repeated nodes.
+    {p \in SeqOf(G.node, Cardinality(G.node)) :
+             /\ p # << >>
+             /\ Cardinality({ p[i] : i \in DOMAIN p}) = Len(p)
              /\ \A i \in 1..(Len(p)-1) : <<p[i], p[i+1]>> \in G.edge}
 
 AreConnectedIn(m, n, G) == 
