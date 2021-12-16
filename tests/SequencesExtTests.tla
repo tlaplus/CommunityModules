@@ -217,7 +217,7 @@ ASSUME \A seq \in (BoundedSeq(1..5, 5) \ {<<>>}):
     /\ ReplaceFirstSubSeq(<<6>>, <<Head(seq)>>, seq) = <<6>> \o Tail(seq)
 
 ASSUME ReplaceFirstSubSeq("", "", "") = ""
-ASSUME ReplaceFirstSubSeq("a", "", "") = ""
+ASSUME ReplaceFirstSubSeq("a", "", "") = "a"
 ASSUME ReplaceFirstSubSeq("a", "b", "") = ""
 ASSUME ReplaceFirstSubSeq("a", "d", "abc") = "abc"
 ASSUME ReplaceFirstSubSeq("ddd", "ab", "abab") = "dddab"
@@ -259,7 +259,7 @@ ASSUME AssertEq(ReplaceAllSubSeqs(<<1,1>>, <<>>, <<2,2>>), <<1,1,2,1,1,2>>)
 ASSUME ReplaceAllSubSeqs("dd", "d", "dd") = "dddd"
 
 ASSUME ReplaceAllSubSeqs("ddd", "a", "") = ""
-ASSUME ReplaceAllSubSeqs("ddd", "", "") = ""
+ASSUME ReplaceAllSubSeqs("ddd", "", "") = "ddd"
 ASSUME ReplaceAllSubSeqs("ddd", "ab", "abab") = "dddddd"
 ASSUME ReplaceAllSubSeqs("ddd", "abab", "abab") = "ddd"
 
@@ -269,7 +269,7 @@ ASSUME ReplaceAllSubSeqs("aa", "aa", "aa") = "aa"
 ASSUME ReplaceAllSubSeqs("aa", "aa", "aaaa") = "aaaa"
 ASSUME ReplaceAllSubSeqs("aa", "aa", "bbbb") = "bbbb"
 
-ASSUME ReplaceAllSubSeqs("ddd", "", "abab") = "abab"
+ASSUME ReplaceAllSubSeqs("ddd", "", "abab") = "dddadddbdddadddb"
 
 ASSUME(ReplaceAllSubSeqs("\\", "%%", "Properly escape the %% char") = "Properly escape the \\ char")
 ASSUME(ReplaceAllSubSeqs("\"", "%%", "Properly escape the %% char") = "Properly escape the \" char")

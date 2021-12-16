@@ -252,6 +252,8 @@ public final class SequencesExt {
 			final String ss = ((StringValue) s).getVal().toString();
 			final String sr = ((StringValue) r).getVal().toString();
 			
+			if(ss.equals("")) return new StringValue(sr+st);
+			
 			return new StringValue(StringUtils.replaceOnce(st, ss, sr));
 		}
 		
@@ -269,6 +271,15 @@ public final class SequencesExt {
 			final String st = ((StringValue) t).getVal().toString();
 			final String ss = ((StringValue) s).getVal().toString();
 			final String sr = ((StringValue) r).getVal().toString();
+			
+			if(ss.equals("")) {
+				StringBuilder result = new StringBuilder(sr);
+				for(int i=0;i<st.length();i++) {
+					if(i != 0) result.append(sr);
+					result.append(st.charAt(i));
+				}
+				return new StringValue(result.toString());
+			}
 			
 			return new StringValue(StringUtils.replace(st, ss, sr));
 		}
