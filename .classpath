@@ -13,5 +13,6 @@
 	<classpathentry kind="lib" path="lib/jungrapht-layout-1.4-SNAPSHOT.jar"/>
 	<classpathentry kind="lib" path="lib/jgrapht-core-1.5.1.jar"/>
 	<classpathentry kind="lib" path="lib/slf4j-api-1.7.30.jar"/>
+	<classpathentry kind="lib" path="lib/commons-lang3-3.12.0.jar"/>
 	<classpathentry kind="output" path="build"/>
 </classpath>
