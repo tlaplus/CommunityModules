@@ -13,6 +13,7 @@ EXTENDS SequencesExtTests,
         FunctionsTests,
         CSVTests,
         CombinatoricsTests,
-        FoldsTests
+        FoldsTests,
+        GraphsTests
 
 ===========================================

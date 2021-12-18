@@ -2,6 +2,7 @@
 LOCAL INSTANCE Naturals
 LOCAL INSTANCE Sequences
 LOCAL INSTANCE SequencesExt
+LOCAL INSTANCE FiniteSets
 
 IsDirectedGraph(G) ==
    /\ G = [node |-> G.node, edge |-> G.edge]
