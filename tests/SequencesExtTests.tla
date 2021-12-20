@@ -34,8 +34,8 @@ ASSUME(Remove(<<{"a", "b"}, {"a","c"}>>, {"c", "a"}) = <<{"a", "b"}>>)
 ASSUME(ReplaceAll(<<>>, 1, 4) = <<>>)
 ASSUME(ReplaceAll(<<1,1,2,1,1,3>>, 1, 4) = <<4,4,2,4,4,3>>)
 
-ASSUME(ReplaceAt(<<1>>, 1, 2) = <<2>>) 
-ASSUME(ReplaceAt(<<1,1,1>>, 1, 2) = <<2,1,1>>) 
+ASSUME(ReplaceAt(<<1>>, 1, 2) = <<2>>)
+ASSUME(ReplaceAt(<<1,1,1>>, 1, 2) = <<2,1,1>>)
 
 -----------------------------------------------------------------------------
 
@@ -224,6 +224,13 @@ ASSUME ReplaceFirstSubSeq("ddd", "ab", "abab") = "dddab"
 ASSUME ReplaceFirstSubSeq("ddd", "aa", "aaa") = "ddda"
 ASSUME ReplaceFirstSubSeq("ddd", "abab", "abab") = "ddd"
 
+ASSUME(ReplaceFirstSubSeq("\\", "%%", "Properly escape the %% char") = "Properly escape the \\ char")
+ASSUME(ReplaceFirstSubSeq("\"", "%%", "Properly escape the %% char") = "Properly escape the \" char")
+ASSUME(ReplaceFirstSubSeq("\n", "%%", "Properly escape the %% char") = "Properly escape the \n char")
+ASSUME(ReplaceFirstSubSeq("\t", "%%", "Properly escape the %% char") = "Properly escape the \t char")
+ASSUME(ReplaceFirstSubSeq("\f", "%%", "Properly escape the %% char") = "Properly escape the \f char")
+ASSUME(ReplaceFirstSubSeq("\r", "%%", "Properly escape the %% char") = "Properly escape the \r char")
+
 ASSUME ReplaceFirstSubSeq("\\\\", "\\", "Properly escape the \\quotes") = "Properly escape the \\\\quotes"
 ASSUME ReplaceFirstSubSeq("replaces", "%pattern%", "This %pattern% the pattern") = "This replaces the pattern"
 
@@ -262,7 +269,14 @@ ASSUME ReplaceAllSubSeqs("aa", "aa", "aa") = "aa"
 ASSUME ReplaceAllSubSeqs("aa", "aa", "aaaa") = "aaaa"
 ASSUME ReplaceAllSubSeqs("aa", "aa", "bbbb") = "bbbb"
 
-ASSUME ReplaceAllSubSeqs("ddd", "", "abab") = "dddadddbdddadddbddd"
+ASSUME ReplaceAllSubSeqs("ddd", "", "abab") = "dddadddbdddadddb"
+
+ASSUME(ReplaceAllSubSeqs("\\", "%%", "Properly escape the %% char") = "Properly escape the \\ char")
+ASSUME(ReplaceAllSubSeqs("\"", "%%", "Properly escape the %% char") = "Properly escape the \" char")
+ASSUME(ReplaceAllSubSeqs("\n", "%%", "Properly escape the %% char") = "Properly escape the \n char")
+ASSUME(ReplaceAllSubSeqs("\t", "%%", "Properly escape the %% char") = "Properly escape the \t char")
+ASSUME(ReplaceAllSubSeqs("\f", "%%", "Properly escape the %% char") = "Properly escape the \f char")
+ASSUME(ReplaceAllSubSeqs("\r", "%%", "Properly escape the %% char") = "Properly escape the \r char")
 
 ASSUME AssertEq(ReplaceAllSubSeqs("replaces", "%pattern%", "This %pattern% the pattern %pattern% multipe times"), "This replaces the pattern replaces multipe times")
 ASSUME AssertEq(ReplaceAllSubSeqs("\\\\", "\\", "Properly escape the \\quotes"), "Properly escape the \\\\quotes")

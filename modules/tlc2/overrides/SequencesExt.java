@@ -25,7 +25,7 @@ package tlc2.overrides;
  *   Markus Alexander Kuppe - initial API and implementation
  ******************************************************************************/
 
-import java.util.regex.Pattern;
+import org.apache.commons.lang3.StringUtils;
 
 import tla2sany.semantic.ExprOrOpArgNode;
 import tlc2.output.EC;
@@ -248,11 +248,13 @@ public final class SequencesExt {
 		final IValue t = tool.eval(args[2], c, s0, s1, control, cm);
 		
 		if (r instanceof StringValue && s instanceof StringValue && t instanceof StringValue) {
-			final String st = ((StringValue) t).toUnquotedString();
-			final String ss = ((StringValue) s).toUnquotedString();
-			final String sr = ((StringValue) r).toUnquotedString();
+			final String st = ((StringValue) t).getVal().toString();
+			final String ss = ((StringValue) s).getVal().toString();
+			final String sr = ((StringValue) r).getVal().toString();
 			
-			return new StringValue(st.replaceFirst(Pattern.quote(ss), sr));
+			if(ss.equals("")) { return new StringValue(sr+st); }
+			
+			return new StringValue(StringUtils.replaceOnce(st, ss, sr));
 		}
 		
 		return null; // Non-string functions handled by pure TLA+ definition of operator.
@@ -266,11 +268,20 @@ public final class SequencesExt {
 		final IValue t = tool.eval(args[2], c, s0, s1, control, cm);
 		
 		if (r instanceof StringValue && s instanceof StringValue && t instanceof StringValue) {
-			final String st = ((StringValue) t).toUnquotedString();
-			final String ss = ((StringValue) s).toUnquotedString();
-			final String sr = ((StringValue) r).toUnquotedString();
+			final String st = ((StringValue) t).getVal().toString();
+			final String ss = ((StringValue) s).getVal().toString();
+			final String sr = ((StringValue) r).getVal().toString();
 			
-			return new StringValue(st.replaceAll(Pattern.quote(ss), sr));
+			if(ss.equals("")) {
+				StringBuilder result = new StringBuilder(sr);
+				for(int i=0;i<st.length();i++) {
+					if(i != 0) { result.append(sr); }
+					result.append(st.charAt(i));
+				}
+				return new StringValue(result.toString());
+			}
+			
+			return new StringValue(StringUtils.replace(st, ss, sr));
 		}
 		
 		return null; // Non-string functions handled by pure TLA+ definition of operator.

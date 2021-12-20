@@ -28,7 +28,7 @@
 	</target>
 
 	<target name="compile" depends="download" description="compile the java module overwrites">
-		<javac srcdir="${src}" destdir="${build}/modules" classpath="${tlc}/tla2tools.jar:${lib}/gson-2.8.6.jar:${lib}/jgrapht-core-1.5.1.jar:${lib}/jungrapht-layout-1.4-SNAPSHOT.jar:${lib}/slf4j-api-1.7.30.jar"
+		<javac srcdir="${src}" destdir="${build}/modules" classpath="${tlc}/tla2tools.jar:${lib}/gson-2.8.6.jar:${lib}/jgrapht-core-1.5.1.jar:${lib}/jungrapht-layout-1.4-SNAPSHOT.jar:${lib}/slf4j-api-1.7.30.jar:${lib}/commons-lang3-3.12.0.jar"
            source="1.8"
            target="1.8"
            includeantruntime="false"/>
@@ -63,6 +63,11 @@
 			</patternset>
 		</unzip>
 		<unzip src="lib/slf4j-api-1.7.30.jar" dest="${build}/deps">
+			<patternset>
+		        <include name="**/*.class"/>
+			</patternset>
+		</unzip>
+		<unzip src="lib/commons-lang3-3.12.0.jar" dest="${build}/deps">
 			<patternset>
 		        <include name="**/*.class"/>
 			</patternset>
@@ -109,6 +114,7 @@
                 <pathelement location="${lib}/jgrapht-core-1.5.1.jar" />
                 <pathelement location="${lib}/jungrapht-layout-1.4-SNAPSHOT.jar" />
 				<pathelement location="${lib}/slf4j-api-1.7.30.jar" />
+				<pathelement location="${lib}/commons-lang3-3.12.0.jar" />
 				<!-- The jar that has just been built by the dist target. -->
 				<pathelement location="${dist}/CommunityModules-${timestamp}.jar" />
 			</classpath>
