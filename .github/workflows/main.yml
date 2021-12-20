@@ -23,11 +23,6 @@ jobs:
       run: echo "::set-output name=date::$(date +'%Y%m%d%H%M')"
     - name: Build with Ant
       run: ant -noinput -buildfile build.xml -Dtimestamp=${{steps.date.outputs.date}}
-    - name: Copied CommunityModules-SomeDate.jar to CommunityModules.jar
-      if: github.event_name == 'push'
-      run: |
-        cp dist/CommunityModules-${{steps.date.outputs.date}}.jar dist/CommunityModules.jar
-        cp dist/CommunityModules-deps-${{steps.date.outputs.date}}.jar dist/CommunityModules-deps.jar
     - name: Create Release
       id: create_release
       if: github.event_name == 'push'
