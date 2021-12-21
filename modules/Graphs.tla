@@ -36,7 +36,7 @@ SimplePath(G) ==
              /\ \A i \in 1..(Len(p)-1) : <<p[i], p[i+1]>> \in G.edge}
 
 AreConnectedIn(m, n, G) == 
-  \E p \in Path(G) : (p[1] = m) /\ (p[Len(p)] = n)
+  \E p \in SimplePath(G) : (p[1] = m) /\ (p[Len(p)] = n)
 
 IsStronglyConnected(G) == 
   \A m, n \in G.node : AreConnectedIn(m, n, G) 
@@ -47,3 +47,6 @@ IsTreeWithRoot(G, r) ==
                        /\ \A f \in G.edge : (e[1] = f[1]) => (e = f)
   /\ \A n \in G.node : AreConnectedIn(n, r, G)
 =============================================================================
+\* Modification History
+\* Last modified Tue Dec 21 15:55:45 PST 2021 by Markus Kuppe
+\* Created Tue Jun 18 11:44:08 PST 2002 by Leslie Lamport
