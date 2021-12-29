@@ -114,6 +114,7 @@ public final class Functions {
 	@TLAPlusOperator(identifier = "FoldFunctionOnSet", module = "Functions", warn = false)
 	public static Value foldFunctionOnSet(final OpValue op, final Value base, final Applicable fun, final Enumerable subdomain) {
 		
+		// FoldFunction base is second operand.
 		final Value[] args = new Value[2];
 		args[1] = base;
 

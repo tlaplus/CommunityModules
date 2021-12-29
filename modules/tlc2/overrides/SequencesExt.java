@@ -37,15 +37,12 @@ import tlc2.tool.impl.Tool;
 import tlc2.util.Context;
 import tlc2.value.IValue;
 import tlc2.value.Values;
-import tlc2.value.impl.Applicable;
 import tlc2.value.impl.BoolValue;
-import tlc2.value.impl.Enumerable;
 import tlc2.value.impl.OpValue;
 import tlc2.value.impl.SetEnumValue;
 import tlc2.value.impl.StringValue;
 import tlc2.value.impl.TupleValue;
 import tlc2.value.impl.Value;
-import tlc2.value.impl.ValueEnumeration;
 import tlc2.value.impl.ValueVec;
 
 public final class SequencesExt {
@@ -96,29 +93,6 @@ public final class SequencesExt {
 		            if (prefix.isEmpty()) return "";
 		        }        
 		    return prefix;
-		}
-	/*
-	 */
-		@TLAPlusOperator(identifier = "FoldFunction", module = "Functions", warn = false)
-		public static Value foldFunction(final OpValue op, final Value base, final Applicable fun) {
-			return foldFunctionOnSet(op, base, fun, (Enumerable) fun.getDomain());
-		}
-
-		@TLAPlusOperator(identifier = "FoldFunctionOnSet", module = "Functions", warn = false)
-		public static Value foldFunctionOnSet(final OpValue op, final Value base, final Applicable fun, final Enumerable subdomain) {
-			
-			final Value[] args = new Value[2];
-			args[1] = base;
-
-			final ValueEnumeration ve = subdomain.elements();
-
-			Value v = null;
-			while ((v = ve.nextElement()) != null) {
-				args[0] = fun.select(v);
-				args[1] = op.apply(args, EvalControl.Clear);
-			}
-			
-			return args[1];
 		}
 
 	@TLAPlusOperator(identifier = "LongestCommonPrefix", module = "SequencesExt", warn = false)
@@ -195,7 +169,7 @@ public final class SequencesExt {
 	
 	@TLAPlusOperator(identifier = "FoldSeq", module = "SequencesExt", warn = false)
 	public static Value foldSeq(final OpValue op, final Value base, final TupleValue tv) {
-		return foldLeft(op, base, tv);
+		return Functions.foldFunction(op, base, tv);
 	}
 
 	@TLAPlusOperator(identifier = "FoldLeft", module = "SequencesExt", warn = false)
@@ -207,6 +181,7 @@ public final class SequencesExt {
 					new String[] { "FoldLeft", "sequence", Values.ppr(val.toString()) });
 		}
 
+		// FoldLeft base is left (first) operand.
 		final Value[] args = new Value[2];
 		args[0] = base;
 
@@ -228,6 +203,7 @@ public final class SequencesExt {
 					new String[] { "FoldRight", "sequence", Values.ppr(val.toString()) });
 		}
 
+		// FoldRight base is right (second) operand.
 		final Value[] args = new Value[2];
 		args[1] = base;
 

@@ -99,6 +99,10 @@ ASSUME FoldRight(-, [n \in 1..25 |-> n], 1) =  12
 ASSUME FoldRight(+, [n \in 1..250 |-> n], 1) = 31376
 ASSUME FoldRight(-, [n \in 1..250 |-> n], 1) =  -124
 
+ASSUME FoldSeq(  LAMBDA e, acc: acc + 1, 0, <<1,1,1,1,1>>) = 5
+ASSUME FoldLeft( LAMBDA acc, e: acc + 1, 0, <<1,1,1,1,1>>) = 5
+ASSUME FoldRight(LAMBDA e, acc: acc + 1, <<1,1,1,1,1>>, 0) = 5
+
 -----------------------------------------------------------------------------
 
 ASSUME LongestCommonPrefix({<<>>}) = <<>>
