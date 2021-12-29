@@ -168,17 +168,19 @@ public final class SequencesExt {
 	}
 	
 	@TLAPlusOperator(identifier = "FoldSeq", module = "SequencesExt", warn = false)
-	public static Value foldSeq(final OpValue op, final Value base, final TupleValue tv) {
+	public static Value foldSeq(final OpValue op, final Value base, final Value tv) {
 		return Functions.foldFunction(op, base, tv);
 	}
 
 	@TLAPlusOperator(identifier = "FoldLeft", module = "SequencesExt", warn = false)
 	public static Value foldLeft(final OpValue op, final Value base, final Value val) {
-
+		// Can assume type of OpValue because tla2sany.semantic.Generator.java will
+		// make sure that the first parameter is a binary operator.
+		
 		final TupleValue tv = (TupleValue) val.toTuple();
 		if (tv == null) {
-			throw new EvalException(EC.TLC_MODULE_ONE_ARGUMENT_ERROR,
-					new String[] { "FoldLeft", "sequence", Values.ppr(val.toString()) });
+			throw new EvalException(EC.TLC_MODULE_ARGUMENT_ERROR,
+					new String[] { "third", "FoldLeft", "sequence", Values.ppr(val.toString()) });
 		}
 
 		// FoldLeft base is left (first) operand.
@@ -196,11 +198,13 @@ public final class SequencesExt {
 
 	@TLAPlusOperator(identifier = "FoldRight", module = "SequencesExt", warn = false)
 	public static Value foldRight(final OpValue op, final Value val, final Value base) {
-
+		// Can assume type of OpValue because tla2sany.semantic.Generator.java will
+		// make sure that the first parameter is a binary operator.
+		
 		final TupleValue tv = (TupleValue) val.toTuple();
 		if (tv == null) {
-			throw new EvalException(EC.TLC_MODULE_ONE_ARGUMENT_ERROR,
-					new String[] { "FoldRight", "sequence", Values.ppr(val.toString()) });
+			throw new EvalException(EC.TLC_MODULE_ARGUMENT_ERROR,
+					new String[] { "second", "FoldRight", "sequence", Values.ppr(val.toString()) });
 		}
 
 		// FoldRight base is right (second) operand.

@@ -107,12 +107,32 @@ public final class Functions {
 	}
 
 	@TLAPlusOperator(identifier = "FoldFunction", module = "Functions", warn = false)
-	public static Value foldFunction(final OpValue op, final Value base, final Applicable fun) {
-		return foldFunctionOnSet(op, base, fun, (Enumerable) fun.getDomain());
+	public static Value foldFunction(final OpValue op, final Value base, final Value fun) {
+		// Can assume type of OpValue because tla2sany.semantic.Generator.java will
+		// make sure that the first parameter is a binary operator.
+		
+		if (!(fun instanceof Applicable)) {
+			throw new EvalException(EC.TLC_MODULE_ARGUMENT_ERROR,
+					new String[] { "third", "FoldFunction", "function", Values.ppr(fun.toString()) });
+		}
+		return foldFunctionOnSet(op, base, fun, ((Applicable) fun).getDomain());
 	}
 
 	@TLAPlusOperator(identifier = "FoldFunctionOnSet", module = "Functions", warn = false)
-	public static Value foldFunctionOnSet(final OpValue op, final Value base, final Applicable fun, final Enumerable subdomain) {
+	public static Value foldFunctionOnSet(final OpValue op, final Value base, final Value v3, final Value v4) {
+		// Can assume type of OpValue because tla2sany.semantic.Generator.java will
+		// make sure that the first parameter is a binary operator.
+
+		if (!(v3 instanceof Applicable)) {
+			throw new EvalException(EC.TLC_MODULE_ARGUMENT_ERROR,
+					new String[] { "third", "FoldFunctionOnSet", "function", Values.ppr(v3.toString()) });
+		}
+		final Applicable fun = (Applicable) v3;
+		if (!(v4 instanceof Enumerable)) {
+			throw new EvalException(EC.TLC_MODULE_ARGUMENT_ERROR,
+					new String[] { "fourth", "FoldFunctionOnSet", "set", Values.ppr(v4.toString()) });
+		}
+		final Enumerable subdomain = (Enumerable) v4;
 		
 		// FoldFunction base is second operand.
 		final Value[] args = new Value[2];

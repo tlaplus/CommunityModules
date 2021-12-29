@@ -103,6 +103,19 @@ ASSUME FoldSeq(  LAMBDA e, acc: acc + 1, 0, <<1,1,1,1,1>>) = 5
 ASSUME FoldLeft( LAMBDA acc, e: acc + 1, 0, <<1,1,1,1,1>>) = 5
 ASSUME FoldRight(LAMBDA e, acc: acc + 1, <<1,1,1,1,1>>, 0) = 5
 
+ASSUME AssertError(
+           "The second argument of FoldRight should be a sequence, but instead it is:\nTRUE",
+           FoldRight(+, TRUE, 23))
+
+ASSUME AssertError(
+           "The third argument of FoldLeft should be a sequence, but instead it is:\nTRUE",
+           FoldLeft(+, 23, TRUE))
+
+\* Error comes from Functions!FoldFunctionOnSet
+ASSUME AssertError(
+           "The third argument of FoldFunction should be a function, but instead it is:\nTRUE",
+           FoldSeq(+, 23, TRUE))
+
 -----------------------------------------------------------------------------
 
 ASSUME LongestCommonPrefix({<<>>}) = <<>>

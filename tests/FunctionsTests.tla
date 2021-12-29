@@ -43,6 +43,18 @@ ASSUME FoldFunctionOnSet(LAMBDA x,y: {x} \cup y, {}, [n \in 1..9999 |-> n], {}) 
 
 ASSUME FoldFunctionOnSet(LAMBDA x,y: {x} \cup y, {}, [n \in 1..9999 |-> n], 2..9998) = 2..9998
 
+ASSUME AssertError(
+           "The third argument of FoldFunction should be a function, but instead it is:\nTRUE",
+           FoldFunction(+, 23, TRUE))
+
+ASSUME AssertError(
+           "The fourth argument of FoldFunctionOnSet should be a set, but instead it is:\nTRUE",
+           FoldFunctionOnSet(+, 23, <<>>, TRUE))
+
+ASSUME AssertError(
+           "The third argument of FoldFunctionOnSet should be a function, but instead it is:\nTRUE",
+           FoldFunctionOnSet(+, 23, TRUE, {}))
+
 \* AntiFunction
 ASSUME AntiFunction(<<"a", "b", "c">>) = [a |-> 1, b |-> 2, c |-> 3]
 
