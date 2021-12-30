@@ -5,17 +5,17 @@ LOCAL INSTANCE SequencesExt
 
 \***** Helpers
 
-StringFill(string, args) ==
+HTMLFill(string, args) ==
     (***********************************************************************)
     (* Do the sequence of replaces in args to the string.                  *)
     (* The args is a sequence of tuples: <<substr,newsubstr>>.             *)
     (* Example:                                                            *)
-    (*     StringFill("test %num%", << <<"%num%", "12">> >>) = "test 12"   *)
+    (*     HTMLFill("test %num%", << <<"%num%", "12">> >>) = "test 12"     *)
     (***********************************************************************)
     LET f(str, x) == ReplaceFirstSubSeq(x[2], x[1], str)
     IN FoldLeft(f, string, args)
 
-StringSeqToString(string_seq, separator) ==
+LOCAL StringSeqToString(string_seq, separator) ==
     (***********************************************************************)
     (* Concatenates sequence of strings into one string.                   *)
     (* The `seperator` is put between the strings in the sequence.         *)
@@ -47,7 +47,7 @@ HTMLClass(classname, attribute_list) ==
     >>, "\n")
 
 HTMLAttribute(name, value) ==
-    StringFill("%name%: %value%;", <<
+    HTMLFill("%name%: %value%;", <<
         <<"%name%", name>>,
         <<"%value%", value>>
     >>)
@@ -76,7 +76,7 @@ HTMLStyleSheet(class_list) ==
 \***** Script
 
 HTMLScriptFile(name) ==
-    StringFill("<script src=\"%name%\"></script>", << <<"%name%", name>>>> )
+    HTMLFill("<script src=\"%name%\"></script>", << <<"%name%", name>>>> )
 
 HTMLScript(children) ==
     StringSeqToString(<<
@@ -88,7 +88,7 @@ HTMLScript(children) ==
 \***** Header
 
 HTMLLink(name, type) ==
-    StringFill("<link href=\"%name%\" rel=\"%type%\"/>",
+    HTMLFill("<link href=\"%name%\" rel=\"%type%\"/>",
         << <<"%name%", name>>, <<"%type%", type>> >> )
 
 HTMLHeader(title, list_of_links, class_list) ==
@@ -119,7 +119,7 @@ HTMLFrame(id, children) ==
 
 HTMLGridContainer(id, class_list, children) ==
     StringSeqToString(<<
-        StringFill("<div id=\"%id%\" class=\"default_grid %class_list%\">",<<
+        HTMLFill("<div id=\"%id%\" class=\"default_grid %class_list%\">",<<
             <<"%id%", id>>,
             <<"%class_list%", StringSeqToString(class_list, " ")>>
         >>),
@@ -129,7 +129,7 @@ HTMLGridContainer(id, class_list, children) ==
 
 HTMLBox(id, class_list, size, children) ==
     StringSeqToString(<<
-        StringFill("<div id=\"%id%\" class=\"default_box %class_list%\" style=\"%size%\">",<<
+        HTMLFill("<div id=\"%id%\" class=\"default_box %class_list%\" style=\"%size%\">",<<
             <<"%id%", id>>,
             <<"%class_list%", StringSeqToString(class_list, " ")>>,
             <<"%size%", size>>
@@ -150,7 +150,7 @@ HTMLText(id, text) ==
 
 HTMLSVG(id, viewBox, size, svgString) ==
     StringSeqToString(<<
-        StringFill("<svg id=\"%id%\" viewBox=\"%viewBox%\" style=\"%size%\">",<<
+        HTMLFill("<svg id=\"%id%\" viewBox=\"%viewBox%\" style=\"%size%\">",<<
             <<"%id%", id>>,
             <<"%viewBox%", viewBox>>,
             <<"%size%", size>>
@@ -178,16 +178,16 @@ HTMLFlexCenterAttributes ==
     >>,"\n")
 
 HTMLJSLineElems(fromID, destID) ==
-    StringFill("document.getElementById(\"%id1%\"), document.getElementById(\"%id2%\")",
+    HTMLFill("document.getElementById(\"%id1%\"), document.getElementById(\"%id2%\")",
         << <<"%id1%", fromID>>, <<"%id2%", destID>> >> )
 
 HTMLJSLine(fromID, destID, color, size) ==
-    StringFill("new LeaderLine(%elems%, {color: '%color%', size: %size%})",
+    HTMLFill("new LeaderLine(%elems%, {color: '%color%', size: %size%})",
     << <<"%elems%", HTMLJSLineElems(fromID, destID)>>,
        <<"%color%", color>>, <<"%size%", size>> >> )
 
 HTMLJSLineDash(fromID, destID, color, size) ==
-    StringFill("new LeaderLine(%elems%,  {color: '%color%', size: %size%, dash: true})",
+    HTMLFill("new LeaderLine(%elems%,  {color: '%color%', size: %size%, dash: true})",
     << <<"%elems%", HTMLJSLineElems(fromID, destID)>>,
        <<"%color%", color>>, <<"%size%", size>> >> )
 
