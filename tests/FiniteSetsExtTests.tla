@@ -119,8 +119,8 @@ ASSUME SymDiff({1,2,3}, {2,3,4}) = {1,4}
 ASSUME SymDiff({1,2,3}, {2,3}) = {1}
 ASSUME SymDiff({2,3}, {2,3,4}) = {4}
 
-ASSUME Sum(1..3) = 6
-ASSUME Product(1..4) = 24
+ASSUME SumSet(1..3) = 6
+ASSUME ProductSet(1..4) = 24
 
 -----------------------------------------------------------------------------
 

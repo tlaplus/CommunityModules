@@ -13,7 +13,7 @@ FoldSet(op(_,_), base, set) ==
    (*************************************************************************)
    MapThenFoldSet(op, base, LAMBDA x : x, LAMBDA s : CHOOSE x \in s : TRUE, set)
 
-Sum(set) ==
+SumSet(set) ==
    (*************************************************************************)
    (* Calculate the sum of the elements in set.                             *)
    (*                                                                       *)
@@ -22,7 +22,7 @@ Sum(set) ==
    (*************************************************************************)
    FoldSet(+, 0, set)
 
-Product(set) ==
+ProductSet(set) ==
    (*************************************************************************)
    (* Calculuate the product of the elements in set.                        *)
    (*                                                                       *)
