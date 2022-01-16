@@ -1,5 +1,5 @@
 ---------------------------- MODULE CSVTests ----------------------------
-EXTENDS CSV, TLC, Sequences, IOUtils
+EXTENDS CSV, TLC, Sequences, IOUtils, TLCExt
 
 ASSUME LET T == INSTANCE TLC IN T!PrintT("CSVTests")
 
@@ -14,11 +14,13 @@ ToFile ==
     "build/tests/CSVWriteTest-" \o ToString(JavaTime) \o ".csv"
 
 \* Write Value to ToFile then check success by reading with IOExec. 
-ASSUME(
+ASSUME
   CSVWrite(Template, Value, ToFile) 
     => 
-      /\ IOExec(<< "cat", ToFile >>).stdout = "42#\"abc\"#[a |-> \"a\", b |-> \"b\"]\n")
       /\ CSVRecords(ToFile) = 1
+      \* Skip the third (record) element because it would come back as a string.
+      /\ LET in == Head(CSVRead(<<"a", "b", "c">>, "#", ToFile))
+         IN in.a = "42" /\ in.b = "\"abc\"" /\ in.c = "[a |-> \"a\", b |-> \"b\"]"
 
 ASSUME
   CSVRecords("DoesNotExistNowhere.tla") = 0

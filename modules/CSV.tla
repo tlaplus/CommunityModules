@@ -13,6 +13,15 @@ CSVWrite(template, val, file) ==
     *)
    TRUE
 
+CSVRead(columns, delimiter, file) == 
+   (*
+       CSVRead(<<"C1", "C2", "C3">>, "#", "/tmp/out.csv")
+       
+       << [ C1 |-> "\"abc\"", C2 |-> "42", C3 |-> "{"\"x\"", "\"y\""}" ] >>
+    *)
+   TRUE
+
+
 CSVRecords(file) == 
    (* The number of records in the given file (including headers if any). *)
    CHOOSE n : n \in Nat
