@@ -14,10 +14,10 @@ MapThenFoldSet(op(_,_), base, f(_), choose(_), S) ==
 (* Example:                                                                   *)
 (*                                                                            *)
 (*  MapThenFoldSet(LAMBDA x,y: x \cup y,                                      *)
-(*                 {1,2},                                                     *)
+(*                 {},                                                        *)
 (*                 LAMBDA x: {{x}},                                           *)
 (*                 LAMBDA set: CHOOSE x \in set: TRUE,                        *)
-(*                 S)                                                         *)
+(*                 {1,2})                                                     *)
 (*       = {{1},{2}}                                                          *)
 (******************************************************************************)
   LET iter[s \in SUBSET S] ==
@@ -27,9 +27,4 @@ MapThenFoldSet(op(_,_), base, f(_), choose(_), S) ==
   IN  iter[S]
 
 
-
-
 =============================================================================
-\* Modification History
-\* Last modified Fri Apr 02 13:54:18 CEST 2021 by marty
-\* Created Tue Mar 30 19:20:49 CEST 2021 by marty

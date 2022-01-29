@@ -24,7 +24,8 @@ The Modules
 | <a href="https://github.com/tlaplus/CommunityModules/blob/master/modules/ShiViz.tla">ShiViz.tla</a> | Visualize error-traces of multi-process PlusCal algorithms with an [Interactive Communication Graphs](https://bestchai.bitbucket.io/shiviz/). |  | [@lemmy](https://github.com/lemmy) | 
 | <a href="https://github.com/tlaplus/tlaplus/blob/master/tlatools/org.lamport.tlatools/src/tla2sany/StandardModules/TLCExt.tla">TLCExt.tla</a> | Assertion operators and experimental TLC features (now part of TLC). | [&#10004;](https://github.com/tlaplus/tlaplus/blob/master/tlatools/org.lamport.tlatools/src/tlc2/module/TLCExt.java)| [@lemmy](https://github.com/lemmy), [@will62794](https://github.com/will62794) | 
 | <a href="https://github.com/tlaplus/CommunityModules/blob/master/modules/IOUtils.tla">IOUtils.tla</a> | Input/Output of TLA+ values & Spawn system commands from a spec. | [&#10004;](https://github.com/tlaplus/CommunityModules/blob/master/modules/tlc2/overrides/IOUtils.java) | [@lemmy](https://github.com/lemmy), [@lvanengelen](https://github.com/lvanengelen) | 
-| <a href="https://github.com/tlaplus/CommunityModules/blob/master/modules/Combinatorics.tla">Combinatorics.tla</a> | (n choose k), factorial, .... | [&#10004;](https://github.com/tlaplus/CommunityModules/blob/master/modules/tlc2/overrides/Combinatorics.java) | [@lemmy](https://github.com/lemmy) | 
+| <a href="https://github.com/tlaplus/CommunityModules/blob/master/modules/Combinatorics.tla">Combinatorics.tla</a> | (n choose k), factorial, .... | [&#10004;](https://github.com/tlaplus/CommunityModules/blob/master/modules/tlc2/overrides/Combinatorics.java) | [@lemmy](https://github.com/lemmy) |
+| <a href="https://github.com/tlaplus/CommunityModules/blob/master/modules/BagsExt.tla">BagsExt.tla</a> | BagAdd, BagRemove, FoldBag, ... |  | [@muenchnerkindl](https://github.com/muenchnerkindl) | 
 
 
 How to use it
