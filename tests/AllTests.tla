@@ -14,6 +14,7 @@ EXTENDS SequencesExtTests,
         CSVTests,
         CombinatoricsTests,
         FoldsTests,
-        GraphsTests
+        GraphsTests,
+        BagExtTests
 
 ===========================================
