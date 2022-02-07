@@ -25,60 +25,49 @@
  ******************************************************************************/
 package tlc2.overrides;
 
-import java.util.Arrays;
-
-import tlc2.module.Bags;
 import tlc2.output.EC;
 import tlc2.tool.EvalControl;
 import tlc2.tool.EvalException;
 import tlc2.value.Values;
-// import tlc2.value.impl.Applicable;
-// import tlc2.value.impl.BoolValue;
-// import tlc2.value.impl.Enumerable;
 import tlc2.value.impl.FcnRcdValue;
-import tlc2.value.impl.OpValue;
-// import tlc2.value.impl.SetOfRcdsValue;
-// import tlc2.value.impl.TupleValue;
-import tlc2.value.impl.Value;
 import tlc2.value.impl.IntValue;
-// import tlc2.value.impl.ValueEnumeration;
+import tlc2.value.impl.OpValue;
+import tlc2.value.impl.Value;
 
 public final class BagsExt {
-	
+
 	private BagsExt() {
 		// no-instantiation!
 	}
-	
+
 	@TLAPlusOperator(identifier = "FoldBag", module = "BagsExt", warn = false)
 	public static Value foldBag(final OpValue op, final Value base, final Value bag) {
 		// Can assume type of OpValue because tla2sany.semantic.Generator.java will
 		// make sure that the first parameter is a binary operator.
 
-            FcnRcdValue bfcn = (FcnRcdValue) bag.toFcnRcd();
-            if (bfcn == null) {
-                throw new EvalException(EC.TLC_MODULE_ARGUMENT_ERROR,
-                                        new String[] { "third", "FoldBag", "bag",
-                                                       Values.ppr(bag.toString()) });
-            }
+		FcnRcdValue bfcn = (FcnRcdValue) bag.toFcnRcd();
+		if (bfcn == null) {
+			throw new EvalException(EC.TLC_MODULE_ARGUMENT_ERROR,
+					new String[] { "third", "FoldBag", "bag", Values.ppr(bag.toString()) });
+		}
 
-            final Value[] domain = bfcn.getDomainAsValues();
-            final Value[] values = bfcn.values;
-            final Value acc[] = new Value[2];
-            acc[0] = base;
+		final Value[] domain = bfcn.getDomainAsValues();
+		final Value[] values = bfcn.values;
+		final Value acc[] = new Value[2];
+		acc[0] = base;
 
-            for (int i=0; i < domain.length; i++) {
-                acc[1] = domain[i];
-                if (!(values[i] instanceof IntValue) || (((IntValue)values[i]).val <= 0)) {
-                    throw new EvalException(EC.TLC_MODULE_APPLYING_TO_WRONG_VALUE,
-                                            new String[] { "third", "FoldBag", "bag",
-                                                           Values.ppr(bag.toString()) });
-                }
-                for (int j=0; j < ((IntValue)values[i]).val; j++) {
-                    acc[0] = op.apply(acc, EvalControl.Clear);
-                }
-            }
+		for (int i = 0; i < domain.length; i++) {
+			acc[1] = domain[i];
+			if (!(values[i] instanceof IntValue) || (((IntValue) values[i]).val <= 0)) {
+					throw new EvalException(EC.TLC_MODULE_APPLYING_TO_WRONG_VALUE,
+							new String[] { "FoldBag", "an element of Nat", Values.ppr(values[i].toString()) + " (in: "
+									+ Values.ppr(domain[i].toString()) + ":>" + Values.ppr(values[i].toString()) + ")" });
+			}
+			for (int j = 0; j < ((IntValue) values[i]).val; j++) {
+				acc[0] = op.apply(acc, EvalControl.Clear);
+			}
+		}
 
-            return acc[0];
-        }
+		return acc[0];
+	}
 }
-
