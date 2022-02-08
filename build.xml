@@ -54,6 +54,8 @@
 		</unzip>
 		<unzip src="lib/jgrapht-core-1.5.1.jar" dest="${build}/deps">
 			<patternset>
+				<!-- https://github.com/jgrapht/jgrapht/issues/1112 -->
+		        <exclude name="**/*rensenIndexLinkPrediction.class"/>
 		        <include name="**/*.class"/>
 			</patternset>
 		</unzip>
