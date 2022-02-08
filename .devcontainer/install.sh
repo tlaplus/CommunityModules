@@ -29,4 +29,4 @@ tools/apalache/bin/apalache-mc config --enable-stats=true
 sudo apt-get install -y ant
 
 ## Do initial build
-ant -f build.xml
+ant -d -f build.xml
