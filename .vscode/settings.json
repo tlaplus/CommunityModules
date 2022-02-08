@@ -1,0 +1,14 @@
+{
+    "tlaplus.tlc.modelChecker.options": "-deadlock -noTE",
+    "tlaplus.java.options": "-XX:+UseParallelGC",
+    "tlaplus.java.home": "/home/codespace/.java/current/",
+    "[tlaplus]": {"editor.codeActionsOnSave": {"source": true} },
+    "breadcrumbs.enabled": false,
+    "editor.minimap.enabled": false,
+    "editor.useTabStops": false,
+    "files.exclude": {
+        "tools": true,
+        "*/states/": true,
+        "_apalache-out/": true
+    }
+}
