@@ -1,6 +1,9 @@
 tlc/
 dist/
 build/
+tests/*.out
 *.toolbox/
 *.tlaps/
 states/
+tools/
+_apalache-out/
