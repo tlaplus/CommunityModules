@@ -4,10 +4,20 @@
     "configurations": [
         {
             "type": "java",
-            "name": "Debug Java Module Override (Attach 8000)",
+            "name": "Debug Java Module Override",
             "request": "attach",
             "hostName": "localhost",
-            "port": 8000
+            "port": "${input:portPrompt}"
+            // vscode-java's process picker broken https://github.com/microsoft/vscode-java-debug/issues/1121
+            // "processId": "${command:PickJavaProcess}"
+        }
+    ],
+    "inputs": [
+        {
+            "id": "portPrompt",
+            "description": "Please enter the port of TLC's Java VM",
+            "default": "8080",
+            "type": "promptString"
         }
     ]
 }
