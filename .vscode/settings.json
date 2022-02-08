@@ -1,6 +1,8 @@
 {
+    "tlaplus.smoke.prefix.path": "../.smoke/",
+    "tlaplus.smoke.prefix.name": "Smoke",
     "tlaplus.tlc.modelChecker.options": "-deadlock -noTE",
-    "tlaplus.java.options": "-XX:+UseParallelGC",
+    "tlaplus.java.options": "-XX:+UseParallelGC -DTLA-Library=/workspaces/CommunityModules/.smoke/:/workspaces/CommunityModules/modules/:/workspaces/CommunityModules/tests -Dtlc2.overrides.TLCOverrides=tlc2.overrides.TLCOverrides -cp /workspaces/CommunityModules/tlc/tla2tools.jar:/workspaces/CommunityModules/build/modules:/workspaces/CommunityModules/build/deps",
     "tlaplus.java.home": "/home/codespace/.java/current/",
     "[tlaplus]": {"editor.codeActionsOnSave": {"source": true} },
     "breadcrumbs.enabled": false,
