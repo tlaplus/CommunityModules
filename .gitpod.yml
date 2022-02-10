@@ -1,0 +1,8 @@
+tasks:
+  - init: echo 'init script' # runs during prebuild
+    command: sudo ln -s workspace workspaces && sdk install ant
+
+vscode:
+  extensions:
+    - alygin.vscode-tlaplus-nightly
+    - vscjava.vscode-java-pack
