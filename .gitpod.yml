@@ -1,0 +1,7 @@
+tasks:
+  - init: sudo ln -s /workspace /workspaces && sdk install ant && ln -s /home/gitpod/.sdkman/candidates/java/current /home/codespace/.java/current/ && bash -i .devcontainer/install.sh
+
+vscode:
+  extensions:
+    - alygin.vscode-tlaplus-nightly
+    - vscjava.vscode-java-pack
