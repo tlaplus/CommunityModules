@@ -50,7 +50,6 @@ import tlc2.value.impl.StringValue;
 import tlc2.value.impl.TupleValue;
 import tlc2.value.impl.Value;
 import tlc2.value.impl.ValueVec;
-import util.UniqueString;
 
 public final class SVG {
 
@@ -78,8 +77,7 @@ public final class SVG {
 		RecordValue frv = (RecordValue) elem.toRcd();
 
 		// Get 'name'.
-		StringValue nameVal = (StringValue) frv.apply(new StringValue("name"), 0);
-		String name = nameVal.getVal().toString();
+		String name = ((StringValue) frv.apply(new StringValue("name"), 0)).getVal();
 
 		// Get 'attrs'. We convert it to 'RecordValue' type, which we expect should always be possible.
 		Value attrsVal = frv.apply(new StringValue("attrs"), 0);
@@ -88,11 +86,11 @@ public final class SVG {
 			throw new Exception("Was unable to convert element to a record: " + attrsVal.toString());
 		}
 		String attrStr = "";
-		for (UniqueString us : attrs.names) {
+		for (String us : attrs.names) {
 			attrStr += " ";
-			attrStr += us.toString().replaceAll("_", "-");
+			attrStr += us.replaceAll("_", "-");
 			attrStr += "=";
-			String v = ((StringValue) attrs.apply(new StringValue(us), 0)).getVal().toString();
+			String v = ((StringValue) attrs.apply(new StringValue(us), 0)).getVal();
 			// Quote all SVG attribute values. Technically, attribute values in HTML
 			// don't always need to be quoted, but we use quotes so we can handle all
 			// possible values. We single quote them to play nice with TLC string formatting.
@@ -132,7 +130,7 @@ public final class SVG {
 		// to be empty for all other element types, but since it's not rendered, we don't 
 		// explicitly disallow it.
 		StringValue innerTextVal = (StringValue) frv.apply(new StringValue("innerText"), 0);
-		String innerText = innerTextVal.getVal().toString();
+		String innerText = innerTextVal.getVal();
 		// Make sure TLA+ tuples such as <<1,2,3>> get properly rendered.
 		innerText = innerText.replaceAll("<<", "&lt;&lt;").replaceAll(">>", "&gt;&gt;");
 
@@ -154,7 +152,7 @@ public final class SVG {
 		// Polar to Cartesian coordinates offset by (cx,cy).
 		final int x = (int) (cx.val + r.val * Math.cos(angle));
 		final int y = (int) (cy.val + r.val * Math.sin(angle));
-		return new RecordValue(new UniqueString[] {UniqueString.of("x"), UniqueString.of("y")}, new Value[] {IntValue.gen(x), IntValue.gen(y)}, false);
+		return new RecordValue(new String[] {"x", "y"}, new Value[] {IntValue.gen(x), IntValue.gen(y)}, false);
 	}
 	
 	@TLAPlusOperator(identifier = "NodesOfDirectedMultiGraph", module = "SVG", warn = false)
@@ -183,7 +181,7 @@ public final class SVG {
 
 		// Algorithm
 		final StringValue algo = (StringValue) opts.apply(new StringValue("algo"), EvalControl.Clear);
-		getAlgo(algo.val.toString(), opts).visit(layoutModel);
+		getAlgo(algo.val, opts).visit(layoutModel);
 
 		// Get the node's coordinates from the algorithm.
 		final Map <Value, Point> locations = layoutModel.getLocations();
@@ -196,7 +194,7 @@ public final class SVG {
 	private static Value point2Value(final Point p) {
 		final int x = ((Double) p.x).intValue();
 		final int y = ((Double) p.y).intValue();
-		return new RecordValue(new UniqueString[] { UniqueString.of("x"), UniqueString.of("y") },
+		return new RecordValue(new String[] { "x", "y" },
 				new Value[] { IntValue.gen(x), IntValue.gen(y) }, false);
 	}
 
@@ -207,12 +205,12 @@ public final class SVG {
 		switch (algo) {
 		case "Sugiyama":
 			// https://github.com/tomnelson/jungrapht-visualization/blob/afd155bf0246e5185f054ba1429bbcfbd429292a/jungrapht-layout/src/main/java/org/jungrapht/visualization/layout/algorithms/sugiyama/Layering.java#L4-L7
-			String l = ((StringValue) opts.apply(new StringValue("layering"), EvalControl.Clear)).val.toString();
+			String l = ((StringValue) opts.apply(new StringValue("layering"), EvalControl.Clear)).val;
 			return SugiyamaLayoutAlgorithm.<Value, Integer>edgeAwareBuilder()
 					.layering(Layering.valueOf(l)).vertexBoundsFunction(v -> Rectangle.of(-5, -5, nodeW.val, nodeH.val)).threaded(false)
 					.build();
 		case "Eiglsperger":
-			l = ((StringValue) opts.apply(new StringValue("layering"), EvalControl.Clear)).val.toString();
+			l = ((StringValue) opts.apply(new StringValue("layering"), EvalControl.Clear)).val;
 			return EiglspergerLayoutAlgorithm.<Value, Integer>edgeAwareBuilder()
 					.layering(Layering.valueOf(l)).vertexBoundsFunction(v -> Rectangle.of(-5, -5, nodeW.val, nodeH.val)).threaded(false)
 					.build();
@@ -233,6 +231,6 @@ public final class SVG {
 		int x = (int) (fx + ((tx - fx) / (idx.val * 1d)));
 		int y = (int) (fy + ((ty - fy) / (idx.val * 1d)));
 		
-		return new RecordValue(new UniqueString[] {UniqueString.of("x"), UniqueString.of("y")}, new Value[] {IntValue.gen(x), IntValue.gen(y)}, false);
+		return new RecordValue(new String[] {"x", "y"}, new Value[] {IntValue.gen(x), IntValue.gen(y)}, false);
 	}
 }

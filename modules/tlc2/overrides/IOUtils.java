@@ -57,16 +57,15 @@ import tlc2.value.impl.RecordValue;
 import tlc2.value.impl.StringValue;
 import tlc2.value.impl.TupleValue;
 import tlc2.value.impl.Value;
-import util.UniqueString;
 
 public class IOUtils {
 
 	@TLAPlusOperator(identifier = "IODeserialize", module = "IOUtils", warn = false)
 	public static final IValue ioDeserialize(final StringValue absolutePath, final BoolValue compress)
 			throws IOException {
-		final ValueInputStream vis = new ValueInputStream(new File(absolutePath.val.toString()), compress.val);
+		final ValueInputStream vis = new ValueInputStream(new File(absolutePath.val), compress.val);
 		try {
-			return vis.read(UniqueString.internTbl.toMap());
+			return vis.read();
 		} finally {
 			vis.close();
 		}
@@ -75,7 +74,7 @@ public class IOUtils {
 	@TLAPlusOperator(identifier = "IOSerialize", module = "IOUtils", warn = false)
 	public static final IValue ioSerialize(final IValue value, final StringValue absolutePath, final BoolValue compress)
 			throws IOException {
-		final ValueOutputStream vos = new ValueOutputStream(new File(absolutePath.val.toString()), compress.val);
+		final ValueOutputStream vos = new ValueOutputStream(new File(absolutePath.val), compress.val);
 		try {
 			value.write(vos);
 		} finally {
@@ -110,7 +109,7 @@ public class IOUtils {
 		}
 		
 		final StringValue serializer = (StringValue) opts.apply(new StringValue("format"), EvalControl.Clear);
-		if("TXT".equals(serializer.getVal().toString())) {
+		if("TXT".equals(serializer.getVal())) {
 			
 			final StringValue payload;
 			final StringValue filepath;
@@ -132,11 +131,11 @@ public class IOUtils {
 			
 			try {
 				Files.writeString(
-						Paths.get(filepath.getVal().toString()),
-						payload.getVal().toString(),
-						Charset.forName(charset.getVal().toString()),
+						Paths.get(filepath.getVal()),
+						payload.getVal(),
+						Charset.forName(charset.getVal()),
 						Arrays.asList(openOptions).stream()
-							.map(e -> StandardOpenOption.valueOf(e.getVal().toString()) )
+							.map(e -> StandardOpenOption.valueOf(e.getVal()) )
 							.toArray(size -> new StandardOpenOption[size]));
 				
 				return new RecordValue(EXEC_NAMES, new Value[] { IntValue.ValZero, new StringValue(successmsg), new StringValue("") }, false);
@@ -173,7 +172,7 @@ public class IOUtils {
 		}
 		
 		final StringValue serializer = (StringValue) opts.apply(new StringValue("format"), EvalControl.Clear);
-		if("TXT".equals(serializer.getVal().toString())) {
+		if("TXT".equals(serializer.getVal())) {
 			
 			final StringValue filepath;
 			final StringValue charset;
@@ -186,9 +185,7 @@ public class IOUtils {
 			}
 			
 			try {
-				final String result = Files.readString(
-						Paths.get(filepath.getVal().toString()),
-						Charset.forName(charset.getVal().toString()));
+				final String result = Files.readString(Paths.get(filepath.getVal()), Charset.forName(charset.getVal()));
 				
 				return new RecordValue(EXEC_NAMES, new Value[] { IntValue.ValZero, new StringValue(result), new StringValue("") }, false);
 				
@@ -206,12 +203,12 @@ public class IOUtils {
 		// process executes.
 		final Map<String, String> env = System.getenv();
 		
-		final UniqueString[] names = new UniqueString[env.size()];
+		final String[] names = new String[env.size()];
 		final StringValue[] values = new StringValue[env.size()];
 		
 		final List<Map.Entry<String, String>> entries = new ArrayList<>(env.entrySet());
 		for (int i = 0; i < entries.size(); i++) {
-			names[i] = UniqueString.of(entries.get(i).getKey());
+			names[i] = entries.get(i).getKey();
 			values[i] = new StringValue(entries.get(i).getValue());
 		}
 
@@ -223,7 +220,7 @@ public class IOUtils {
 		if (v instanceof StringValue) {
 			final StringValue sv = (StringValue) v;
 			try {
-				final int i = Integer.parseInt(sv.val.toString());
+				final int i = Integer.parseInt(sv.val);
 				return IntValue.gen(i);
 			} catch (Exception e) {
 				// "fall-through" to eval exception below.
@@ -350,9 +347,9 @@ public class IOUtils {
 		// Convert record of environment variables to what ProcessBuilder works with.
 		final Map<String, String> penv = new HashMap<>();
 		for (int i = 0; i < environment.size(); i++) {
-			final UniqueString name = environment.names[i];
+			final String name = environment.names[i];
 			final Value value = environment.values[i];
-			penv.put(name.toString(), value.toUnquotedString());
+			penv.put(name, value.toUnquotedString());
 		}
 		return penv;
 	}
@@ -398,11 +395,11 @@ public class IOUtils {
 		}
 		final StringValue sv = (StringValue) v;
 
-		return sv.val.toString();
+		return sv.val;
 	}
 
-	private static final UniqueString EXITVALUE = UniqueString.uniqueStringOf("exitValue");
-	private static final UniqueString STDOUT = UniqueString.uniqueStringOf("stdout");
-	private static final UniqueString STDERR = UniqueString.uniqueStringOf("stderr");
-	private static final UniqueString[] EXEC_NAMES = new UniqueString[] { EXITVALUE, STDOUT, STDERR };
+	private static final String EXITVALUE = ("exitValue");
+	private static final String STDOUT = ("stdout");
+	private static final String STDERR = ("stderr");
+	private static final String[] EXEC_NAMES = new String[] { EXITVALUE, STDOUT, STDERR };
 }

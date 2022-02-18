@@ -58,7 +58,6 @@ import tlc2.value.impl.StringValue;
 import tlc2.value.impl.SubsetValue;
 import tlc2.value.impl.TupleValue;
 import tlc2.value.impl.Value;
-import util.UniqueString;
 
 /**
  * Module overrides for operators to read and write JSON.
@@ -107,7 +106,7 @@ public class Json {
   @TLAPlusOperator(identifier = "ndJsonDeserialize", module = "Json", warn = false)
   public static IValue ndDeserialize(final StringValue path) throws IOException {
     List<Value> values = new ArrayList<>();
-    try (BufferedReader reader = new BufferedReader(new FileReader(new File(path.val.toString())))) {
+    try (BufferedReader reader = new BufferedReader(new FileReader(new File(path.val)))) {
       String line = reader.readLine();
       while (line != null) {
         JsonElement node = JsonParser.parseString(line);
@@ -126,7 +125,7 @@ public class Json {
    */
   @TLAPlusOperator(identifier = "JsonDeserialize", module = "Json", warn = false)
   public static IValue deserialize(final StringValue path) throws IOException {
-    JsonElement node = JsonParser.parseReader(new FileReader(new File(path.val.toString())));
+    JsonElement node = JsonParser.parseReader(new FileReader(new File(path.val)));
     return getValue(node);
   }
 
@@ -139,9 +138,9 @@ public class Json {
    */
   @TLAPlusOperator(identifier = "ndJsonSerialize", module = "Json", warn = false)
   public synchronized static BoolValue ndSerialize(final StringValue path, final TupleValue value) throws IOException {
-    File file = new File(path.val.toString());
+    File file = new File(path.val);
     if (file.getParentFile() != null) {file.getParentFile().mkdirs();} // Cannot create parent dir for relative path.
-    try (BufferedWriter writer = new BufferedWriter(new FileWriter(new File(path.val.toString())))) {
+    try (BufferedWriter writer = new BufferedWriter(new FileWriter(new File(path.val)))) {
         for (int i = 0; i < value.elems.length; i++) {
             writer.write(getNode(value.elems[i]).toString() + "\n");
           }
@@ -158,9 +157,9 @@ public class Json {
    */
   @TLAPlusOperator(identifier = "JsonSerialize", module = "Json", warn = false)
   public synchronized static BoolValue serialize(final StringValue path, final TupleValue value) throws IOException {
-    File file = new File(path.val.toString());
+    File file = new File(path.val);
     if (file.getParentFile() != null) {file.getParentFile().mkdirs();} // Cannot create parent dir for relative path.
-    try (BufferedWriter writer = new BufferedWriter(new FileWriter(new File(path.val.toString())))) {
+    try (BufferedWriter writer = new BufferedWriter(new FileWriter(new File(path.val)))) {
     	writer.write("[\n");
 		for (int i = 0; i < value.elems.length; i++) {
 			writer.write(getNode(value.elems[i]).toString());
@@ -186,9 +185,9 @@ public class Json {
     } else if (value instanceof TupleValue) {
       return getArrayNode((TupleValue) value);
     } else if (value instanceof StringValue) {
-      return new JsonPrimitive(((StringValue) value).val.toString());
+      return new JsonPrimitive(((StringValue) value).val);
     } else if (value instanceof ModelValue) {
-      return new JsonPrimitive(((ModelValue) value).val.toString());
+      return new JsonPrimitive(((ModelValue) value).val);
     } else if (value instanceof IntValue) {
       return new JsonPrimitive(((IntValue) value).val);
     } else if (value instanceof BoolValue) {
@@ -272,7 +271,7 @@ public class Json {
     for (int i = 0; i < domain.length; i++) {
       Value domainValue = domain[i];
       if (domainValue instanceof StringValue) {
-        jsonObject.add(((StringValue) domainValue).val.toString(), getNode(value.values[i]));
+        jsonObject.add(((StringValue) domainValue).val, getNode(value.values[i]));
       } else {
         jsonObject.add(domainValue.toString(), getNode(value.values[i]));
       }
@@ -289,7 +288,7 @@ public class Json {
   private static JsonElement getObjectNode(RecordValue value) throws IOException {
     JsonObject jsonObject = new JsonObject();
     for (int i = 0; i < value.names.length; i++) {
-      jsonObject.add(value.names[i].toString(), getNode(value.values[i]));
+      jsonObject.add(value.names[i], getNode(value.values[i]));
     }
     return jsonObject;
   }
@@ -440,15 +439,15 @@ public class Json {
    * @return the record value
    */
   private static RecordValue getRecordValue(JsonElement node) throws IOException {
-    List<UniqueString> keys = new ArrayList<>();
+    List<String> keys = new ArrayList<>();
     List<Value> values = new ArrayList<>();
     Iterator<Map.Entry<String, JsonElement>> iterator = node.getAsJsonObject().entrySet().iterator();
     while (iterator.hasNext()) {
       Map.Entry<String, JsonElement> entry = iterator.next();
-      keys.add(UniqueString.uniqueStringOf(entry.getKey()));
+      keys.add(entry.getKey());
       values.add(getValue(entry.getValue()));
     }
-	return new RecordValue(keys.toArray(new UniqueString[keys.size()]), values.toArray(new Value[values.size()]),
+	return new RecordValue(keys.toArray(new String[keys.size()]), values.toArray(new Value[values.size()]),
 			false);
   }
 
