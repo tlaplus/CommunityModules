@@ -38,6 +38,24 @@ SimplePath(G) ==
 AreConnectedIn(m, n, G) == 
   \E p \in SimplePath(G) : (p[1] = m) /\ (p[Len(p)] = n)
 
+ConnectionsIn(G) ==
+  \* Compute a Boolean matrix that indicates, for each pair of nodes,
+  \* if there exists a path that links the two nodes. The computation,
+  \* based on Warshall's algorithm, is much more efficient than the
+  \* definition used in AreConnectedIn, and the result can be cached
+  \* by TLC, avoiding recomputation.
+  LET C[N \in SUBSET G.node] ==
+      \* Matrix representing the existence of paths whose inner nodes
+      \* (i.e., except for the source and the target) are all in the
+      \* set of nodes N.
+      IF N = {}
+      THEN [m,n \in G.node |-> m = n \/ <<m,n>> \in G.edge]
+      ELSE LET u == CHOOSE u \in N : TRUE
+               Cu == C[N \ {u}]
+           IN  [m,n \in G.node |-> \/ Cu[m,n]
+                                   \/ Cu[m,u] /\ Cu[u,n]]
+  IN  C[G.node]
+
 IsStronglyConnected(G) == 
   \A m, n \in G.node : AreConnectedIn(m, n, G) 
 -----------------------------------------------------------------------------
@@ -48,5 +66,7 @@ IsTreeWithRoot(G, r) ==
   /\ \A n \in G.node : AreConnectedIn(n, r, G)
 =============================================================================
 \* Modification History
+\* Last modified Sun Mar 06 18:10:34 CET 2022 by merz
+\* Last modified Sun Mar 06 18:02:33 CET 2022 by merz
 \* Last modified Tue Dec 21 15:55:45 PST 2021 by Markus Kuppe
 \* Created Tue Jun 18 11:44:08 PST 2002 by Leslie Lamport
