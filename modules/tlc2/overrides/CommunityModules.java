@@ -28,6 +28,6 @@ package tlc2.overrides;
 public abstract class CommunityModules {
 
 	public static final String popularModules() {
-		return String.join(",", "FiniteSetsExt", "Functions", "SequencesExt", "Folds", "IOUtils");
+		return String.join(",", "FiniteSetsExt", "Functions", "SequencesExt", "Folds", "BagsExt", "IOUtils");
 	}
 }

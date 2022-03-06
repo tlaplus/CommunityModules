@@ -1,0 +1,23 @@
+{
+    // Run TLC's Java VM with -Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=n,address=8000
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Debug Java Module Override",
+            "request": "attach",
+            "hostName": "localhost",
+            "port": "${input:portPrompt}"
+            // vscode-java's process picker broken https://github.com/microsoft/vscode-java-debug/issues/1121
+            // "processId": "${command:PickJavaProcess}"
+        }
+    ],
+    "inputs": [
+        {
+            "id": "portPrompt",
+            "description": "Please enter the port of TLC's Java VM",
+            "default": "8080",
+            "type": "promptString"
+        }
+    ]
+}

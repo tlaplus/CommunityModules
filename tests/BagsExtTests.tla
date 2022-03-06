@@ -4,7 +4,7 @@ NEXT Next
 =====
 
 ---------------------------- MODULE BagsExtTests ----------------------------
-EXTENDS Integers, TLC, Bags, BagsExt
+EXTENDS Integers, TLC, Bags, BagsExt, Sequences, TLCExt
 
 ASSUME LET T == INSTANCE TLC IN T!PrintT("BagsExtTests")
 
@@ -59,6 +59,16 @@ ASSUME SumBag((1:>2) @@ (2:>1) @@ (3:>2)) = 10
 ASSUME SumBag((1:>2) @@ (-2:>1)) = 0
 
 ASSUME ProductBag((1:>2) @@ (-2:>1)) = -2
+
+ASSUME FoldBag(LAMBDA x,y : Append(x, y), <<>>, SetToBag({"a", "b"}) (+) SetToBag({"a"})) = <<"a", "a", "b">>
+
+ASSUME AssertError(
+           "Applying FoldBag to the following value,\nwhich is not an element of Nat:\n-1 (in: \"b\":>-1)", 
+           ProductBag(("b":>-1)) = 42)
+
+ASSUME AssertError(
+           "The third argument of FoldBag should be a bag, but instead it is:\n42", 
+           ProductBag(42) = 42)
 
 (***************************************************************************)
 (* The two following tests fail without the Java override for FoldBag.     *)
