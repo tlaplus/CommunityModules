@@ -26,6 +26,17 @@ SetToSeq(S) ==
   (**************************************************************************)
   CHOOSE f \in [1..Cardinality(S) -> S] : IsInjective(f)
 
+SetToSeqs(S) == 
+  (**************************************************************************)
+  (* Convert the set S to a set containing all sequences containing the     *)
+  (* elements of S exactly once and no other elements.                      *)
+  (* Example:                                                               *)
+  (*    SetToSeqs({}), {<<>>}                                               *)
+  (*    SetToSeqs({"t","l"}) = {<<"t","l">>, <<"l","t">>}                   *) 
+  (**************************************************************************)
+  LET D == 1..Cardinality(S)
+  IN { f \in [D -> S] : \A i,j \in D : i # j => f[i] # f[j] }
+
 SetToSortSeq(S, op(_,_)) ==
   (**************************************************************************)
   (* Convert a set to a sorted sequence that contains all the elements of   *)

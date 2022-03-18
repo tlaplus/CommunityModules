@@ -38,6 +38,7 @@ import tlc2.util.Context;
 import tlc2.value.IValue;
 import tlc2.value.Values;
 import tlc2.value.impl.BoolValue;
+import tlc2.value.impl.FcnRcdValue;
 import tlc2.value.impl.OpValue;
 import tlc2.value.impl.SetEnumValue;
 import tlc2.value.impl.StringValue;
@@ -65,6 +66,85 @@ public final class SequencesExt {
 		return new TupleValue(setEnumValue.elems.toArray());
 	}
 
+	@TLAPlusOperator(identifier = "SetToSeqs", module = "SequencesExt", warn = false)
+	public static Value SetToSeqs(final Value s) {		
+        SetEnumValue s1 = (SetEnumValue) s.toSetEnum();
+        if (s1 == null)
+        {
+            throw new EvalException(EC.TLC_MODULE_APPLYING_TO_WRONG_VALUE, new String[] { "SetToSeqs",
+                    "a finite set", Values.ppr(s.toString()) });
+        }
+        s1.normalize();
+        ValueVec elems = s1.elems;
+        int len = elems.size();
+        if (len == 0)
+        {
+        	Value[] elems1 = { FcnRcdValue.EmptyFcn };
+            return new SetEnumValue(elems1, true);
+        }
+
+        int factorial = 1;
+        Value [] domain = new Value[len];
+        int[] idxArray = new int[len];
+        boolean[] inUse = new boolean[len];
+        for (int i = 0; i < len; i++)
+        {
+            domain[i] = elems.elementAt(i);
+            idxArray[i] = i;
+            inUse[i] = true;
+            factorial = factorial * (i + 1);
+        }
+
+        ValueVec fcns = new ValueVec(factorial);
+        _done: while (true)
+        {
+        	Value [] vals = new Value[len];
+            for (int i = 0; i < len; i++)
+            {
+                vals[i] = domain[idxArray[i]];
+            }
+            // Except for this line, this method is a copy of tlc2.module.TLC#Permutations.
+            fcns.addElement(new TupleValue(vals));
+            int i;
+            for (i = len - 1; i >= 0; i--)
+            {
+                boolean found = false;
+                for (int j = idxArray[i] + 1; j < len; j++)
+                {
+                    if (!inUse[j])
+                    {
+                        inUse[j] = true;
+                        inUse[idxArray[i]] = false;
+                        idxArray[i] = j;
+                        found = true;
+                        break;
+                    }
+                }
+                if (found) {
+                    break;
+                }
+                if (i == 0) {
+                    break _done;
+                }
+                inUse[idxArray[i]] = false;
+            }
+            for (int j = i + 1; j < len; j++)
+            {
+                for (int k = 0; k < len; k++)
+                {
+                    if (!inUse[k])
+                    {
+                        inUse[k] = true;
+                        idxArray[j] = k;
+                        break;
+                    }
+                }
+            }
+        }
+        return new SetEnumValue(fcns, false);
+	}
+	
+	
 	/*
 	 * Contains(s, e) == \E i \in 1..Len(s) : s[i] = e
 	 */

@@ -298,4 +298,21 @@ ASSUME(ReplaceAllSubSeqs("\r", "%%", "Properly escape the %% char") = "Properly 
 ASSUME AssertEq(ReplaceAllSubSeqs("replaces", "%pattern%", "This %pattern% the pattern %pattern% multipe times"), "This replaces the pattern replaces multipe times")
 ASSUME AssertEq(ReplaceAllSubSeqs("\\\\", "\\", "Properly escape the \\quotes"), "Properly escape the \\\\quotes")
 
+
+-----------------------------------------------------------------------------
+
+ASSUME AssertEq(SetToSeqs({}), {<<>>})
+ASSUME AssertEq(SetToSeqs({"t"}), {<<"t">>})
+ASSUME AssertEq(SetToSeqs({"t","l"}), {<<"t","l">>, <<"l","t">>})
+ASSUME AssertEq(SetToSeqs({"t","l","a"}), {<<"t","l","a">>, <<"t","a","l">> , <<"l","t","a">>, <<"l","a","t">> , <<"a","t","l">>, <<"a","l","t">>})
+
+SetToSeqsPure(S) ==
+LET D == 1..Cardinality(S)
+  IN { f \in [D -> S] : \A i,j \in D : i # j => f[i] # f[j] }
+
+ASSUME AssertEq(SetToSeqs({}), SetToSeqsPure({}))
+ASSUME AssertEq(SetToSeqs({"t"}), SetToSeqsPure({"t"}))
+ASSUME AssertEq(SetToSeqs({"t","l"}), SetToSeqsPure({"t","l"}))
+ASSUME AssertEq(SetToSeqs({"t","l","a"}), SetToSeqsPure({"t","l","a"}))
+
 =============================================================================
