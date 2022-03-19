@@ -315,4 +315,12 @@ ASSUME AssertEq(SetToSeqs({"t"}), SetToSeqsPure({"t"}))
 ASSUME AssertEq(SetToSeqs({"t","l"}), SetToSeqsPure({"t","l"}))
 ASSUME AssertEq(SetToSeqs({"t","l","a"}), SetToSeqsPure({"t","l","a"}))
 
+ASSUME AssertEq(SetToAllKPermutations({}), {<<>>})
+ASSUME AssertEq(SetToAllKPermutations({"t"}), {<<>>, <<"t">>})
+ASSUME AssertEq(SetToAllKPermutations({"t","l"}), {<<>>, <<"t">>, <<"l">>,<<"t","l">>, <<"l","t">>})
+ASSUME AssertEq(SetToAllKPermutations({"t","l","a"}), {<< >>, 
+                                        <<"a">>, <<"t">>, <<"l">>, 
+                                        <<"a", "t">>, <<"a", "l">>, <<"t", "a">>, <<"t", "l">>, <<"l", "a">>, <<"l", "t">>, 
+                                        <<"a", "t", "l">>, <<"a", "l", "t">>, <<"t", "a", "l">>, <<"t", "l", "a">>, <<"l", "a", "t">>, <<"l", "t", "a">>})
+
 =============================================================================

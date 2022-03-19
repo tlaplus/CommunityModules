@@ -46,6 +46,18 @@ SetToSortSeq(S, op(_,_)) ==
   \* because this variant works efficiently without a dedicated TLC override.
   SortSeq(SetToSeq(S), op)
 
+SetToAllKPermutations(S) ==
+  (**************************************************************************)
+  (* Convert the set S to a set containing all k-permutations of elements   *)
+  (* of S for k \in 0..Cardinality(S).                                      *)
+  (* Example:                                                               *)
+  (*    SetToAllKPermutations({}) = {<<>>}                                  *)
+  (*    SetToAllKPermutations({"a"}) = {<<>>, <<"a">>}                      *)
+  (*    SetToAllKPermutations({"a","b"}) =                                  *)
+  (*                    {<<>>, <<"a">>, <<"b">>,<<"a","b">>, <<"b","a">>}   *)
+  (**************************************************************************)
+  UNION { SetToSeqs(s) : s \in SUBSET S  }
+
 TupleOf(set, n) == 
   (***************************************************************************)
   (* TupleOf(s, 3) = s \X s \X s                                             *)
@@ -65,7 +77,7 @@ BoundedSeq(S, n) ==
   (* the unbounded version of BoundedSeq.                                    *)
   (***************************************************************************)
   SeqOf(S, n)
-  
+
 -----------------------------------------------------------------------------
 
 Contains(s, e) ==
