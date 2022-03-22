@@ -261,6 +261,8 @@ ASSUME AssertEq(ReplaceAllSubSeqs(<<>>,<<>>,<<>>), <<>>)
 ASSUME AssertEq(ReplaceAllSubSeqs(<<4>>,<<>>,<<>>), <<4>>)
 ASSUME AssertEq(ReplaceAllSubSeqs(<<4,4>>,<<>>,<<>>), <<4,4>>)
 
+ASSUME AssertEq(ReplaceAllSubSeqs(<<4,4>>,<<>>,<<1,2,3>>), <<4,4,1,4,4,2,4,4,3>>)
+
 ASSUME AssertEq(ReplaceAllSubSeqs(<<1>>, <<1>>, <<1>>), <<1>>)
 ASSUME AssertEq(ReplaceAllSubSeqs(<<2>>, <<3>>, <<1,3>>), <<1,2>>)
 ASSUME AssertEq(ReplaceAllSubSeqs(<<1,1>>, <<1>>, <<1,1>>), <<1,1,1,1>>)
@@ -279,6 +281,8 @@ ASSUME ReplaceAllSubSeqs("ddd", "a", "") = ""
 ASSUME ReplaceAllSubSeqs("ddd", "", "") = "ddd"
 ASSUME ReplaceAllSubSeqs("ddd", "ab", "abab") = "dddddd"
 ASSUME ReplaceAllSubSeqs("ddd", "abab", "abab") = "ddd"
+
+ASSUME ReplaceAllSubSeqs("dd", "", "abc") = "ddaddbddc"
 
 ASSUME ReplaceAllSubSeqs("ddd", "aa", "aaa") = "ddda"
 ASSUME ReplaceAllSubSeqs("a", "a", "a") = "a"
