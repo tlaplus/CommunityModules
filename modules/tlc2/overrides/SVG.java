@@ -42,6 +42,7 @@ import org.jungrapht.visualization.layout.model.Point;
 import org.jungrapht.visualization.layout.model.Rectangle;
 
 import tlc2.tool.EvalControl;
+import tlc2.value.impl.FcnLambdaValue;
 import tlc2.value.impl.FcnRcdValue;
 import tlc2.value.impl.IntValue;
 import tlc2.value.impl.RecordValue;
@@ -110,6 +111,9 @@ public final class SVG {
 			RecordValue rv = (RecordValue) childrenVal.toRcd();
 			children = rv.values;
 		} else if (childrenVal instanceof FcnRcdValue) {
+			FcnRcdValue fcv = (FcnRcdValue) childrenVal.toFcnRcd();
+			children = fcv.values;
+		} else if (childrenVal instanceof FcnLambdaValue) {
 			FcnRcdValue fcv = (FcnRcdValue) childrenVal.toFcnRcd();
 			children = fcv.values;
 		} else {
