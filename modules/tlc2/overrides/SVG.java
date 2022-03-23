@@ -158,8 +158,24 @@ public final class SVG {
 	}
 	
 	@TLAPlusOperator(identifier = "NodesOfDirectedMultiGraph", module = "SVG", warn = false)
-	public static Value directedMultiGraph(final SetEnumValue nodes, final SetEnumValue edges, final RecordValue opts)
+	public static Value directedMultiGraph(final Value n, final Value e, final Value o)
 			throws Exception {
+		if (!(n instanceof RecordValue) || n.toSetEnum() == null) {
+			throw new Exception(
+					"Nodes must be a set. Value given is of type: " + n.getClass().getName());
+		}
+		if (!(e instanceof RecordValue) || e.toSetEnum() == null) {
+			throw new Exception(
+					"Edges must be a record. Value given is of type: " + e.getClass().getName());
+		}
+		if (!(o instanceof RecordValue) || o.toRcd() == null) {
+			throw new Exception(
+					"Opts must be a record. Value given is of type: " + o.getClass().getName());
+		}
+		final SetEnumValue nodes = (SetEnumValue) n.toSetEnum();
+		final SetEnumValue edges = (SetEnumValue) e.toSetEnum();
+		final RecordValue opts = (RecordValue) o.toRcd();
+		
 		// https://jgrapht.org/guide/UserOverview#graph-structures
 		final Graph<Value, Integer> graph = GraphTypeBuilder
 				.<Value, Integer>forGraphType(DefaultGraphType.directedMultigraph())
