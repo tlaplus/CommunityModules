@@ -11,6 +11,7 @@ LOCAL INSTANCE Folds
 (***************************************************************************)
 (* Restriction of a function to a set (should be a subset of the domain).  *)
 (***************************************************************************)
+\* @supportedBy("TLC,Apalache")
 Restrict(f,S) == [ x \in S |-> f[x] ]
 
 (***************************************************************************)
@@ -18,6 +19,7 @@ Restrict(f,S) == [ x \in S |-> f[x] ]
 (* Note: The image of a set under function f can be defined as             *)
 (*       Range(Restrict(f,S)).                                             *)
 (***************************************************************************)
+\* @supportedBy("TLC,Apalache")
 Range(f) == { f[x] : x \in DOMAIN f }
 
 
@@ -32,11 +34,13 @@ Range(f) == { f[x] : x \in DOMAIN f }
 (*    IN Inverse(f, DOMAIN f, {1,3}) =                                     *)
 (*                                 1 :> "b" @@ 3 :> "a")                   *)
 (***************************************************************************)
+\* @supportedBy("TLC,Apalache")
 Inverse(f,S,T) == [t \in T |-> CHOOSE s \in S : t \in Range(f) => f[s] = t]
 
 (***************************************************************************)
 (* The inverse of a function.                                              *)
 (***************************************************************************)
+\* @supportedBy("TLC,Apalache")
 AntiFunction(f) == Inverse(f, DOMAIN f, Range(f))
 
 (***************************************************************************)
@@ -46,11 +50,13 @@ AntiFunction(f) == Inverse(f, DOMAIN f, Range(f))
 (* This definition is overridden by TLC in the Java class SequencesExt.    *)
 (* The operator is overridden by the Java method with the same name.       *)
 (***************************************************************************)
+\* @supportedBy("TLC,Apalache")
 IsInjective(f) == \A a,b \in DOMAIN f : f[a] = f[b] => a = b
 
 (***************************************************************************)
 (* Set of injections between two sets.                                     *)
 (***************************************************************************)
+\* @supportedBy("TLC,Apalache")
 Injection(S,T) == { M \in [S -> T] : IsInjective(M) }
 
 
@@ -58,12 +64,14 @@ Injection(S,T) == { M \in [S -> T] : IsInjective(M) }
 (* A map is a surjection iff for each element in the range there is some   *)
 (* element in the domain that maps to it.                                  *)
 (***************************************************************************)
+\* @supportedBy("TLC,Apalache")
 Surjection(S,T) == { M \in [S -> T] : \A t \in T : \E s \in S : M[s] = t }
 
 
 (***************************************************************************)
 (* A map is a bijection iff it is both an injection and a surjection.      *)
 (***************************************************************************)
+\* @supportedBy("TLC,Apalache")
 Bijection(S,T) == Injection(S,T) \cap Surjection(S,T)
 
 
@@ -71,12 +79,16 @@ Bijection(S,T) == Injection(S,T) \cap Surjection(S,T)
 (* An injection, surjection, or bijection exists if the corresponding set  *)
 (* is nonempty.                                                            *)
 (***************************************************************************)
+\* @supportedBy("TLC,Apalache")
 ExistsInjection(S,T)  == Injection(S,T) # {}
+\* @supportedBy("TLC,Apalache")
 ExistsSurjection(S,T) == Surjection(S,T) # {}
+\* @supportedBy("TLC,Apalache")
 ExistsBijection(S,T)  == Bijection(S,T) # {}
 
 --------------------------------------------------------------------------------
 
+\* @supportedBy("TLC,Apalache")
 FoldFunction(op(_,_), base, fun) ==
   (***************************************************************************)
   (* Applies the binary function op on all elements of seq in arbitrary      *)
@@ -92,6 +104,7 @@ FoldFunction(op(_,_), base, fun) ==
   MapThenFoldSet(op, base, LAMBDA i : fun[i], LAMBDA s: CHOOSE x \in s : TRUE, DOMAIN fun)
 
 
+\* @supportedBy("TLC,Apalache")
 FoldFunctionOnSet(op(_,_), base, fun, indices) ==
   (***************************************************************************)
   (* Applies the binary function op on the given indices of seq in arbitrary *)

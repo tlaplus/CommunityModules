@@ -9,12 +9,15 @@ LOCAL INSTANCE TLC
 
 -----------------------------------------------------------------------------
 
+\* @supportedBy("TLC")
 LOCAL IsSequence(F, D) == TRUE \/ FALSE
 
+\* @supportedBy("TLC")
 LOCAL ToJsonKeyValue(F, d) ==
   ToString(ToString(d)) \o ":" \o ToString(F[d])
 
 RECURSIVE ToJsonObjectString(_,_)
+\* @supportedBy("TLC")
 LOCAL ToJsonObjectString(F, D) == \* LOCAL just a hint for humans.
   LET d == CHOOSE d \in D: TRUE
   IN IF D = DOMAIN F
@@ -26,6 +29,7 @@ LOCAL ToJsonObjectString(F, D) == \* LOCAL just a hint for humans.
                                           ELSE ToJsonObjectString(F, D \ {d})
 
 RECURSIVE ToJsonArrayString(_,_)
+\* @supportedBy("TLC")
 LOCAL ToJsonArrayString(F, D) == \* LOCAL just a hint for humans.
   LET d == CHOOSE d \in D: TRUE
   IN IF D = DOMAIN F
@@ -37,12 +41,14 @@ LOCAL ToJsonArrayString(F, D) == \* LOCAL just a hint for humans.
                                     ELSE ToJsonArrayString(F, D \ {d})
 
 RECURSIVE ToJsonString(_,_)
+\* @supportedBy("TLC")
 LOCAL ToJsonString(F, D) == \* LOCAL just a hint for humans.
   IF IsFiniteSet(F) \/ IsSequence(F, D) THEN
     ToJsonArrayString(F, D)
   ELSE
     ToJsonObjectString(F, D)
 
+\* @supportedBy("TLC")
 ToJson(value) ==
   (*************************************************************************)
   (* Converts the given value to a JSON string. Records are converted to   *)
@@ -54,6 +60,7 @@ ToJson(value) ==
   ELSE
     ToJsonString(value, DOMAIN value)
 
+\* @supportedBy("TLC")
 ToJsonArray(value) ==
   (*************************************************************************)
   (* Converts the given tuple value to a JSON array.                       *)
@@ -63,6 +70,7 @@ ToJsonArray(value) ==
   ELSE
     ToJsonArrayString(value, DOMAIN value)
 
+\* @supportedBy("TLC")
 ToJsonObject(value) ==
   (*************************************************************************)
   (* Converts the given tuple value to a JSON object.                      *)
@@ -72,6 +80,7 @@ ToJsonObject(value) ==
   ELSE
     ToJsonObjectString(value, DOMAIN value)
 
+\* @supportedBy("TLC")
 JsonSerialize(absoluteFilename, value) ==
   (*************************************************************************)
   (* Serializes a tuple of values to the given file as (plain) JSON.       *)
@@ -79,6 +88,7 @@ JsonSerialize(absoluteFilename, value) ==
   (*************************************************************************)
   TRUE
 
+\* @supportedBy("TLC")
 JsonDeserialize(absoluteFilename) ==
   (*************************************************************************)
   (* Deserializes JSON values from the given file. JSON objects will be    *)
@@ -86,6 +96,7 @@ JsonDeserialize(absoluteFilename) ==
   (*************************************************************************)
   CHOOSE val : TRUE
 
+\* @supportedBy("TLC")
 ndJsonSerialize(absoluteFilename, value) ==
   (*************************************************************************)
   (* Serializes a tuple of values to the given file as newline delimited   *)
@@ -94,6 +105,7 @@ ndJsonSerialize(absoluteFilename, value) ==
   (*************************************************************************)
   TRUE
 
+\* @supportedBy("TLC")
 ndJsonDeserialize(absoluteFilename) ==
   (*************************************************************************)
   (* Deserializes JSON values from the given file. JSON values must be     *)

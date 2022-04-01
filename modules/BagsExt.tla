@@ -7,6 +7,7 @@ LOCAL INSTANCE Bags
 LOCAL INSTANCE Integers
 LOCAL INSTANCE Folds
 
+\* @supportedBy("TLC,Apalache")
 BagAdd(B, x) ==
    (************************************************************************)
    (* Add an element x to bag B.                                           *)
@@ -16,6 +17,7 @@ BagAdd(B, x) ==
    THEN [e \in DOMAIN B |-> IF e=x THEN B[e]+1 ELSE B[e]]
    ELSE [e \in DOMAIN B \union {x} |-> IF e=x THEN 1 ELSE B[e]]
 
+\* @supportedBy("TLC,Apalache")
 BagRemove(B,x) ==
    (************************************************************************)
    (* Remove an element x from bag B.                                      *)
@@ -27,13 +29,15 @@ BagRemove(B,x) ==
         ELSE [e \in DOMAIN B |-> IF e=x THEN B[e]-1 ELSE B[e]]
    ELSE B
 
+\* @supportedBy("TLC,Apalache")
 BagRemoveAll(B,x) ==
    (************************************************************************)
    (* Remove all copies of an element x from bag B.                        *)
    (************************************************************************)
    [e \in DOMAIN B \ {x} |-> B[e]]
  
- MapThenFoldBag(op(_,_), base, f(_), choose(_), B) ==
+\* @supportedBy("TLC")
+MapThenFoldBag(op(_,_), base, f(_), choose(_), B) ==
     (***********************************************************************)
     (* Fold operation op over the images through f of all elements of bag  *)
     (* B, starting from base. The parameter choose indicates the order in  *)
@@ -69,6 +73,7 @@ BagRemoveAll(B,x) ==
                        LAMBDA S : CHOOSE x \in S : TRUE,
                        DOMAIN B)
 
+\* @supportedBy("TLC")
 FoldBag(op(_,_), base, B) ==
    (************************************************************************)
    (* Fold op over all elements of bag B, starting with value base.        *)
@@ -81,12 +86,14 @@ FoldBag(op(_,_), base, B) ==
    (************************************************************************)
    MapThenFoldBag(op, base, LAMBDA x: x, LAMBDA S : CHOOSE x \in S : TRUE, B)
 
+\* @supportedBy("TLC,Apalache")
 SumBag(B) ==
    (************************************************************************)
    (* Compute the sum of the elements of B.                                *)
    (************************************************************************)
    FoldBag(LAMBDA x,y : x+y, 0, B)
 
+\* @supportedBy("TLC,Apalache")
 ProductBag(B) ==
    (************************************************************************)
    (* Compute the product of the elements of B.                            *)

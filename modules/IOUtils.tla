@@ -6,10 +6,13 @@ LOCAL INSTANCE Integers
   (* Imports the definitions from the modules, but doesn't export them.    *)
   (*************************************************************************)
 
+\* @supportedBy("TLC")
 IOSerialize(val, absoluteFilename, compress) == TRUE
 
+\* @supportedBy("TLC")
 IODeserialize(absoluteFilename, compressed) == CHOOSE val : TRUE
 
+\* @supportedBy("TLC")
 Serialize(value, dest, options) ==
   (*******************************************************************************)
   (* value: TLA+ value to be serialized.                                         *)
@@ -20,6 +23,7 @@ Serialize(value, dest, options) ==
   (*******************************************************************************)
   CHOOSE r \in [exitValue : Int, stdout : STRING, stderr : STRING] : TRUE
 
+\* @supportedBy("TLC")
 Deserialize(src, options) ==
   (*******************************************************************************)
   (* src: Destination to serialize to such as a file or URL.                     *)
@@ -31,6 +35,7 @@ Deserialize(src, options) ==
 
 ----------------------------------------------------------------------------
 
+\* @supportedBy("TLC")
 IOExec(command) ==
   (*******************************************************************************)
   (* Spawns the given command as a sub-process of TLC.  The sequence of sequence *)
@@ -42,6 +47,7 @@ IOExec(command) ==
   (*******************************************************************************)
   CHOOSE r \in [exitValue : Int, stdout : STRING, stderr : STRING] : TRUE
 
+\* @supportedBy("TLC")
 IOEnvExec(env, command) ==
   (*******************************************************************************)
   (* See IOExec                                                                  *)
@@ -50,6 +56,7 @@ IOEnvExec(env, command) ==
   (*******************************************************************************)
   CHOOSE r \in [exitValue : Int, stdout : STRING, stderr : STRING] : TRUE
 
+\* @supportedBy("TLC")
 IOExecTemplate(commandTemplate, parameters) ==
   (*************************************************************************)
   (* Spawns the given printf-style command as a sub-process of TLC.  The   *)
@@ -61,6 +68,7 @@ IOExecTemplate(commandTemplate, parameters) ==
   (*************************************************************************)
   CHOOSE r \in [exitValue : Int, stdout : STRING, stderr : STRING] : TRUE
 
+\* @supportedBy("TLC")
 IOEnvExecTemplate(env, commandTemplate, parameters) ==
   (*******************************************************************************)
   (* See IOExecTemplate                                                          *)
@@ -69,12 +77,14 @@ IOEnvExecTemplate(env, commandTemplate, parameters) ==
   (*******************************************************************************)
   CHOOSE r \in [exitValue : Int, stdout : STRING, stderr : STRING] : TRUE
 
+\* @supportedBy("TLC")
 IOEnv ==
   (*************************************************************************)
   (* The process' environment variables.                                   *)
   (*************************************************************************)
   CHOOSE r \in [STRING -> STRING] : TRUE
 
+\* @supportedBy("TLC")
 atoi(str) ==
   (*************************************************************************)
   (* Assuming the environment variable  SomeEnvVar  is set to  42,         *)

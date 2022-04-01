@@ -6,6 +6,7 @@ LOCAL INSTANCE Integers
   (* Imports the definitions from the modules, but doesn't export them.    *)
   (*************************************************************************)
 
+\* @supportedBy("TLC")
 CSVWrite(template, val, file) == 
    (*
        CSVWrite("%1$s#%2$s#%3$s", 
@@ -13,6 +14,7 @@ CSVWrite(template, val, file) ==
     *)
    TRUE
 
+\* @supportedBy("TLC")
 CSVRead(columns, delimiter, file) == 
    (*
        CSVRead(<<"C1", "C2", "C3">>, "#", "/tmp/out.csv")
@@ -22,6 +24,7 @@ CSVRead(columns, delimiter, file) ==
    TRUE
 
 
+\* @supportedBy("TLC")
 CSVRecords(file) == 
    (* The number of records in the given file (including headers if any). *)
    CHOOSE n : n \in Nat

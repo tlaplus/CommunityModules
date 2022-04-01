@@ -23,6 +23,7 @@ INSTANCE Toolbox
 \* whereas the CHOOSE evalutes for states n and n + 1.
 \* This difference is most easily observed by looking
 \* at off-by-one difference of the initial state.
+\* @supportedBy("TLC")
 LOCAL FnHost ==
     LET host[i \in DOMAIN _TETrace] ==
         (*************************************************************************)
@@ -36,19 +37,23 @@ LOCAL FnHost ==
                             _TETrace[i-1].pc[p] # _TETrace[i].pc[p]
     IN TLCEval(host)
 
+\* @supportedBy("TLC")
 Host == FnHost[_TEPosition]
     
 -----------------------------------------------------------------------------
 
+\* @supportedBy("TLC")
 LOCAL clock(n) == 
    IF n = 1 THEN [p \in DOMAIN _TETrace[n].pc |-> 0] \* In the init state, all clocks are 0.
    ELSE [p \in DOMAIN _TETrace[n].pc |-> IF p = FnHost[n] 
                                     THEN 1
                                     ELSE 0]
 
+\* @supportedBy("TLC")
 LOCAL sum(F, G) == 
    [d \in DOMAIN F |-> F[d] + G[d]]
 
+\* @supportedBy("TLC")
 LOCAL FnClock == 
     LET vclock[i \in DOMAIN _TETrace] == 
         IF i = 1
@@ -56,6 +61,7 @@ LOCAL FnClock ==
         ELSE sum(TLCEval(vclock[i-1]), clock(i))
     IN TLCEval(vclock)
 
+\* @supportedBy("TLC")
 Clock ==
    (*************************************************************************)
    (* The pc variable formatted as a Json object as required by ShiViz.     *)

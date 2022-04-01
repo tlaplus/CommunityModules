@@ -12,6 +12,7 @@ LOCAL INSTANCE TLC
 
 -----------------------------------------------------------------------------
 
+\* @supportedBy("TLC,Apalache")
 ToSet(s) ==
   (*************************************************************************)
   (* The image of the given sequence s. Cardinality(ToSet(s)) <= Len(s)    *)
@@ -19,6 +20,7 @@ ToSet(s) ==
   (*************************************************************************)
   { s[i] : i \in DOMAIN s }
 
+\* @supportedBy("TLC,Apalache")
 SetToSeq(S) == 
   (**************************************************************************)
   (* Convert a set to some sequence that contains all the elements of the   *)
@@ -26,6 +28,7 @@ SetToSeq(S) ==
   (**************************************************************************)
   CHOOSE f \in [1..Cardinality(S) -> S] : IsInjective(f)
 
+\* @supportedBy("TLC,Apalache")
 SetToSeqs(S) == 
   (**************************************************************************)
   (* Convert the set S to a set containing all sequences containing the     *)
@@ -37,6 +40,7 @@ SetToSeqs(S) ==
   LET D == 1..Cardinality(S)
   IN { f \in [D -> S] : \A i,j \in D : i # j => f[i] # f[j] }
 
+\* @supportedBy("TLC,Apalache")
 SetToSortSeq(S, op(_,_)) ==
   (**************************************************************************)
   (* Convert a set to a sorted sequence that contains all the elements of   *)
@@ -46,6 +50,7 @@ SetToSortSeq(S, op(_,_)) ==
   \* because this variant works efficiently without a dedicated TLC override.
   SortSeq(SetToSeq(S), op)
 
+\* @supportedBy("TLC")
 SetToAllKPermutations(S) ==
   (**************************************************************************)
   (* Convert the set S to a set containing all k-permutations of elements   *)
@@ -58,12 +63,14 @@ SetToAllKPermutations(S) ==
   (**************************************************************************)
   UNION { SetToSeqs(s) : s \in SUBSET S  }
 
+\* @supportedBy("TLC")
 TupleOf(set, n) == 
   (***************************************************************************)
   (* TupleOf(s, 3) = s \X s \X s                                             *)
   (***************************************************************************)
   [1..n -> set]
 
+\* @supportedBy("TLC")
 SeqOf(set, n) == 
   (***************************************************************************)
   (* All sequences up to length n with all elements in set.  Includes empty  *)
@@ -71,6 +78,7 @@ SeqOf(set, n) ==
   (***************************************************************************)
   UNION {[1..m -> set] : m \in 0..n}
 
+\* @supportedBy("TLC")
 BoundedSeq(S, n) ==
   (***************************************************************************)
   (* An alias for SeqOf to make the connection to Sequences!Seq, which is    *)
@@ -80,12 +88,14 @@ BoundedSeq(S, n) ==
 
 -----------------------------------------------------------------------------
 
+\* @supportedBy("TLC,Apalache")
 Contains(s, e) ==
   (**************************************************************************)
   (* TRUE iff the element e \in ToSet(s).                                   *)
   (**************************************************************************)
   \E i \in 1..Len(s) : s[i] = e
 
+\* @supportedBy("TLC,Apalache")
 Reverse(s) ==
   (**************************************************************************)
   (* Reverse the given sequence s:  Let l be Len(s) (length of s).          *)
@@ -93,12 +103,14 @@ Reverse(s) ==
   (**************************************************************************)
   [ i \in 1..Len(s) |-> s[(Len(s) - i) + 1] ]
 
+\* @supportedBy("TLC,Apalache")
 Remove(s, e) ==
     (************************************************************************)
     (* The sequence s with e removed or s iff e \notin Range(s)             *)
     (************************************************************************)
     SelectSeq(s, LAMBDA t: t # e)
 
+\* @supportedBy("TLC,Apalache")
 ReplaceAll(s, old, new) ==
   (*************************************************************************)
   (* Equals the sequence s except that all occurrences of element old are  *)
@@ -112,6 +124,7 @@ ReplaceAll(s, old, new) ==
 \* from the TLAPS module SequencesTheorems.tla as of 10/14/2019.  The original
 \* comments have been partially rewritten.
 
+\* @supportedBy("TLC,Apalache")
 InsertAt(s, i, e) ==
   (**************************************************************************)
   (* Inserts element e at the position i moving the original element to i+1 *)
@@ -123,12 +136,14 @@ InsertAt(s, i, e) ==
   (**************************************************************************)
   SubSeq(s, 1, i-1) \o <<e>> \o SubSeq(s, i, Len(s))
 
+\* @supportedBy("TLC,Apalache")
 ReplaceAt(s, i, e) ==
   (**************************************************************************)
   (* Replaces the element at position i with the element e.                 *)
   (**************************************************************************)
   [s EXCEPT ![i] = e]
   
+\* @supportedBy("TLC,Apalache")
 RemoveAt(s, i) == 
   (**************************************************************************)
   (* Replaces the element at position i shortening the length of s by one.  *)
@@ -137,18 +152,21 @@ RemoveAt(s, i) ==
 
 -----------------------------------------------------------------------------
 
+\* @supportedBy("TLC,Apalache")
 Cons(elt, seq) == 
     (************************************************************************)
     (* Cons prepends an element at the beginning of a sequence.             *)
     (************************************************************************)
     <<elt>> \o seq
 
+\* @supportedBy("TLC,Apalache")
 Front(s) == 
   (**************************************************************************)
   (* The sequence formed by removing its last element.                      *)
   (**************************************************************************)
   SubSeq(s, 1, Len(s)-1)
 
+\* @supportedBy("TLC,Apalache")
 Last(s) ==
   (**************************************************************************)
   (* The last element of the sequence.                                      *)
@@ -157,6 +175,7 @@ Last(s) ==
 
 -----------------------------------------------------------------------------
 
+\* @supportedBy("TLC,Apalache")
 IsPrefix(s, t) ==
   (**************************************************************************)
   (* TRUE iff the sequence s is a prefix of the sequence t, s.t.            *)
@@ -165,12 +184,14 @@ IsPrefix(s, t) ==
   (**************************************************************************)
   Len(s) <= Len(t) /\ SubSeq(s, 1, Len(s)) = SubSeq(t, 1, Len(s))
 
+\* @supportedBy("TLC,Apalache")
 IsStrictPrefix(s,t) ==
   (**************************************************************************)
   (* TRUE iff the sequence s is a prefix of the sequence t and s # t        *)
   (**************************************************************************)
   IsPrefix(s, t) /\ s # t
 
+\* @supportedBy("TLC,Apalache")
 IsSuffix(s, t) ==
   (**************************************************************************)
   (* TRUE iff the sequence s is a suffix of the sequence t, s.t.            *)
@@ -179,6 +200,7 @@ IsSuffix(s, t) ==
   (**************************************************************************)
   IsPrefix(Reverse(s), Reverse(t))
 
+\* @supportedBy("TLC,Apalache")
 IsStrictSuffix(s, t) ==
   (**************************************************************************)
   (* TRUE iff the sequence s is a suffix of the sequence t and s # t        *)
@@ -187,12 +209,14 @@ IsStrictSuffix(s, t) ==
   
 -----------------------------------------------------------------------------
 
+\* @supportedBy("TLC,Apalache")
 Prefixes(s) ==
   (**************************************************************************)
   (* The set of prefixes of the sequence s, including the empty sequence.   *)
   (**************************************************************************)
   { SubSeq(s, 1, l) : l \in 0..Len(s) } \* 0.. for <<>>
 
+\* @supportedBy("TLC,Apalache")
 CommonPrefixes(S) ==
   (**************************************************************************)
   (* The set of all sequences that are prefixes of the set of sequences S.  *)
@@ -200,6 +224,7 @@ CommonPrefixes(S) ==
   LET P == UNION { Prefixes(seq) : seq \in S }
   IN { prefix \in P : \A t \in S: IsPrefix(prefix, t) }
 
+\* @supportedBy("TLC,Apalache")
 LongestCommonPrefix(S) ==
   (**************************************************************************)
   (* The longest common prefix of the sequences in the set S.               *)
@@ -210,6 +235,7 @@ LongestCommonPrefix(S) ==
 
 -----------------------------------------------------------------------------
 
+\* @supportedBy("TLC,Apalache")
 SeqMod(a, b) == 
   (***************************************************************************)
   (*   Range(a % b) = 0..b-1, but DOMAIN seq = 1..Len(seq).                  *)
@@ -219,6 +245,7 @@ SeqMod(a, b) ==
   IF a % b = 0 THEN b ELSE a % b
 
 
+\* @supportedBy("TLC,Apalache")
 FoldSeq(op(_, _), base, seq) == 
   (***************************************************************************)
   (* An alias of FoldFunction that op on all elements of seq an arbitrary    *)
@@ -233,6 +260,7 @@ FoldSeq(op(_, _), base, seq) ==
   (***************************************************************************)
   FoldFunction(op, base, seq)
 
+\* @supportedBy("TLC,Apalache")
 FoldLeft(op(_, _), base, seq) == 
   (***************************************************************************)
   (* FoldLeft folds op on all elements of seq from left to right, starting   *)
@@ -249,6 +277,7 @@ FoldLeft(op(_, _), base, seq) ==
                  LAMBDA S : Max(S),
                  DOMAIN seq)
 
+\* @supportedBy("TLC,Apalache")
 FoldRight(op(_, _), seq, base) == 
   (***************************************************************************)
   (* FoldRight folds op on all elements of seq from right to left, starting  *)
@@ -267,6 +296,7 @@ FoldRight(op(_, _), seq, base) ==
 
 -----------------------------------------------------------------------------
 
+\* @supportedBy("TLC,Apalache")
 FlattenSeq(seqs) ==
   (**************************************************************************)
   (* A sequence of all elements from all sequences in the sequence  seqs  . *)
@@ -283,6 +313,7 @@ FlattenSeq(seqs) ==
         IF i = 1 THEN seqs[i] ELSE flatten[i-1] \o seqs[i]
     IN flatten[Len(seqs)]
 
+\* @supportedBy("TLC,Apalache")
 Zip(s, t) ==
   (**************************************************************************)
   (* A sequence where the i-th tuple contains the i-th element of  s  and   *)
@@ -300,6 +331,7 @@ Zip(s, t) ==
     [] Len(s) = Len(t) /\ Len(s) = 0 -> << >>
     \* error "Zip: sequences must have same length"
 
+\* @supportedBy("TLC")
 Interleave(s, t) ==
   (**************************************************************************)
   (* A sequence where the i-th tuple contains the i-th element of  s  and   *)
@@ -320,6 +352,7 @@ Interleave(s, t) ==
     [] Len(s) = Len(t) /\ Len(s) = 0 -> << <<>>, <<>> >>
     \* error "Interleave: sequences must have same length"
 
+\* @supportedBy("TLC,Apalache")
 SubSeqs(s) ==
   (**************************************************************************)
   (* The set of all subsequences of the sequence  s  .  Note that the empty *)
@@ -328,6 +361,7 @@ SubSeqs(s) ==
   { SubSeq(s, i+1, j) : i, j \in 0..Len(s) }
 
 
+\* @supportedBy("TLC,Apalache")
 IndexFirstSubSeq(s, t) ==
   (**************************************************************************)
   (* The (1-based) index of the beginning of the subsequence  s  of the     *)
@@ -340,6 +374,7 @@ IndexFirstSubSeq(s, t) ==
                 /\ \A j \in 0..i-1 : s \notin SubSeqs(SubSeq(t, 1, j))
   IN last - (Len(s) - 1)
 
+\* @supportedBy("TLC,Apalache")
 ReplaceSubSeqAt(i, r, s, t) ==
   (**************************************************************************)
   (* The sequence  t  with its subsequence  s  at position  i  replaced by  *)
@@ -349,6 +384,7 @@ ReplaceSubSeqAt(i, r, s, t) ==
       suffix == SubSeq(t, i + Len(s), Len(t))
   IN prefix \o r \o suffix 
 
+\* @supportedBy("TLC,Apalache")
 ReplaceFirstSubSeq(r, s, t) ==
   (**************************************************************************)
   (* The sequence  t  with its subsequence  s  replaced by the sequence  r  *)
@@ -357,6 +393,7 @@ ReplaceFirstSubSeq(r, s, t) ==
   THEN ReplaceSubSeqAt(IndexFirstSubSeq(s, t), r, s, t)
   ELSE t
 
+\* @supportedBy("TLC")
 ReplaceAllSubSeqs(r, s, t) ==
   (**************************************************************************)
   (* The sequence  t  with all subsequences  s  replaced by the sequence  r *)
