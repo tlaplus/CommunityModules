@@ -18,7 +18,7 @@ SumSet(set) ==
    (* Calculate the sum of the elements in set.                             *)
    (*                                                                       *)
    (* Example:                                                              *)
-   (*         Sum(0 .. 10) = 55                                             *)
+   (*         SumSet(0 .. 10) = 55                                          *)
    (*************************************************************************)
    FoldSet(+, 0, set)
 
@@ -27,7 +27,7 @@ ProductSet(set) ==
    (* Calculuate the product of the elements in set.                        *)
    (*                                                                       *)
    (* Example:                                                              *)
-   (*         Product(1 .. 3) = 6                                           *)
+   (*         ProductSet(1 .. 3) = 6                                        *)
    (*************************************************************************)
    FoldSet(LAMBDA x, y: x * y, 1, set)
 
