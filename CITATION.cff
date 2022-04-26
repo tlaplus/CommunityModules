@@ -1,0 +1,35 @@
+cff-version: 1.2.0
+title: TLA+ CommunityModules
+message: Please cite this software using these metadata.
+type: software
+authors:
+  - given-names: Markus
+    name-particle: A.
+    affiliation: Microsoft
+    family-names: Kuppe
+  - given-names: Stephan
+    family-names: Merz
+    affiliation: Inria
+  - given-names: Paulo
+    name-particle: Rafael 
+    family-names: Feodrippe
+  - given-names: Leslie
+    affiliation: Microsoft
+    family-names: Lamport
+  - given-names: William
+    family-names: Schultz
+  - given-names: Afonso
+    family-names: Fernandes
+  - given-names: Mariusz
+    family-names: Ryndzionek
+  - given-names: Igor
+    family-names: Konnov
+    affiliation: Informal Systems
+  - given-names: Jordan
+    family-names: Halterman
+    affiliation: Intel
+  - given-names: Hillel
+    family-names: Wayne
+  - given-names: Jobvs
+version: 1.0.0
+url: "https://github.com/tlaplus/CommunityModules"
