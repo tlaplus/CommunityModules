@@ -45,7 +45,6 @@ import tlc2.value.impl.RecordValue;
 import tlc2.value.impl.StringValue;
 import tlc2.value.impl.TupleValue;
 import tlc2.value.impl.Value;
-import util.UniqueString;
 
 public class CSV {
 
@@ -59,8 +58,8 @@ public class CSV {
 		}
 		final Object[] params = Arrays.asList(tv.getElems()).stream().map(v -> v.toString())
 				.toArray(size -> new Object[size]);
-		Files.write(Paths.get(absolutePath.val.toString()),
-				(String.format(template.val.toString(), params) + System.lineSeparator()).getBytes("UTF-8"),
+		Files.write(Paths.get(absolutePath.val),
+				(String.format(template.val, params) + System.lineSeparator()).getBytes("UTF-8"),
 				StandardOpenOption.CREATE, StandardOpenOption.APPEND);
 		return BoolValue.ValTrue;
 	}
@@ -75,19 +74,19 @@ public class CSV {
 					new String[] { "CSVRead", "sequence", Values.ppr(columns.toString()) });
 		}
 
-		final Path path = Paths.get(absolutePath.val.toString());
+		final Path path = Paths.get(absolutePath.val);
 		if (!path.toFile().exists()) {
 			// There are zero records in a file that doesn't exist.
 			return TupleValue.EmptyTuple;
 		}
 		
-		final UniqueString[] names = Arrays.asList(tv.elems).stream().map(v -> ((StringValue) v).val)
-				.collect(Collectors.toList()).toArray(UniqueString[]::new);
+		final String[] names = Arrays.asList(tv.elems).stream().map(v -> ((StringValue) v).val)
+				.collect(Collectors.toList()).toArray(String[]::new);
 
 		final List<String> lines = Files.readAllLines(path);
 		final Value[] records = new Value[lines.size()];
 		for (int i = 0; i < lines.size(); i++) {
-			StringValue[] values = Arrays.asList(lines.get(i).split(delim.val.toString())).stream()
+			StringValue[] values = Arrays.asList(lines.get(i).split(delim.val)).stream()
 					.map(s -> new StringValue(s)).collect(Collectors.toList()).toArray(StringValue[]::new);
 			records[i] = new RecordValue(names, values, false);
 		}
@@ -98,7 +97,7 @@ public class CSV {
 	@TLAPlusOperator(identifier = "CSVRecords", module = "CSV", minLevel = 1, warn = false)
 	public static Value records(final StringValue absolutePath)
 			throws IOException {
-		final Path path = Paths.get(absolutePath.val.toString());
+		final Path path = Paths.get(absolutePath.val);
 		if (!path.toFile().exists()) {
 			// There are zero records in a file that doesn't exist.
 			return IntValue.ValZero;
