@@ -36,7 +36,7 @@ ReduceSet(op(_, _), set, acc) ==
    (* An alias for FoldSet. ReduceSet was used instead of FoldSet in        *)
    (* earlier versions of the community modules.                            *)
    (*************************************************************************)
-   FoldSet(op, set, acc)
+   FoldSet(op, acc, set)
 
 
 FlattenSet(S) ==
