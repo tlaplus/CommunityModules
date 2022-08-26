@@ -90,7 +90,6 @@ ASSUME FoldSet(LAMBDA x,y : x + y, 0, 0 .. 10) = 55
 
 \* Without the corresponding Java module override, this overflows TLC's stack.
 ASSUME FoldSet(LAMBDA x,y : x + y, 0, 0 .. 10000) = 50005000
-
 -----------------------------------------------------------------------------
 
 ASSUME ChooseUnique({2, 3, 4, 5}, LAMBDA x : x % 3 = 1) = 4
@@ -121,6 +120,8 @@ ASSUME SymDiff({2,3}, {2,3,4}) = {4}
 
 ASSUME SumSet(1..3) = 6
 ASSUME ProductSet(1..4) = 24
+
+ASSUME ReduceSet(+, 1..5, 42) = 57
 
 -----------------------------------------------------------------------------
 
