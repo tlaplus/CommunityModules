@@ -50,7 +50,7 @@ public class DyadicRationals {
 
 	 */
 	@TLAPlusOperator(identifier = "Reduce", module = "DyadicRationals", warn = false)
-	public static synchronized Value reduce(final Value val) {
+	public static Value reduce(final Value val) {
 		if (!(val instanceof RecordValue)) {
 			throw new EvalException(EC.TLC_MODULE_ONE_ARGUMENT_ERROR,
 					new String[] { "Half", "record", Values.ppr(val.toString()) });
