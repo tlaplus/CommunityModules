@@ -16,6 +16,7 @@ EXTENDS SequencesExtTests,
         FoldsTests,
         GraphsTests,
         BagsExtTests,
-        DyadicRationalsTests
+        DyadicRationalsTests,
+        StatisticsTests
 
 ===========================================

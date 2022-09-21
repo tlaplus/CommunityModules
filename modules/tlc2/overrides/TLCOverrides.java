@@ -41,17 +41,18 @@ public class TLCOverrides implements ITLCOverrides {
 	@Override
 	public Class[] get() {
 		try {
-                        // Remove `Json.resolves();` call when this Class is moved to `TLC`.
+			// Remove `Json.resolves();` call when this Class is moved to `TLC`.
 			Json.resolves();
 			return new Class[] { IOUtils.class, SVG.class, SequencesExt.class, Json.class, Bitwise.class,
-                                             FiniteSetsExt.class, Functions.class, CSV.class, Combinatorics.class, BagsExt.class, DyadicRationals.class };
+					FiniteSetsExt.class, Functions.class, CSV.class, Combinatorics.class, BagsExt.class,
+					DyadicRationals.class, Statistics.class };
 		} catch (NoClassDefFoundError e) {
-                        // Remove this catch when this Class is moved to `TLC`.
-			System.out.println(
-					"gson dependencies of Json overrides not found, Json module won't work unless "
+			// Remove this catch when this Class is moved to `TLC`.
+			System.out.println("gson dependencies of Json overrides not found, Json module won't work unless "
 					+ "the libraries in the lib/ folder of the CommunityModules have been added to the classpath of TLC.");
 		}
-		return new Class[] { IOUtils.class, SVG.class, SequencesExt.class, Bitwise.class,
-                                     FiniteSetsExt.class, Functions.class, CSV.class, Combinatorics.class, BagsExt.class, DyadicRationals.class };
+		return new Class[] { IOUtils.class, SVG.class, SequencesExt.class, Bitwise.class, FiniteSetsExt.class,
+				Functions.class, CSV.class, Combinatorics.class, BagsExt.class, DyadicRationals.class,
+				Statistics.class };
 	}
 }
