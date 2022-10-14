@@ -346,4 +346,33 @@ public final class SequencesExt {
 		
 		return null; // Non-string functions handled by pure TLA+ definition of operator.
 	}
+
+	@TLAPlusOperator(identifier = "IsPrefix", module = "SequencesExt", warn = false)
+	public static Value isPrefix(final Value v1, final Value v2) {
+		if (v1 instanceof StringValue && v2 instanceof StringValue) {
+			final StringValue s1 = (StringValue) v1;
+			final StringValue s2 = (StringValue) v2;
+			if (s2.getVal().toString().startsWith(s1.getVal().toString())) {
+				return BoolValue.ValTrue;
+			}
+			return BoolValue.ValFalse;
+		}
+
+		// No need to normalize s and t because TupleValuels are normalized by construction.
+		final TupleValue s = (TupleValue) v1.toTuple();
+		final TupleValue t = (TupleValue) v2.toTuple();
+
+		if (s.size() <= t.size()) {
+			for (int i = 0 ; i < s.size(); i++) {
+				final Value vs = s.elems[i];
+				final Value vt = t.elems[i];
+				if (!vs.equals(vt)) {
+					return BoolValue.ValFalse;
+				}
+			}
+			return BoolValue.ValTrue;
+		}
+		return BoolValue.ValFalse;
+	}
+
 }
