@@ -51,6 +51,10 @@ public final class Functions {
 	public static BoolValue IsInjective(final Value val) {
 		if (val instanceof TupleValue) {
 			return isInjectiveNonDestructive(((TupleValue) val).elems);
+		} else if (val instanceof FcnRcdValue && ((FcnRcdValue) val).intv != null
+				&& ((FcnRcdValue) val).intv.low == 1) {
+			// Input a FcnRcdValue whose toTuple representation can non be mutated.
+			return isInjectiveNonDestructive(((FcnRcdValue) val).values);
 		} else {
 			final Value conv = val.toTuple();
 			if (conv != null) {

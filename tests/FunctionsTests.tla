@@ -1,5 +1,5 @@
 ------------------------- MODULE FunctionsTests -------------------------
-EXTENDS Functions, Naturals, TLC, TLCExt, FiniteSets
+EXTENDS Functions, Naturals, TLC, TLCExt, FiniteSets, Sequences
 
 ASSUME LET T == INSTANCE TLC IN T!PrintT("FunctionsTests")
 
@@ -26,6 +26,11 @@ ASSUME(~IsInjective({"a"} :> [i \in 0..2 |-> i] @@ {"b"} :> [i \in 0..2 |-> i]))
 ASSUME(IsInjective([i \in 0..2 |-> i]))
 ASSUME(IsInjective( "a":> [{1,2} -> {3,4}] @@ "b":> [{1,2} -> {3,5}] ))
 ASSUME(AssertError("The argument of IsInjective should be a function, but instead it is:\n{}", IsInjective({})))
+
+\* Assert that Functions#isInjectiveDestructive is side-effect free.
+SomeSeq == UNION {[1..m -> {1,2}] : m \in 0..Cardinality({1,2})}
+SomeExp == CHOOSE x \in SomeSeq: IsInjective(x) /\ Len(x) > 3
+ASSUME Cardinality(SomeSeq) = 7
 
 ASSUME 
     LET IsInjectivePure(f) == \A a,b \in DOMAIN f : f[a] = f[b] => a = b \* Pure as in no Java module override.
