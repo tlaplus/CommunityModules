@@ -341,4 +341,23 @@ ASSUME AssertEq(SetToAllKPermutations({"t","l","a"}), {<< >>,
                                         <<"a", "t">>, <<"a", "l">>, <<"t", "a">>, <<"t", "l">>, <<"l", "a">>, <<"l", "t">>, 
                                         <<"a", "t", "l">>, <<"a", "l", "t">>, <<"t", "a", "l">>, <<"t", "l", "a">>, <<"l", "a", "t">>, <<"l", "t", "a">>})
 
+-----------------------------------------------------------------------------
+
+Op(e) == FALSE
+
+ASSUME AssertEq(SelectInSeq(<<>>, Op), 0)
+ASSUME AssertEq(SelectInSeq(<<1,1,2>>  , LAMBDA e : e = 1), 1)
+ASSUME AssertEq(SelectInSeq(<<1,1,2,2>>, LAMBDA e : e = 2), 3)
+
+ASSUME AssertEq(SelectLastInSeq(<<>>, Op), 0)
+ASSUME AssertEq(SelectLastInSeq(<<1,1,2>>  , LAMBDA e : e = 1), 2)
+ASSUME AssertEq(SelectLastInSeq(<<1,1,2,2>>, LAMBDA e : e = 2), 4)
+
+ASSUME AssertEq(SelectInSubSeq(<<>>, 1, Len(<<>>), Op), 0)
+ASSUME AssertEq(SelectInSubSeq(<<1,1,2>>  , 2, 3, LAMBDA e : e = 1), 2)
+ASSUME AssertEq(SelectInSubSeq(<<1,1,2,2>>, 2, 4, LAMBDA e : e = 2), 3)
+
+ASSUME AssertEq(SelectLastInSubSeq(<<>>, 1, Len(<<>>), Op), 0)
+ASSUME AssertEq(SelectLastInSubSeq(<<1,1,2>>  , 1, 3, LAMBDA e : e = 1), 2)
+ASSUME AssertEq(SelectLastInSubSeq(<<1,1,2,2>>, 2, 4, LAMBDA e : e = 2), 4)
 =============================================================================

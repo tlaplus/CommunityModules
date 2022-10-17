@@ -108,6 +108,40 @@ ReplaceAll(s, old, new) ==
 
 -----------------------------------------------------------------------------
 
+SelectInSeq(seq, Test(_)) ==
+  (*************************************************************************)
+  (* Selects the index of the first element such that Test(seq[i]) is true *)
+  (* Equals 0 if Test(seq[i]) is FALSE for all elements.                   *)
+  (*************************************************************************)
+  LET I == { i \in 1..Len(seq) : Test(seq[i]) }
+  IN IF I # {} THEN Min(I) ELSE 0
+
+SelectInSubSeq(seq, from, to, Test(_)) ==
+  (*************************************************************************)
+  (* Selects the index of the first element in seq such that Test(seq[i])  *)
+  (* is TRUE for this elements in from..to.  Equals 0 if Test(seq[i]) is   *)
+  (* FALSE for all elements.                                               *)
+  (*************************************************************************)
+  SelectInSeq(SubSeq(seq, from, to), Test)
+
+SelectLastInSeq(seq, Test(_)) ==
+  (*************************************************************************)
+  (* Selects the index of the last element such that Test(seq[i]) is true  *)
+  (* Equals 0 if Test(seq[i]) is FALSE for all elements.                   *)
+  (*************************************************************************)
+  LET I == { i \in 1..Len(seq) : Test(seq[i]) }
+  IN IF I # {} THEN Max(I) ELSE 0
+
+SelectLastInSubSeq(seq, from, to, Test(_)) ==
+  (*************************************************************************)
+  (* Selects the index of the last element in seq such that Test(seq[i])   *)
+  (* is TRUE for this elements in from..to.  Equals 0 if Test(seq[i]) is   *)
+  (* FALSE for all elements.                                               *)
+  (*************************************************************************)
+  SelectLastInSeq(SubSeq(seq, from, to), Test)
+
+-----------------------------------------------------------------------------
+
 \* The operators below up to including IsStrictSuffix have been extracted 
 \* from the TLAPS module SequencesTheorems.tla as of 10/14/2019.  The original
 \* comments have been partially rewritten.
