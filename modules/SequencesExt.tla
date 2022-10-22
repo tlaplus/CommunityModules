@@ -319,20 +319,21 @@ FlattenSeq(seqs) ==
 
 Zip(s, t) ==
   (**************************************************************************)
-  (* A sequence where the i-th tuple contains the i-th element of  s  and   *)
-  (*   t  in this order.  Not defined for  Len(s) # Len(t)                  *)
+  (* A sequence of pairs where the i-th pair is formed from the i-th        *)
+  (* element of s and the i-th element of t. The length of the result       *)
+  (* sequence is the minimum of the lengths of s and t.                     *)
   (*                                                                        *)
   (* Examples:                                                              *)
   (*                                                                        *)
   (*  Zip(<< >>, << >>) = << >>                                             *)
-  (*  Zip(<<"a">>, <<"b">>) = <<"a", "b">>                                  *)
+  (*  Zip(<<"a">>, <<"b">>) = << <<"a", "b">> >>                            *)
   (*  Zip(<<1, 3>>, <<2, 4>>) = <<<<1, 2>>, <<3, 4>>>>                      *)
   (*  FlattenSeq(Zip(<<1, 3>>, <<2, 4>>)) = <<1, 2, 3, 4>>>>                *)
+  (*  Zip(<< >>, <<1, 2, 3>>) = << >>                                       *)
+  (*  Zip(<<"a", "b", "c">>, <<1>>) = << <<"a", 1>> >>                      *)
   (**************************************************************************)
-  CASE Len(s) = Len(t) /\ Len(s) > 0 ->
-        [ i \in DOMAIN s |-> <<s[i], t[i]>> ]
-    [] Len(s) = Len(t) /\ Len(s) = 0 -> << >>
-    \* error "Zip: sequences must have same length"
+  LET l == IF Len(s) <= Len(t) THEN Len(s) ELSE Len(t)
+  IN  [ i \in 1 .. l |-> <<s[i], t[i] >> ]
 
 Interleave(s, t) ==
   (**************************************************************************)
