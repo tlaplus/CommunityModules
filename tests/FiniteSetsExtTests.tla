@@ -95,15 +95,15 @@ ASSUME FoldSet(LAMBDA x,y : x + y, 0, 0 .. 10000) = 50005000
 ASSUME ChooseUnique({2, 3, 4, 5}, LAMBDA x : x % 3 = 1) = 4
 
 ASSUME AssertError(
-           "Attempted to compute the value of an expression of form\nCHOOSE x \\in S: P, but no element of S satisfied P.\nline 132, col 26 to line 133, col 64 of module FiniteSetsExt", 
+           "Attempted to compute the value of an expression of form\nCHOOSE x \\in S: P, but no element of S satisfied P.\nline 124, col 26 to line 125, col 64 of module FiniteSetsExt", 
            ChooseUnique({2, 3, 4, 5}, LAMBDA x : TRUE))
 
 ASSUME AssertError(
-           "Attempted to compute the value of an expression of form\nCHOOSE x \\in S: P, but no element of S satisfied P.\nline 132, col 26 to line 133, col 64 of module FiniteSetsExt", 
+           "Attempted to compute the value of an expression of form\nCHOOSE x \\in S: P, but no element of S satisfied P.\nline 124, col 26 to line 125, col 64 of module FiniteSetsExt", 
            ChooseUnique({}, LAMBDA x : TRUE))
 
 ASSUME AssertError(
-           "Attempted to compute the value of an expression of form\nCHOOSE x \\in S: P, but no element of S satisfied P.\nline 132, col 26 to line 133, col 64 of module FiniteSetsExt", 
+           "Attempted to compute the value of an expression of form\nCHOOSE x \\in S: P, but no element of S satisfied P.\nline 124, col 26 to line 125, col 64 of module FiniteSetsExt", 
            ChooseUnique({2, 3, 4, 5}, LAMBDA x : FALSE))
 
 -----------------------------------------------------------------------------
@@ -122,6 +122,21 @@ ASSUME SumSet(1..3) = 6
 ASSUME ProductSet(1..4) = 24
 
 ASSUME ReduceSet(+, 1..5, 42) = 57
+
+ASSUME FlattenSet({}) = {}
+ASSUME FlattenSet({{}}) = {}
+ASSUME FlattenSet({{},{}}) = {}
+ASSUME FlattenSet({{1}}) = {1}
+ASSUME FlattenSet({{1},{2}}) = {1,2}
+ASSUME FlattenSet({{{1}}}) = { {1} }
+ASSUME FlattenSet({{{1},{1}}}) = { {1} }
+ASSUME FlattenSet({{{1},{2}}}) = { {1},{2} }
+
+ASSUME FlattenSet({{"a"}}) = {"a"}
+ASSUME FlattenSet({{"a"},{"b"}}) = {"a","b"}
+ASSUME FlattenSet({{{"a"}}}) = { {"a"} }
+ASSUME FlattenSet({{{"a"},{"a"}}}) = { {"a"} }
+ASSUME FlattenSet({{{"a"},{"b"}}}) = { {"a"},{"b"} }
 
 -----------------------------------------------------------------------------
 

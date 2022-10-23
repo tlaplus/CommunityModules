@@ -40,15 +40,7 @@ ReduceSet(op(_, _), set, acc) ==
 
 
 FlattenSet(S) ==
-(******************************************************************************)
-(* Starting from base, apply op to f(x), for all x \in S, in an arbitrary     *)
-(* order. It is assumed that op is associative and commutative.               *)
-(*                                                                            *)
-(* Example:                                                                   *)
-(*                                                                            *)
-(*  FlattenSet({{1},{2}}) = {1,2}                                                *)
-(******************************************************************************)
-  FoldSet(LAMBDA x,y: x \cup y, {}, S) 
+   UNION S
 
 (***************************************************************************)
 (* The symmetric difference of two sets.                                   *)
