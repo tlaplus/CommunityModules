@@ -30,18 +30,18 @@ SelectDomain(f, Test(_)) == Restrict(f, {x \in DOMAIN f : Test(x)})
 (*                                                                         *)
 (* Example:                                                                *)
 (*   (LET f == ("a" :> 0 @@ "b" :> 1 @@ "c" :> 2)                          *)
-(*    IN  SelectValue(f, LAMBDA y : y \in {0,2}))                          *)
+(*    IN  SelectValues(f, LAMBDA y : y \in {0,2}))                         *)
 (*   = ("a" :> 0 @@ "b" :> 2)                                              *)
 (*                                                                         *)
 (* This is similar to the operator SelectSeq from the standard Sequences   *)
 (* module and related to standard "filter" functions in functional         *)
-(* programming. However, SelectSeq produces sequences, whereas SelectValue *)
-(* will in general not. For example,                                       *)
+(* programming. However, SelectSeq produces sequences, whereas             *)
+(* SelectValues will in general not. For example,                          *)
 (*                                                                         *)
-(*   SelectValue([0,1,2], LAMBDA y : y \in {0,2})                          *)
+(*   SelectValues([0,1,2], LAMBDA y : y \in {0,2})                         *)
 (*   = (1 :> 0 @@ 3 :> 2)                                                  *)
 (***************************************************************************)
-SelectValue(f, Test(_)) ==
+SelectValues(f, Test(_)) ==
   LET S == {x \in DOMAIN f : Test(f[x])}
   IN  Restrict(f, S)
 
@@ -142,7 +142,7 @@ FoldFunctionOnSet(op(_,_), base, fun, indices) ==
 
 =============================================================================
 \* Modification History
-\* Last modified Sun Oct 30 09:52:56 CET 2022 by merz
+\* Last modified Sun Oct 30 10:13:23 CET 2022 by merz
 \* Last modified Mon Apr 05 03:25:53 CEST 2021 by marty
 \* Last modified Wed Jun 05 12:14:19 CEST 2013 by bhargav
 \* Last modified Fri May 03 12:55:35 PDT 2013 by tomr
