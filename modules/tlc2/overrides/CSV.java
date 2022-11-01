@@ -57,6 +57,7 @@ public class CSV {
 			throw new EvalException(EC.TLC_MODULE_ONE_ARGUMENT_ERROR,
 					new String[] { "CSVWrite", "sequence", Values.ppr(parameter.toString()) });
 		}
+		tv.deepNormalize();
 		final Object[] params = Arrays.asList(tv.getElems()).stream().map(v -> v.toString())
 				.toArray(size -> new Object[size]);
 		Files.write(Paths.get(absolutePath.val.toString()),
