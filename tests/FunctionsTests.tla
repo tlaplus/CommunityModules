@@ -3,6 +3,12 @@ EXTENDS Functions, Naturals, TLC, TLCExt, FiniteSets, Sequences
 
 ASSUME LET T == INSTANCE TLC IN T!PrintT("FunctionsTests")
 
+ASSUME RestrictDomain([x \in 0 .. 9 |-> x*x], LAMBDA x : x % 2 = 0)
+       = (0 :> 0 @@ 2 :> 4 @@ 4 :> 16 @@ 6 :> 36 @@ 8 :> 64)
+
+ASSUME RestrictValues([x \in 0 .. 9 |-> x*x], LAMBDA y : y % 4 = 0)
+       = (0 :> 0 @@ 2 :> 4 @@ 4 :> 16 @@ 6 :> 36 @@ 8 :> 64)
+
 ASSUME(IsInjective(<<>>))
 ASSUME(IsInjective(<<1>>))
 ASSUME(IsInjective(<<1,2,3>>))

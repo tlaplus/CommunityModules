@@ -14,6 +14,38 @@ LOCAL INSTANCE Folds
 Restrict(f,S) == [ x \in S |-> f[x] ]
 
 (***************************************************************************)
+(* Restriction of a function to the subset of its domain satisfying a      *)
+(* test predicate.                                                         *)
+(*                                                                         *)
+(* Example:                                                                *)
+(*   (LET f == (0 :> "a" @@ 1 :> "b" @@ 2 :> "c")                          *)
+(*    IN  RestrictDomain(f, LAMBDA x : x \in {0,2}))                       *)
+(*   = (0 :> "a" @@ 2 :> "c")                                              *)
+(***************************************************************************)
+RestrictDomain(f, Test(_)) == Restrict(f, {x \in DOMAIN f : Test(x)})
+
+(***************************************************************************)
+(* Restriction of a function to the subset of its domain for which the     *)
+(* function values satisfy a test predicate.                               *)
+(*                                                                         *)
+(* Example:                                                                *)
+(*   (LET f == ("a" :> 0 @@ "b" :> 1 @@ "c" :> 2)                          *)
+(*    IN  RestrictValues(f, LAMBDA y : y \in {0,2}))                       *)
+(*   = ("a" :> 0 @@ "b" :> 2)                                              *)
+(*                                                                         *)
+(* This is similar to the operator SelectSeq from the standard Sequences   *)
+(* module and related to standard "filter" functions in functional         *)
+(* programming. However, SelectSeq produces sequences, whereas             *)
+(* RestrictValues will in general not. For example,                        *)
+(*                                                                         *)
+(*   RestrictValues([0,1,2], LAMBDA y : y \in {0,2})                       *)
+(*   = (1 :> 0 @@ 3 :> 2)                                                  *)
+(***************************************************************************)
+RestrictValues(f, Test(_)) ==
+  LET S == {x \in DOMAIN f : Test(f[x])}
+  IN  Restrict(f, S)
+
+(***************************************************************************)
 (* Range of a function.                                                    *)
 (* Note: The image of a set under function f can be defined as             *)
 (*       Range(Restrict(f,S)).                                             *)
@@ -110,8 +142,8 @@ FoldFunctionOnSet(op(_,_), base, fun, indices) ==
 
 =============================================================================
 \* Modification History
+\* Last modified Tue Nov 01 08:46:11 CET 2022 by merz
 \* Last modified Mon Apr 05 03:25:53 CEST 2021 by marty
-\* Last modified Sun Dec 27 09:38:06 CET 2020 by merz
 \* Last modified Wed Jun 05 12:14:19 CEST 2013 by bhargav
 \* Last modified Fri May 03 12:55:35 PDT 2013 by tomr
 \* Created Thu Apr 11 10:30:48 PDT 2013 by tomr
