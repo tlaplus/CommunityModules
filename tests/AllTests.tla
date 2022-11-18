@@ -6,7 +6,6 @@
 (***************************************************)
 EXTENDS SequencesExtTests,
         SVGTests,
-        JsonTests,
         BitwiseTests,
         IOUtilsTests,
         FiniteSetsExtTests,
