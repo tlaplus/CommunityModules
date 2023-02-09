@@ -122,9 +122,9 @@
 
 			<classpath>
 				<pathelement location="${tlc}/tla2tools.jar" />
-                <pathelement location="${lib}/gson-2.8.6.jar" />
-                <pathelement location="${lib}/jgrapht-core-1.5.1.jar" />
-                <pathelement location="${lib}/jungrapht-layout-1.4-SNAPSHOT.jar" />
+				<pathelement location="${lib}/gson-2.8.6.jar" />
+				<pathelement location="${lib}/jgrapht-core-1.5.1.jar" />
+				<pathelement location="${lib}/jungrapht-layout-1.4-SNAPSHOT.jar" />
 				<pathelement location="${lib}/slf4j-api-1.7.30.jar" />
 				<pathelement location="${lib}/slf4j-nop-1.7.30.jar" />
 				<pathelement location="${lib}/commons-lang3-3.12.0.jar" />
@@ -136,7 +136,7 @@
 		
 		<!-- Test if trace expressions involving the ShiViz module work correctly. -->
 		<!-- This test expects TLC to report a liveness violation, which is why    -->
-		<!-- failonerror is off.  Instead, the ant records TLC's return value in   -->
+		<!-- failonerror is off.  Instead, ant records TLC's return value in       -->
 		<!-- shiviz.return.value, which is cheked in the conditional below.        -->
 		<java classname="tlc2.TLC" fork="true" failonerror="false" resultproperty="shiviz.return.value">
 			<!-- Tell Java to use a garbage collector which makes TLC happy. -->

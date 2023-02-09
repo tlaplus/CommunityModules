@@ -160,4 +160,10 @@ RoundTrip ==
        /\ JsonSerialize("build/json/test.json", output)
        /\ output = JsonDeserialize("build/json/test.json")
 ASSUME(RoundTrip)
+
+\* Deserialize existing ndjson with trailing white spaces and (empty) newlines.
+
+ASSUME LET input == <<[a |-> 3], <<<<1, 2>>, "look">>, << <<[b |-> [c |-> <<4, 5, 6>>]]>> >> >>
+       IN  input = ndJsonDeserialize("tests/JsonTests.ndjson")
+
 =============================================================================
