@@ -3,17 +3,17 @@ EXTENDS VectorClocks, Sequences, Naturals, TLC, Json
 
 ASSUME LET T == INSTANCE TLC IN T!PrintT("VectorClocksTests")
 
-ASSUME IsCausallyOrdered(<< >>, LAMBDA l: l)
-ASSUME IsCausallyOrdered(<< <<0,0>> >>, LAMBDA l: l)
-ASSUME IsCausallyOrdered(<< <<0,0>>, <<0,1>> >>, LAMBDA l: l) \* happened before
-ASSUME IsCausallyOrdered(<< <<1,0>>, <<0,1>> >>, LAMBDA l: l) \* concurrent
+ASSUME IsCausalOrder(<< >>, LAMBDA l: l)
+ASSUME IsCausalOrder(<< <<0,0>> >>, LAMBDA l: l)
+ASSUME IsCausalOrder(<< <<0,0>>, <<0,1>> >>, LAMBDA l: l) \* happened before
+ASSUME IsCausalOrder(<< <<1,0>>, <<0,1>> >>, LAMBDA l: l) \* concurrent
 
-ASSUME IsCausallyOrdered(<< <<0>>, <<0,1>> >>, LAMBDA l: l) \* happened before
-ASSUME IsCausallyOrdered(<< <<1>>, <<0,1>> >>, LAMBDA l: l) \* concurrent
+ASSUME IsCausalOrder(<< <<0>>, <<0,1>> >>, LAMBDA l: l) \* happened before
+ASSUME IsCausalOrder(<< <<1>>, <<0,1>> >>, LAMBDA l: l) \* concurrent
 
-ASSUME ~IsCausallyOrdered(<< <<0,1>>, <<0,0>> >>, LAMBDA l: l)
+ASSUME ~IsCausalOrder(<< <<0,1>>, <<0,0>> >>, LAMBDA l: l)
 
-ASSUME ~IsCausallyOrdered(<< <<1>>, <<0,0>> >>, LAMBDA l: l) \* concurrent
+ASSUME ~IsCausalOrder(<< <<1>>, <<0,0>> >>, LAMBDA l: l) \* concurrent
 
 Log ==
     ndJsonDeserialize("tests/VectorClocksTests.ndjson")
@@ -28,10 +28,10 @@ Node(l) ==
      \* into a function with domain {0, 1}.
     ToString(l.node)
 
-ASSUME ~IsCausallyOrdered(Log, VectorClock)
+ASSUME ~IsCausalOrder(Log, VectorClock)
 
-ASSUME IsCausallyOrdered(
-			SortCausally(Log, 
+ASSUME IsCausalOrder(
+			CausalOrder(Log, 
 						 VectorClock, 
 						 Node,
 						 LAMBDA vc: DOMAIN vc), 

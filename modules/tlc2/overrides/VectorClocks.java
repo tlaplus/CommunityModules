@@ -95,8 +95,8 @@ public class VectorClocks {
 	 * https://github.com/DistributedClocks/shiviz/blob/
 	 * ff02d48ed2bcda065f326aa25409cb317be9feb9/js/model/modelGraph.js
 	 */
-	@TLAPlusOperator(identifier = "SortCausally", module = "VectorClocks", warn = false)
-	public static Value SortCausally(final TupleValue v, final Applicable opClock, final Applicable opNode,
+	@TLAPlusOperator(identifier = "CausalOrder", module = "VectorClocks", warn = false)
+	public static Value causalOrder(final TupleValue v, final Applicable opClock, final Applicable opNode,
 			final Applicable opDomain) {
 
 		// A1) Sort each node's individual log which can be totally ordered.

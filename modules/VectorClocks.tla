@@ -11,7 +11,7 @@ LOCAL happenedBefore(v1, v2) ==
     /\ \A i \in DOMAIN v1: v1[i] <= v2[i]
     /\ \E i \in DOMAIN v1: v1[i]  < v2[i]
 
-IsCausallyOrdered(log, clock(_)) ==
+IsCausalOrder(log, clock(_)) ==
     \A i \in 1..Len(log) :
         \A j \in 1..(i - 1) :
             \* Align the vector clocks to the same domain (mapping
@@ -24,7 +24,7 @@ IsCausallyOrdered(log, clock(_)) ==
                 vcj == Fill(clock(log[j]), D)
             IN happenedBefore(vcj, vci) \/ concurrent(vcj, vci)
 
-SortCausally(log, clock(_), node(_), domain(_)) ==
+CausalOrder(log, clock(_), node(_), domain(_)) ==
     (*
         Sort the provided log by the vector clock values indicated on each line
         of the log. This operator cannot accommodate "hidden" events, meaning
@@ -49,7 +49,7 @@ SortCausally(log, clock(_), node(_), domain(_)) ==
 			 ...
 		    ]
 		 
-		 SortCausally(log, 
+		 CausalOrder(log, 
 					 	LAMBDA line: line.pkt.vc,
 					 	LAMBDA line: line.node,
 						LAMBDA vc : DOMAIN vc)
@@ -58,6 +58,6 @@ SortCausally(log, clock(_), node(_), domain(_)) ==
         { f \in 
             [ 1..Len(log) -> Range(log)] : 
                 Range(f) = Range(log) } : 
-                    IsCausallyOrdered(newlog, clock)
+                    IsCausalOrder(newlog, clock)
 
 ===============================================================================
