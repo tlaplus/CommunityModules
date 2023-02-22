@@ -36,9 +36,11 @@ import java.util.Set;
 
 import tlc2.tool.EvalControl;
 import tlc2.value.impl.Applicable;
+import tlc2.value.impl.Enumerable;
 import tlc2.value.impl.IntValue;
 import tlc2.value.impl.TupleValue;
 import tlc2.value.impl.Value;
+import tlc2.value.impl.ValueEnumeration;
 
 public class VectorClocks {
 
@@ -49,11 +51,13 @@ public class VectorClocks {
 
 		private final Value value;
 		private final Value clock;
+		private final Enumerable domain;
 		private final Value time;
 
-		public GraphNode(final Value clock, final Value time, final Value value) {
+		public GraphNode(final Value clock, final Value time, final Enumerable domain, Value value) {
 			this.clock = clock;
 			this.time = time;
+			this.domain = domain;
 			this.value = value;
 		}
 
@@ -63,6 +67,10 @@ public class VectorClocks {
 
 		public Value getTime() {
 			return time;
+		}
+
+		public Enumerable getHosts() {
+			return domain;
 		}
 
 		public boolean hasParents() {
@@ -88,7 +96,8 @@ public class VectorClocks {
 	 * ff02d48ed2bcda065f326aa25409cb317be9feb9/js/model/modelGraph.js
 	 */
 	@TLAPlusOperator(identifier = "SortCausally", module = "VectorClocks", warn = false)
-	public static Value SortCausally(final TupleValue v, final Applicable opClock, final Applicable opNode) {
+	public static Value SortCausally(final TupleValue v, final Applicable opClock, final Applicable opNode,
+			final Applicable opDomain) {
 
 		// A1) Sort each node's individual log which can be totally ordered.
 		final Map<Value, LinkedList<GraphNode>> n2l = new HashMap<>();
@@ -98,9 +107,10 @@ public class VectorClocks {
 			final Value nodeId = opNode.apply(new Value[] { val }, EvalControl.Clear);
 			final Value vc = opClock.apply(new Value[] { val }, EvalControl.Clear);
 			final Value nodeTime = vc.select(new Value[] { nodeId });
+			final Enumerable dom = (Enumerable) opDomain.apply(new Value[] { vc }, EvalControl.Clear).toSetEnum();
 
 			final LinkedList<GraphNode> list = n2l.computeIfAbsent(nodeId, k -> new LinkedList<GraphNode>());
-			list.add(new GraphNode(vc, nodeTime, val));
+			list.add(new GraphNode(vc, nodeTime, dom, val));
 		}
 
 		// A2) Totally order each node's vector clocks in the log! They are likely
@@ -132,7 +142,9 @@ public class VectorClocks {
 				globalClock.put(host, gn.getTime());
 
 				final Value c = gn.getClock();
-				for (Value otherHost : n2l.keySet()) {
+				final ValueEnumeration hosts = gn.getHosts().elements();
+				Value otherHost = null;
+		        while ((otherHost = hosts.nextElement()) != null) {
 					final Value time = c.select(new Value[] { otherHost });
 
 					if (globalClock.get(otherHost).compareTo(time) < 0) {

@@ -8,7 +8,12 @@ ASSUME IsCausallyOrdered(<< <<0,0>> >>, LAMBDA l: l)
 ASSUME IsCausallyOrdered(<< <<0,0>>, <<0,1>> >>, LAMBDA l: l) \* happened before
 ASSUME IsCausallyOrdered(<< <<1,0>>, <<0,1>> >>, LAMBDA l: l) \* concurrent
 
+ASSUME IsCausallyOrdered(<< <<0>>, <<0,1>> >>, LAMBDA l: l) \* happened before
+ASSUME IsCausallyOrdered(<< <<1>>, <<0,1>> >>, LAMBDA l: l) \* concurrent
+
 ASSUME ~IsCausallyOrdered(<< <<0,1>>, <<0,0>> >>, LAMBDA l: l)
+
+ASSUME ~IsCausallyOrdered(<< <<1>>, <<0,0>> >>, LAMBDA l: l) \* concurrent
 
 Log ==
     ndJsonDeserialize("tests/VectorClocksTests.ndjson")
@@ -25,6 +30,11 @@ Node(l) ==
 
 ASSUME ~IsCausallyOrdered(Log, VectorClock)
 
-ASSUME IsCausallyOrdered(SortCausally(Log, VectorClock, Node), VectorClock)
+ASSUME IsCausallyOrdered(
+			SortCausally(Log, 
+						 VectorClock, 
+						 Node,
+						 LAMBDA vc: DOMAIN vc), 
+			VectorClock)
 
 =============================================================================
