@@ -13,6 +13,7 @@ echo "alias tlcrepl='java -cp /workspace/ewd998/tools/tla2tools.jar:/workspaces/
 echo "alias tlc='java -cp /workspace/ewd998/tools/tla2tools.jar:/workspaces/ewd998/tools/tla2tools.jar tlc2.TLC'" >> $HOME/.bashrc
 
 ## Install Apache Ant that builds CommunityModules (see build.xml)
+sudo apt-get update
 sudo apt-get install -y ant
 
 ## Do initial build
