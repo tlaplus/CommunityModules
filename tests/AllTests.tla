@@ -18,6 +18,7 @@ EXTENDS SequencesExtTests,
         BagsExtTests,
         DyadicRationalsTests,
         StatisticsTests,
-        VectorClocksTests
+        VectorClocksTests,
+		GraphVizTests
 
 ===========================================

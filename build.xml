@@ -115,6 +115,8 @@
 			<sysproperty key="tlc2.TLC.ide" value="azure-pipeline"/>
 			<sysproperty key="util.ExecutionStatisticsCollector.id" value="01ed03e40ba44f278a934849dd2b1038"/>
 			
+			<arg value="-fp"/>
+			<arg value="1"/>
 			<arg value="-metadir"/>
 			<arg value="${basedir}/build/states"/>
 			<arg value="-cleanup"/>
