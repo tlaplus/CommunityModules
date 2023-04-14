@@ -75,7 +75,7 @@ AntiFunction(f) == Inverse(f, DOMAIN f, Range(f))
 (* A function is injective iff it maps each element in its domain to a     *)
 (* distinct element.                                                       *)
 (*                                                                         *)
-(* This definition is overridden by TLC in the Java class SequencesExt.    *)
+(* This definition is overridden by TLC in the Java class Functions.java   *)
 (* The operator is overridden by the Java method with the same name.       *)
 (***************************************************************************)
 IsInjective(f) == \A a,b \in DOMAIN f : f[a] = f[b] => a = b
