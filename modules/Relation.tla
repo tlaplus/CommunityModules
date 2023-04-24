@@ -10,31 +10,37 @@ LOCAL INSTANCE FiniteSets
 (***************************************************************************)
 (* Is the relation R reflexive over S?                                     *)
 (***************************************************************************)
+\* @supportedBy("TLC")
 IsReflexive(R, S) == \A x \in S : R[x,x]
 
 (***************************************************************************)
 (* Is the relation R irreflexive over set S?                               *)
 (***************************************************************************)
+\* @supportedBy("TLC")
 IsIrreflexive(R, S) == \A x \in S : ~ R[x,x]
 
 (***************************************************************************)
 (* Is the relation R symmetric over set S?                                 *)
 (***************************************************************************)
+\* @supportedBy("TLC")
 IsSymmetric(R, S) == \A x,y \in S : R[x,y] <=> R[y,x]
 
 (***************************************************************************)
 (* Is the relation R asymmetric over set S?                                *)
 (***************************************************************************)
+\* @supportedBy("TLC")
 IsAsymmetric(R, S) == \A x,y \in S : ~(R[x,y] /\ R[y,x])
 
 (***************************************************************************)
 (* Is the relation R transitive over set S?                                *)
 (***************************************************************************)
+\* @supportedBy("TLC")
 IsTransitive(R, S) == \A x,y,z \in S : R[x,y] /\ R[y,z] => R[x,z]
 
 (***************************************************************************)
 (* Compute the transitive closure of relation R over set S.                *)
 (***************************************************************************)
+\* @supportedBy("TLC")
 TransitiveClosure(R, S) ==
   LET N == Cardinality(S)
       trcl[n \in Nat] == 
@@ -46,6 +52,7 @@ TransitiveClosure(R, S) ==
 (***************************************************************************)
 (* Compute the reflexive transitive closure of relation R over set S.      *)
 (***************************************************************************)
+\* @supportedBy("TLC")
 ReflexiveTransitiveClosure(R, S) ==
   LET trcl == TransitiveClosure(R,S)
   IN  [x,y \in S |-> x=y \/ trcl[x,y]]
@@ -54,6 +61,7 @@ ReflexiveTransitiveClosure(R, S) ==
 (* Is the relation R connected over set S, i.e. does there exist a path    *)
 (* between two arbitrary elements of S?                                    *)
 (***************************************************************************)
+\* @supportedBy("TLC")
 IsConnected(R, S) ==
   LET rtrcl == ReflexiveTransitiveClosure(R,S)
   IN  \A x,y \in S : rtrcl[x,y]

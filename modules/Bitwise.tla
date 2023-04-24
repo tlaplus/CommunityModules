@@ -3,6 +3,7 @@ LOCAL INSTANCE Integers
 
 \* https://en.wikipedia.org/wiki/Bitwise_operation#Mathematical_equivalents
 RECURSIVE And(_,_,_,_)
+\* @supportedBy("TLC")
 LOCAL And(x,y,n,m) == 
         LET exp == 2^n
         IN IF m = 0 
@@ -10,6 +11,7 @@ LOCAL And(x,y,n,m) ==
            ELSE exp * ((x \div exp) % 2) * ((y \div exp) % 2) 
                     + And(x,y,n+1,m \div 2)
 
+\* @supportedBy("TLC")
 x & y == 
     (***************************************************************************)
     (* Bitwise AND of (non-negative) x and y (defined for Nat \cup {0}).       *)
@@ -19,6 +21,7 @@ x & y ==
 -------------------------------------------------------------------------------
 
 RECURSIVE Or(_,_,_,_)
+\* @supportedBy("TLC")
 LOCAL Or(x,y,n,m) == 
         LET exp == 2^n
             xdm == (x \div exp) % 2
@@ -28,6 +31,7 @@ LOCAL Or(x,y,n,m) ==
            ELSE exp * (((xdm + ydm) + (xdm * ydm)) % 2)
                         + Or(x,y,n+1,m \div 2)
 
+\* @supportedBy("TLC")
 x | y == 
     (***************************************************************************)
     (* Bitwise OR of (non-negative) x and y (defined for Nat \cup {0}).        *)
@@ -37,6 +41,7 @@ x | y ==
 -------------------------------------------------------------------------------
 
 RECURSIVE Xor(_,_,_,_)
+\* @supportedBy("TLC")
 LOCAL Xor(x,y,n,m) == 
         LET exp == 2^n
         IN IF m = 0 
@@ -44,6 +49,7 @@ LOCAL Xor(x,y,n,m) ==
            ELSE exp * (((x \div exp) + (y \div exp)) % 2) 
                     + Xor(x,y,n+1,m \div 2)
 
+\* @supportedBy("TLC")
 x ^^ y ==   \* single "^" already taken by Naturals.tla
     (***************************************************************************)
     (* Bitwise XOR of (non-negative) x and y (defined for Nat \cup {0}).       *)
@@ -53,6 +59,7 @@ x ^^ y ==   \* single "^" already taken by Naturals.tla
 -------------------------------------------------------------------------------
 
 RECURSIVE NotR(_,_,_)
+\* @supportedBy("TLC")
 LOCAL NotR(x,n,m) == 
     LET exp == 2^n
         xdm == (x \div exp) % 2
@@ -61,6 +68,7 @@ LOCAL NotR(x,n,m) ==
         ELSE exp * ((xdm + 1) % 2)
                     + NotR(x,n+1,m \div 2)
 
+\* @supportedBy("TLC")
 Not(a) ==
     (***************************************************************************)
     (* Bitwise NOT of (non-negative) x (defined for Nat \cup {0}).             *)
@@ -70,6 +78,7 @@ Not(a) ==
 -------------------------------------------------------------------------------
 
 RECURSIVE shiftR(_,_)
+\* @supportedBy("TLC")
 shiftR(n,pos) == 
     (***************************************************************************)
     (* Logical bit-shifting the (non-negative) n by pos positions to the right *)

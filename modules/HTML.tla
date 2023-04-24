@@ -5,6 +5,7 @@ LOCAL INSTANCE SequencesExt
 
 \***** Helpers
 
+\* @supportedBy("TLC")
 HTMLFill(string, args) ==
     (***********************************************************************)
     (* Do the sequence of replaces in args to the string.                  *)
@@ -15,6 +16,7 @@ HTMLFill(string, args) ==
     LET f(str, x) == ReplaceFirstSubSeq(x[2], x[1], str)
     IN FoldLeft(f, string, args)
 
+\* @supportedBy("TLC")
 LOCAL StringSeqToString(string_seq, separator) ==
     (***********************************************************************)
     (* Concatenates sequence of strings into one string.                   *)
@@ -27,6 +29,7 @@ LOCAL StringSeqToString(string_seq, separator) ==
 
 \***** Main Document
 
+\* @supportedBy("TLC")
 HTMLDocument(header, body, list_of_scripts) ==
     StringSeqToString(<<
         "<!DOCTYPE html>",
@@ -39,6 +42,7 @@ HTMLDocument(header, body, list_of_scripts) ==
 
 \***** Style Sheet
 
+\* @supportedBy("TLC")
 HTMLClass(classname, attribute_list) ==
     StringSeqToString(<<
         ReplaceFirstSubSeq(classname, "%classname%", "%classname% {"),
@@ -46,12 +50,14 @@ HTMLClass(classname, attribute_list) ==
         "}"
     >>, "\n")
 
+\* @supportedBy("TLC")
 HTMLAttribute(name, value) ==
     HTMLFill("%name%: %value%;", <<
         <<"%name%", name>>,
         <<"%value%", value>>
     >>)
 
+\* @supportedBy("TLC")
 HTMLDefaultStyle ==
     StringSeqToString(<<
         HTMLClass(".default_grid",<<
@@ -65,6 +71,7 @@ HTMLDefaultStyle ==
         >>)
     >>, "\n")
 
+\* @supportedBy("TLC")
 HTMLStyleSheet(class_list) ==
     StringSeqToString(<<
         "<style type=\"text/css\">",
@@ -75,9 +82,11 @@ HTMLStyleSheet(class_list) ==
 
 \***** Script
 
+\* @supportedBy("TLC")
 HTMLScriptFile(name) ==
     HTMLFill("<script src=\"%name%\"></script>", << <<"%name%", name>>>> )
 
+\* @supportedBy("TLC")
 HTMLScript(children) ==
     StringSeqToString(<<
         "<script>",
@@ -87,10 +96,12 @@ HTMLScript(children) ==
 
 \***** Header
 
+\* @supportedBy("TLC")
 HTMLLink(name, type) ==
     HTMLFill("<link href=\"%name%\" rel=\"%type%\"/>",
         << <<"%name%", name>>, <<"%type%", type>> >> )
 
+\* @supportedBy("TLC")
 HTMLHeader(title, list_of_links, class_list) ==
     StringSeqToString(<<
         "<head>",
@@ -103,6 +114,7 @@ HTMLHeader(title, list_of_links, class_list) ==
 
 \***** Body
 
+\* @supportedBy("TLC")
 HTMLBody(body) ==
     StringSeqToString(<<
         "<body>",
@@ -110,6 +122,7 @@ HTMLBody(body) ==
         "</body>"
     >>, "\n")
 
+\* @supportedBy("TLC")
 HTMLFrame(id, children) ==
     StringSeqToString(<<
         ReplaceFirstSubSeq(id, "%id%", "<div id=\"%id%\">"),
@@ -117,6 +130,7 @@ HTMLFrame(id, children) ==
         "</div>"
     >>, "\n")
 
+\* @supportedBy("TLC")
 HTMLGridContainer(id, class_list, children) ==
     StringSeqToString(<<
         HTMLFill("<div id=\"%id%\" class=\"default_grid %class_list%\">",<<
@@ -127,6 +141,7 @@ HTMLGridContainer(id, class_list, children) ==
         "</div>"
     >>, "\n")
 
+\* @supportedBy("TLC")
 HTMLBox(id, class_list, size, children) ==
     StringSeqToString(<<
         HTMLFill("<div id=\"%id%\" class=\"default_box %class_list%\" style=\"%size%\">",<<
@@ -138,9 +153,11 @@ HTMLBox(id, class_list, size, children) ==
         "</div>"
     >>, "\n")
 
+\* @supportedBy("TLC")
 HTMLCircle(id, class_list, size, children)  ==
     HTMLBox(id, <<"default_circle">> \o class_list, size, children)
 
+\* @supportedBy("TLC")
 HTMLText(id, text) ==
     StringSeqToString(<<
         ReplaceFirstSubSeq(id, "%id%", "<span id=\"%id%\">"),
@@ -148,6 +165,7 @@ HTMLText(id, text) ==
         "</span>"
     >>, "\n")
 
+\* @supportedBy("TLC")
 HTMLSVG(id, viewBox, size, svgString) ==
     StringSeqToString(<<
         HTMLFill("<svg id=\"%id%\" viewBox=\"%viewBox%\" style=\"%size%\">",<<
@@ -161,15 +179,18 @@ HTMLSVG(id, viewBox, size, svgString) ==
 
 \***** Pre built
 
+\* @supportedBy("TLC")
 HTMLSize(width, height) ==
     StringSeqToString(<<
         HTMLAttribute("width", width),
         HTMLAttribute("height", height)
     >>, " ")
 
+\* @supportedBy("TLC")
 HTMLNewLine ==
     "<br>"
 
+\* @supportedBy("TLC")
 HTMLFlexCenterAttributes ==
     StringSeqToString(<<
         HTMLAttribute("display", "flex"),
@@ -177,20 +198,24 @@ HTMLFlexCenterAttributes ==
         HTMLAttribute("justify-content", "center")
     >>,"\n")
 
+\* @supportedBy("TLC")
 HTMLJSLineElems(fromID, destID) ==
     HTMLFill("document.getElementById(\"%id1%\"), document.getElementById(\"%id2%\")",
         << <<"%id1%", fromID>>, <<"%id2%", destID>> >> )
 
+\* @supportedBy("TLC")
 HTMLJSLine(fromID, destID, color, size) ==
     HTMLFill("new LeaderLine(%elems%, {color: '%color%', size: %size%})",
     << <<"%elems%", HTMLJSLineElems(fromID, destID)>>,
        <<"%color%", color>>, <<"%size%", size>> >> )
 
+\* @supportedBy("TLC")
 HTMLJSLineDash(fromID, destID, color, size) ==
     HTMLFill("new LeaderLine(%elems%,  {color: '%color%', size: %size%, dash: true})",
     << <<"%elems%", HTMLJSLineElems(fromID, destID)>>,
        <<"%color%", color>>, <<"%size%", size>> >> )
 
+\* @supportedBy("TLC")
 HTMLJSKeyListener(events) ==
     StringSeqToString(<<
         "window.onkeyup = function(event) {",
@@ -199,6 +224,7 @@ HTMLJSKeyListener(events) ==
         "}"
     >>, "\n")
 
+\* @supportedBy("TLC")
 HTMLJSNavigationKey(key, file) ==
     StringSeqToString(<<
         ReplaceFirstSubSeq(key, "%key%", "if(key == '%key%'){"),

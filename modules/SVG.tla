@@ -9,6 +9,7 @@ LOCAL INSTANCE FiniteSets
 (* Helper Operators                                                           *)
 (******************************************************************************)
 
+\* @supportedBy("TLC")
 LOCAL Merge(r1, r2) == 
     (**************************************************************************)
     (* Merge two records.                                                     *)
@@ -19,6 +20,7 @@ LOCAL Merge(r1, r2) ==
         D2 == DOMAIN r2 IN
     [k \in (D1 \cup D2) |-> IF k \in D1 THEN r1[k] ELSE r2[k]]
 
+\* @supportedBy("TLC")
 LOCAL SVGElem(_name, _attrs, _children, _innerText) == 
     (**************************************************************************)
     (* SVG element constructor.                                               *)
@@ -57,6 +59,7 @@ LOCAL SVGElem(_name, _attrs, _children, _innerText) ==
 (*                                                                            *)
 (******************************************************************************)
 
+\* @supportedBy("TLC")
 Line(x1, y1, x2, y2, attrs) == 
     (**************************************************************************)
     (* Line element.  'x1', 'y1', 'x2', and 'y2' should be given as integers. *)
@@ -67,6 +70,7 @@ Line(x1, y1, x2, y2, attrs) ==
                      y2 |-> ToString(y2)] IN
     SVGElem("line", Merge(svgAttrs, attrs), <<>>, "")
 
+\* @supportedBy("TLC")
 Circle(cx, cy, r, attrs) == 
     (**************************************************************************)
     (* Circle element. 'cx', 'cy', and 'r' should be given as integers.       *)
@@ -76,6 +80,7 @@ Circle(cx, cy, r, attrs) ==
                      r  |-> ToString(r)] IN
     SVGElem("circle", Merge(svgAttrs, attrs), <<>>, "")
 
+\* @supportedBy("TLC")
 Rect(x, y, w, h, attrs) == 
     (**************************************************************************)
     (* Rectangle element.  'x', 'y', 'w', and 'h' should be given as          *)
@@ -87,6 +92,7 @@ Rect(x, y, w, h, attrs) ==
                      height |-> ToString(h)] IN
     SVGElem("rect", Merge(svgAttrs, attrs), <<>>, "")
 
+\* @supportedBy("TLC")
 Text(x, y, text, attrs) == 
     (**************************************************************************)
     (* Text element.'x' and 'y' should be given as integers, and 'text' given *)
@@ -96,6 +102,7 @@ Text(x, y, text, attrs) ==
                      y |-> ToString(y)] IN
     SVGElem("text", Merge(svgAttrs, attrs), <<>>, text) 
 
+\* @supportedBy("TLC")
 Group(children, attrs) == 
     (**************************************************************************)
     (* Group element.  'children' is a sequence of elements that will be      *)
@@ -103,6 +110,7 @@ Group(children, attrs) ==
     (**************************************************************************)
     SVGElem("g", attrs, children, "")
 
+\* @supportedBy("TLC")
 Svg(children, attrs) == 
     (**************************************************************************)
     (* Svg container.  'children' is a sequence of elements that will be      *)
@@ -110,6 +118,7 @@ Svg(children, attrs) ==
     (**************************************************************************)
     SVGElem("svg", attrs, children, "")
 
+\* @supportedBy("TLC")
 SVGElemToString(elem) == 
     (**************************************************************************)
     (* Convert an SVG element record into its string representation.          *)
@@ -124,6 +133,7 @@ SVGElemToString(elem) ==
 
 -------------------------------------------------------------------------------
 
+\* @supportedBy("TLC")
 NodeOfRingNetwork(cx, cy, r, n, m) ==
     (**************************************************************************)
     (* Equals the Cartesian coordinates of the n-th of m nodes in a ring      *)
@@ -155,6 +165,7 @@ NodeOfRingNetwork(cx, cy, r, n, m) ==
     (**************************************************************************)
     [ x |-> 0, y |-> 0 ]
 
+\* @supportedBy("TLC")
 NodesOfDirectedMultiGraph(nodes, edges, options) ==
     (**************************************************************************)
     (* Example to layout a graph with the given Nodes and Edges:              *)
@@ -174,6 +185,7 @@ NodesOfDirectedMultiGraph(nodes, edges, options) ==
     (**************************************************************************)
     CHOOSE f \in [ nodes -> [x: Int, y: Int] ]: TRUE
 
+\* @supportedBy("TLC")
 PointOnLine(from, to, segment) ==
     [x |-> from.x + ((to.x - from.x) \div segment), 
      y |-> from.y + ((to.y - from.y) \div segment)]

@@ -1,5 +1,6 @@
 ------------------------------- MODULE Folds -------------------------------
 
+\* @supportedBy("TLC")
 MapThenFoldSet(op(_,_), base, f(_), choose(_), S) ==
 (******************************************************************************)
 (* Starting from base, apply op to f(x), for all x \in S, by choosing the set *)

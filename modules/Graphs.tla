@@ -4,30 +4,37 @@ LOCAL INSTANCE Sequences
 LOCAL INSTANCE SequencesExt
 LOCAL INSTANCE FiniteSets
 
+\* @supportedBy("TLC")
 IsDirectedGraph(G) ==
    /\ G = [node |-> G.node, edge |-> G.edge]
    /\ G.edge \subseteq (G.node \X G.node)
 
+\* @supportedBy("TLC")
 DirectedSubgraph(G) ==    
   {H \in [node : SUBSET G.node, edge : SUBSET (G.node \X G.node)] :
      IsDirectedGraph(H) /\ H.edge \subseteq G.edge}
 
+\* @supportedBy("TLC")
 Transpose(G) ==
     \* https://en.wikipedia.org/wiki/Transpose_graph
     [ edge |-> { <<e[2], e[1]>> : e \in G.edge }, 
       node |-> G.node] 
 
 -----------------------------------------------------------------------------
+\* @supportedBy("TLC")
 IsUndirectedGraph(G) ==
    /\ IsDirectedGraph(G)
    /\ \A e \in G.edge : <<e[2], e[1]>> \in G.edge
 
+\* @supportedBy("TLC")
 UndirectedSubgraph(G) == {H \in DirectedSubgraph(G) : IsUndirectedGraph(H)}
 -----------------------------------------------------------------------------
+\* @supportedBy("TLC")
 Path(G) == {p \in Seq(G.node) :
              /\ p # << >>
              /\ \A i \in 1..(Len(p)-1) : <<p[i], p[i+1]>> \in G.edge}
 
+\* @supportedBy("TLC")
 SimplePath(G) ==
     \* A simple path is a path with no repeated nodes.
     {p \in SeqOf(G.node, Cardinality(G.node)) :
@@ -35,9 +42,11 @@ SimplePath(G) ==
              /\ Cardinality({ p[i] : i \in DOMAIN p }) = Len(p)
              /\ \A i \in 1..(Len(p)-1) : <<p[i], p[i+1]>> \in G.edge}
 
+\* @supportedBy("TLC")
 AreConnectedIn(m, n, G) == 
   \E p \in SimplePath(G) : (p[1] = m) /\ (p[Len(p)] = n)
 
+\* @supportedBy("TLC")
 ConnectionsIn(G) ==
   \* Compute a Boolean matrix that indicates, for each pair of nodes,
   \* if there exists a path that links the two nodes. The computation,
@@ -56,9 +65,11 @@ ConnectionsIn(G) ==
                                    \/ Cu[m,u] /\ Cu[u,n]]
   IN  C[G.node]
 
+\* @supportedBy("TLC")
 IsStronglyConnected(G) == 
   \A m, n \in G.node : AreConnectedIn(m, n, G) 
 -----------------------------------------------------------------------------
+\* @supportedBy("TLC")
 IsTreeWithRoot(G, r) ==
   /\ IsDirectedGraph(G)
   /\ \A e \in G.edge : /\ e[1] # r

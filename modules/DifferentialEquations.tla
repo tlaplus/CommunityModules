@@ -1,9 +1,13 @@
 ----------------------- MODULE DifferentialEquations ------------------------
 LOCAL INSTANCE Reals
 LOCAL INSTANCE Sequences
+\* @supportedBy("TLC")
 LOCAL PosReal == {r \in Real : r > 0}
+\* @supportedBy("TLC")
 LOCAL OpenInterval(a, b) == {s \in Real : a < s /\ s < b}
+\* @supportedBy("TLC")
 LOCAL Nbhd(r,e) ==  OpenInterval(r-e, r+e)
+\* @supportedBy("TLC")
 LOCAL IsFirstDeriv(df, f) ==
         /\ df \in [DOMAIN f -> Real]
         /\ \A r \in DOMAIN f : 
@@ -12,6 +16,7 @@ LOCAL IsFirstDeriv(df, f) ==
                     \A s \in Nbhd(r,d) \ {r} :
                         (f[s] - f[r])/(s - r) \in Nbhd(df[r], e)
 
+\* @supportedBy("TLC")
 LOCAL IsDeriv(n, df, f) == 
   LET IsD[k \in 0..n,  g \in [DOMAIN f -> Real]] ==
          IF k = 0 
@@ -20,6 +25,7 @@ LOCAL IsDeriv(n, df, f) ==
                                                /\ IsD[k-1, gg]
   IN  IsD[n, df]
 
+\* @supportedBy("TLC")
 Integrate(D, a, b, InitVals) ==
   LET n == Len(InitVals)
       gg == CHOOSE g : 
