@@ -107,7 +107,15 @@ public final class Functions {
 			throw new EvalException(EC.TLC_MODULE_ONE_ARGUMENT_ERROR,
 					new String[] { "AntiFunction", "functions", Values.ppr(f.toString()) });
 		}
-		return new FcnRcdValue(frc.values, frc.getDomainAsValues(), false).normalize();
+		final Value[] range;
+		if (frc.intv != null) {
+			range = frc.getDomainAsValues();
+		} else {
+			final Value[] values = frc.getDomainAsValues();
+			range = Arrays.copyOf(values, values.length);
+		}
+		final Value[] domain = Arrays.copyOf(frc.values, frc.values.length);
+		return new FcnRcdValue(domain, range, false).normalize();
 	}
 
 	@TLAPlusOperator(identifier = "FoldFunction", module = "Functions", warn = false)

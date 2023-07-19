@@ -75,5 +75,26 @@ ASSUME
        /\ \A f \in [{"a","b","c"} -> {0,1,2,3}] : IsInjective(f) => InversePure(f, DOMAIN f, Range(f)) = AntiFunction(f)
        /\ \A f \in [{0,1,2,3} -> {"a","b","c"}] : IsInjective(f) => InversePure(f, DOMAIN f, Range(f)) = AntiFunction(f)
       
+SomeVal ==
+	[n1 |-> "n3", n2 |-> "n1", n3 |-> "n2"]
+	
+SomeDerivedVal[ i \in 0..2 ] == 
+	IF i = 0 THEN "n1" ELSE SomeVal[SomeDerivedVal[i-1]]
+     
+ASSUME
+	/\ AntiFunction(SomeDerivedVal) = [n1 |-> 0, n2 |-> 2, n3 |-> 1]
+	/\ SomeDerivedVal = (0 :> "n1" @@ 2 :> "n2" @@ 1 :> "n3")
+
+ASSUME
+	LET F == [n1 |-> 0, n2 |-> 2, n3 |-> 1]
+	IN AntiFunction(F) = (0 :> "n1" @@ 2 :> "n2" @@ 1 :> "n3")
+
+ASSUME
+	LET F == [n1 |-> 0, n2 |-> 2, n3 |-> 1]
+	IN AntiFunction(AntiFunction(F)) = F
+
+ASSUME
+	LET F == (0 :> "n1" @@ 2 :> "n2" @@ 1 :> "n3")
+	IN AntiFunction(AntiFunction(F)) = F
 
 =============================================================================
