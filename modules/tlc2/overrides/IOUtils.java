@@ -271,11 +271,11 @@ public class IOUtils {
 		final RecordValue environment = (RecordValue) env.toRcd();
 		if (environment == null) {
 			throw new EvalException(EC.TLC_MODULE_ONE_ARGUMENT_ERROR,
-					new String[] { "IOExecVars", "record", Values.ppr(env.toString()) });
+					new String[] { "IOEnvExec", "record", Values.ppr(env.toString()) });
 		}
 		if (!(parameter instanceof TupleValue)) {
 			throw new EvalException(EC.TLC_MODULE_ONE_ARGUMENT_ERROR,
-					new String[] { "IOExecVars", "sequence", Values.ppr(parameter.toString()) });
+					new String[] { "IOEnvExec", "sequence", Values.ppr(parameter.toString()) });
 		}
 		final TupleValue tv = (TupleValue) parameter;
 
@@ -293,11 +293,11 @@ public class IOUtils {
 		// 1. Check parameters and covert.
 		if (!(commandTemplate instanceof TupleValue)) {
 			throw new EvalException(EC.TLC_MODULE_ONE_ARGUMENT_ERROR,
-					new String[] { "IOExec", "sequence", Values.ppr(commandTemplate.toString()) });
+					new String[] { "IOExecTemplate", "sequence", Values.ppr(commandTemplate.toString()) });
 		}
 		if (!(parameter instanceof TupleValue)) {
 			throw new EvalException(EC.TLC_MODULE_ONE_ARGUMENT_ERROR,
-					new String[] { "IOExec", "sequence", Values.ppr(parameter.toString()) });
+					new String[] { "IOExecTemplate", "sequence", Values.ppr(parameter.toString()) });
 		}
 		final TupleValue sv = (TupleValue) commandTemplate;
 		final TupleValue tv = (TupleValue) parameter;
@@ -320,16 +320,16 @@ public class IOUtils {
 		final RecordValue environment = (RecordValue) env.toRcd();
 		if (environment == null) {
 			throw new EvalException(EC.TLC_MODULE_ONE_ARGUMENT_ERROR,
-					new String[] { "ioEnvExecTemplate", "record", Values.ppr(env.toString()) });
+					new String[] { "IOEnvExecTemplate", "record", Values.ppr(env.toString()) });
 		}
 		// 1. Check parameters and covert.
 		if (!(commandTemplate instanceof TupleValue)) {
 			throw new EvalException(EC.TLC_MODULE_ONE_ARGUMENT_ERROR,
-					new String[] { "ioEnvExecTemplate", "sequence", Values.ppr(commandTemplate.toString()) });
+					new String[] { "IOEnvExecTemplate", "sequence", Values.ppr(commandTemplate.toString()) });
 		}
 		if (!(parameter instanceof TupleValue)) {
 			throw new EvalException(EC.TLC_MODULE_ONE_ARGUMENT_ERROR,
-					new String[] { "ioEnvExecTemplate", "sequence", Values.ppr(parameter.toString()) });
+					new String[] { "IOEnvExecTemplate", "sequence", Values.ppr(parameter.toString()) });
 		}
 		final TupleValue sv = (TupleValue) commandTemplate;
 		final TupleValue tv = (TupleValue) parameter;
