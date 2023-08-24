@@ -49,6 +49,37 @@ import util.UniqueString;
 
 public class CSV {
 
+	@TLAPlusOperator(identifier = "CSVWriteRecord", module = "CSV", minLevel = 1, warn = false)
+	public static Value writeRecord(final Value parameter, final StringValue delim, final BoolValue headers,
+			final StringValue absolutePath) throws IOException {
+		
+		final RecordValue tv = (RecordValue) parameter.toRcd();
+		if (tv == null) {
+			throw new EvalException(EC.TLC_MODULE_ONE_ARGUMENT_ERROR,
+					new String[] { "CSVWriteRecord", "record", Values.ppr(parameter.toString()) });
+		}
+		
+		// Normalizing the input takes care of mapping subsequent invocations of the
+		// same record to the same columns.
+		tv.deepNormalize();
+		
+		// Names/Headers
+		if (headers.val) {
+			final String s = Arrays.stream(tv.names).map(v -> v.toString())
+					.collect(Collectors.joining(delim.val.toString()));
+			Files.write(Paths.get(absolutePath.val.toString()), (s + System.lineSeparator()).getBytes("UTF-8"),
+					StandardOpenOption.CREATE, StandardOpenOption.APPEND);
+		}
+
+		// Values
+		final String s = Arrays.stream(tv.values).map(v -> v.toString())
+				.collect(Collectors.joining(delim.val.toString()));
+		Files.write(Paths.get(absolutePath.val.toString()), (s + System.lineSeparator()).getBytes("UTF-8"),
+				StandardOpenOption.CREATE, StandardOpenOption.APPEND);
+
+		return BoolValue.ValTrue;
+	}
+
 	@TLAPlusOperator(identifier = "CSVWrite", module = "CSV", minLevel = 1, warn = false)
 	public static Value write(final StringValue template, final Value parameter, final StringValue absolutePath)
 			throws IOException {

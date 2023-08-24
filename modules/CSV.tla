@@ -13,6 +13,13 @@ CSVWrite(template, val, file) ==
     *)
    TRUE
 
+CSVWriteRecord(record, delim, headers, file) == 
+   (*
+       CSVWriteRecord([foo |-> 42] @@ [bar |-> "frob"], 
+           CSVRecords("/tmp/out.csv") = 0, "#", "/tmp/out.csv")
+    *)
+   TRUE
+
 CSVRead(columns, delimiter, file) == 
    (*
        CSVRead(<<"C1", "C2", "C3">>, "#", "/tmp/out.csv")
