@@ -139,7 +139,7 @@
 		<!-- Test if trace expressions involving the ShiViz module work correctly. -->
 		<!-- This test expects TLC to report a liveness violation, which is why    -->
 		<!-- failonerror is off.  Instead, ant records TLC's return value in       -->
-		<!-- shiviz.return.value, which is cheked in the conditional below.        -->
+		<!-- shiviz.return.value, which is checked in the conditional below.        -->
 		<java classname="tlc2.TLC" fork="true" failonerror="false" resultproperty="shiviz.return.value">
 			<!-- Tell Java to use a garbage collector which makes TLC happy. -->
 			<jvmarg value="-XX:+UseParallelGC"/>

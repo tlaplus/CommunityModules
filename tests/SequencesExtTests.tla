@@ -315,7 +315,7 @@ ASSUME(ReplaceAllSubSeqs("\t", "%%", "Properly escape the %% char") = "Properly 
 ASSUME(ReplaceAllSubSeqs("\f", "%%", "Properly escape the %% char") = "Properly escape the \f char")
 ASSUME(ReplaceAllSubSeqs("\r", "%%", "Properly escape the %% char") = "Properly escape the \r char")
 
-ASSUME AssertEq(ReplaceAllSubSeqs("replaces", "%pattern%", "This %pattern% the pattern %pattern% multipe times"), "This replaces the pattern replaces multipe times")
+ASSUME AssertEq(ReplaceAllSubSeqs("replaces", "%pattern%", "This %pattern% the pattern %pattern% multiple times"), "This replaces the pattern replaces multiple times")
 ASSUME AssertEq(ReplaceAllSubSeqs("\\\\", "\\", "Properly escape the \\quotes"), "Properly escape the \\\\quotes")
 
 

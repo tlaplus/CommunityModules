@@ -20,7 +20,7 @@ INSTANCE Toolbox
 \* Host below is different to the action predicate 
 \*   CHOOSE p \in DOMAIN pc : pc[p] # pc'[p]
 \* since Host evaluates for states n and n - 1
-\* whereas the CHOOSE evalutes for states n and n + 1.
+\* whereas the CHOOSE evaluates for states n and n + 1.
 \* This difference is most easily observed by looking
 \* at off-by-one difference of the initial state.
 LOCAL FnHost ==

@@ -99,7 +99,7 @@ public class IOUtils {
 			final TLCState s0, final TLCState s1, final int control, final CostModel cm) {
 		
 		final String msgInvalidParam = "Serialize error invalid parameters: ";
-		final String successmsg = "Finish writting to the file with success!";
+		final String successmsg = "Finish writing to the file with success!";
 		
 		final RecordValue opts;	
 		
@@ -142,7 +142,7 @@ public class IOUtils {
 				return new RecordValue(EXEC_NAMES, new Value[] { IntValue.ValZero, new StringValue(successmsg), new StringValue("") }, false);
 				
 			} catch(Exception e) {
-				final StringValue errormsg = new StringValue("Serialize error writting to the file: "+e.toString());
+				final StringValue errormsg = new StringValue("Serialize error writing to the file: "+e.toString());
 				return new RecordValue(EXEC_NAMES, new Value[] { IntValue.ValOne, new StringValue(""), errormsg }, false);
 			}
 		}
@@ -249,7 +249,7 @@ public class IOUtils {
 	
 	@TLAPlusOperator(identifier = "IOExec", module = "IOUtils", minLevel = 1, warn = false)
 	public static Value ioExec(final Value parameter) throws IOException, InterruptedException {
-		// 1. Check parameters and covert.
+		// 1. Check parameters and convert.
 		if (!(parameter instanceof TupleValue)) {
 			throw new EvalException(EC.TLC_MODULE_ONE_ARGUMENT_ERROR,
 					new String[] { "IOExec", "sequence", Values.ppr(parameter.toString()) });
@@ -267,7 +267,7 @@ public class IOUtils {
 
 	@TLAPlusOperator(identifier = "IOEnvExec", module = "IOUtils", minLevel = 1, warn = false)
 	public static Value ioEnvExec(final Value env, final Value parameter) throws IOException, InterruptedException {
-		// Check env and parameters and covert.
+		// Check env and parameters and convert.
 		final RecordValue environment = (RecordValue) env.toRcd();
 		if (environment == null) {
 			throw new EvalException(EC.TLC_MODULE_ONE_ARGUMENT_ERROR,
@@ -290,7 +290,7 @@ public class IOUtils {
 
 	@TLAPlusOperator(identifier = "IOExecTemplate", module = "IOUtils", minLevel = 1, warn = false)
 	public static Value ioExecTemplate(final Value commandTemplate, final Value parameter) throws IOException, InterruptedException {
-		// 1. Check parameters and covert.
+		// 1. Check parameters and convert.
 		if (!(commandTemplate instanceof TupleValue)) {
 			throw new EvalException(EC.TLC_MODULE_ONE_ARGUMENT_ERROR,
 					new String[] { "IOExecTemplate", "sequence", Values.ppr(commandTemplate.toString()) });
@@ -316,13 +316,13 @@ public class IOUtils {
 	
 	@TLAPlusOperator(identifier = "IOEnvExecTemplate", module = "IOUtils", minLevel = 1, warn = false)
 	public static Value ioEnvExecTemplate(final Value env, final Value commandTemplate, final Value parameter) throws IOException, InterruptedException {
-		// Check env and parameters and covert.
+		// Check env and parameters and convert.
 		final RecordValue environment = (RecordValue) env.toRcd();
 		if (environment == null) {
 			throw new EvalException(EC.TLC_MODULE_ONE_ARGUMENT_ERROR,
 					new String[] { "IOEnvExecTemplate", "record", Values.ppr(env.toString()) });
 		}
-		// 1. Check parameters and covert.
+		// 1. Check parameters and convert.
 		if (!(commandTemplate instanceof TupleValue)) {
 			throw new EvalException(EC.TLC_MODULE_ONE_ARGUMENT_ERROR,
 					new String[] { "IOEnvExecTemplate", "sequence", Values.ppr(commandTemplate.toString()) });
