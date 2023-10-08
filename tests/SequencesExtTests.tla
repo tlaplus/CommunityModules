@@ -362,4 +362,12 @@ ASSUME AssertEq(SelectInSubSeq(<<1,1,2,2>>, 2, 4, LAMBDA e : e = 2), 3)
 ASSUME AssertEq(SelectLastInSubSeq(<<>>, 1, Len(<<>>), Op), 0)
 ASSUME AssertEq(SelectLastInSubSeq(<<1,1,2>>  , 1, 3, LAMBDA e : e = 1), 2)
 ASSUME AssertEq(SelectLastInSubSeq(<<1,1,2,2>>, 2, 4, LAMBDA e : e = 2), 4)
+
+-----------------------------------------------------------------------------
+
+ASSUME AssertEq(Suffixes(<<>>), {<<>>})
+ASSUME AssertEq(Suffixes(<<1>>), {<<>>, <<1>>})
+ASSUME AssertEq(Suffixes(<<1,2>>), {<<>>, <<1,2>>, <<2>>})
+ASSUME AssertEq(Suffixes(<<1,2,3>>), {<<>>, <<3>>, <<2,3>>, <<1,2,3>>})
+
 =============================================================================

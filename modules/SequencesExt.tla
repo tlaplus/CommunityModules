@@ -242,6 +242,12 @@ LongestCommonPrefix(S) ==
           \A other \in CommonPrefixes(S):
               Len(other) <= Len(longest)
 
+Suffixes(s) ==
+  (**************************************************************************)
+  (* The set of suffixes of the sequence s, including the empty sequence.   *)
+  (**************************************************************************)
+  { SubSeq(s, l, Len(s)) : l \in 1..Len(s) } \cup {<<>>}
+
 -----------------------------------------------------------------------------
 
 SeqMod(a, b) == 
