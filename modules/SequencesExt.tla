@@ -169,6 +169,24 @@ RemoveAt(s, i) ==
   (**************************************************************************)
   SubSeq(s, 1, i-1) \o SubSeq(s, i+1, Len(s))
 
+RemoveFirst(s, e) ==
+    (************************************************************************)
+    (* The sequence s with the first occurrence of e removed or s           *)
+    (* iff e \notin Range(s)                                                *)
+    (************************************************************************)
+    IF \E i \in 1..Len(s): s[i] = e
+    THEN RemoveAt(s, SelectInSeq(s, LAMBDA v: v = e))
+    ELSE s
+
+RemoveFirstMatch(s, Test(_)) ==
+    (************************************************************************)
+    (* The sequence s with the first element removed s.t. Test(e) or s      *)
+    (* iff e \notin Range(s)                                                *)
+    (************************************************************************)
+    IF \E i \in 1..Len(s): Test(s[i])
+    THEN RemoveAt(s, SelectInSeq(s, Test))
+    ELSE s
+
 -----------------------------------------------------------------------------
 
 Cons(elt, seq) == 

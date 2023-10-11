@@ -25,6 +25,8 @@ package tlc2.overrides;
  *   Markus Alexander Kuppe - initial API and implementation
  ******************************************************************************/
 
+import java.util.ArrayList;
+
 import org.apache.commons.lang3.StringUtils;
 
 import tla2sany.semantic.ExprOrOpArgNode;
@@ -534,6 +536,64 @@ public final class SequencesExt {
 			}
 		}
 		return IntValue.ValZero;
+	}
+	
+	@TLAPlusOperator(identifier = "RemoveFirst", module = "SequencesExt", warn = false)
+	public static Value removeFirst(final Value s, final Value e) {
+		final TupleValue seq = (TupleValue) s.toTuple();
+		if (seq == null) {
+			throw new EvalException(EC.TLC_MODULE_ARGUMENT_ERROR,
+					new String[] { "first", "RemoveFirst", "sequence", Values.ppr(s.toString()) });
+		}
+
+		final ArrayList<Value> val = new ArrayList<>(seq.elems.length);
+		
+		boolean found = false;
+		for (int i = 0; i < seq.elems.length; i++) {
+			if (!found && seq.elems[i].equals(e)) {
+				found = true;
+			} else {
+				val.add(seq.elems[i]);
+			}
+		}
+		
+		return new TupleValue(val.toArray(Value[]::new));
+	}
+	
+	@TLAPlusOperator(identifier = "RemoveFirstMatch", module = "SequencesExt", warn = false)
+	public static Value removeFirstMatch(final Value s, final Value test) {
+		final TupleValue seq = (TupleValue) s.toTuple();
+		if (seq == null) {
+			throw new EvalException(EC.TLC_MODULE_ARGUMENT_ERROR,
+					new String[] { "first", "RemoveFirstMatch", "sequence", Values.ppr(s.toString()) });
+		}
+		if (!(test instanceof Applicable)) {
+			throw new EvalException(EC.TLC_MODULE_ARGUMENT_ERROR,
+					new String[] { "second", "RemoveFirstMatch", "function", Values.ppr(test.toString()) });
+		}
+		final Applicable ftest = (Applicable) test;
+		final Value[] args = new Value[1];
+
+		final ArrayList<Value> val = new ArrayList<>(seq.elems.length);
+		
+		boolean found = false;
+		for (int i = 0; i < seq.elems.length; i++) {
+			if (!found) {
+				args[0] = seq.elems[i];
+				final Value bval = ftest.apply(args, EvalControl.Clear);
+				if (!(bval instanceof IBoolValue)) {
+					throw new EvalException(EC.TLC_MODULE_ARGUMENT_ERROR, new String[] { "second", "RemoveFirstMatch",
+							"boolean-valued function", Values.ppr(test.toString()) });
+				}
+				if (((BoolValue) bval).val) {
+					found = true;
+					continue;
+				}
+			}
+			val.add(seq.elems[i]);
+		}
+		
+		return new TupleValue(val.toArray(Value[]::new));
 	}
 
 	/*

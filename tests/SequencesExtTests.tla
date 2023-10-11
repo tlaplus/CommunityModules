@@ -369,5 +369,18 @@ ASSUME AssertEq(Suffixes(<<>>), {<<>>})
 ASSUME AssertEq(Suffixes(<<1>>), {<<>>, <<1>>})
 ASSUME AssertEq(Suffixes(<<1,2>>), {<<>>, <<1,2>>, <<2>>})
 ASSUME AssertEq(Suffixes(<<1,2,3>>), {<<>>, <<3>>, <<2,3>>, <<1,2,3>>})
+-----------------------------------------------------------------------------
+
+ASSUME AssertEq(RemoveFirst(<<>>, 1), <<>>)
+ASSUME AssertEq(RemoveFirst(<<1>>, 1), <<>>)
+ASSUME AssertEq(RemoveFirst(<<1,2>>, 1), <<2>>)
+ASSUME AssertEq(RemoveFirst(<<1,2,1>>, 1), <<2,1>>)
+ASSUME AssertEq(RemoveFirst(<<1,2,1,2>>, 2), <<1,1,2>>)
+
+ASSUME AssertEq(RemoveFirstMatch(<<>>, LAMBDA e: e = 1), <<>>)
+ASSUME AssertEq(RemoveFirstMatch(<<1>>, LAMBDA e: e = 1), <<>>)
+ASSUME AssertEq(RemoveFirstMatch(<<1,2>>, LAMBDA e: e = 1), <<2>>)
+ASSUME AssertEq(RemoveFirstMatch(<<1,2,1>>, LAMBDA e: e = 1), <<2,1>>)
+ASSUME AssertEq(RemoveFirstMatch(<<1,2,1,2>>, LAMBDA e: e = 2), <<1,1,2>>)
 
 =============================================================================
