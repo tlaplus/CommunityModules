@@ -535,4 +535,39 @@ public final class SequencesExt {
 		}
 		return IntValue.ValZero;
 	}
+
+	/*
+	   Suffixes(s) ==
+		  (**************************************************************************)
+		  (* The set of suffixes of the sequence s, including the empty sequence.   *)
+		  (**************************************************************************)
+		  { SubSeq(s, l, Len(s)) : l \in 1..Len(s) } \cup {<<>>}
+	 */
+	@TLAPlusOperator(identifier = "Suffixes", module = "SequencesExt", warn = false)
+	public static Value Suffixes(final Value s) {
+		final TupleValue seq = (TupleValue) s.toTuple();
+		if (seq == null) {
+			throw new EvalException(EC.TLC_MODULE_ARGUMENT_ERROR,
+					new String[] { "first", "Suffixes", "sequence", Values.ppr(s.toString()) });
+		}
+		
+		final Value[] vals = new Value[seq.elems.length + 1];
+		
+		// \cup {<<>>} 
+		vals[0] = TupleValue.EmptyTuple;
+		
+		// Add the elements in reverse order to implicitly normalize the SetEnumValue.
+		for (int i = seq.elems.length - 1; i >= 0; i--) {
+			final Value[] suffix = new Value[seq.elems.length - i];
+			System.arraycopy(seq.elems, i, suffix, 0, seq.elems.length - i);
+			
+			vals[seq.elems.length - i] = new TupleValue(suffix);
+		}
+		
+		// Decided against calling "normalize" as a safeguard, even though "vals" will
+		// be normalized. This is because "normalize," albeit performing a single pass
+		// over "vals" for a normalized input, still compares elements, which can be
+		// expensive: return new SetEnumValue(vals, false).normalize();
+		return new SetEnumValue(vals, true);
+	}
 }
