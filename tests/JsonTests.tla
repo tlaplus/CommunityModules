@@ -166,4 +166,24 @@ ASSUME(RoundTrip)
 ASSUME LET input == <<[a |-> 3], <<<<1, 2>>, "look">>, << <<[b |-> [c |-> <<4, 5, 6>>]]>> >> >>
        IN  input = ndJsonDeserialize("tests/JsonTests.ndjson")
 
+-----
+
+ASSUME AssertError(
+           "The second argument of JsonSerialize should be a sequence, but instead it is:\n[a |-> 1, b |-> TRUE]",
+           JsonSerialize("target/json/test.json", [a |-> 1, b |-> TRUE] ))
+
+ASSUME AssertError(
+           "The second argument of ndJsonSerialize should be a sequence, but instead it is:\n[a |-> 1, b |-> TRUE]",
+           ndJsonSerialize("target/json/test.json", [a |-> 1, b |-> TRUE] ))
+
+
+ASSUME AssertError(
+           "The second argument of JsonSerialize should be a sequence, but instead it is:\n42",
+           JsonSerialize("target/json/test.json", 42 ))
+
+ASSUME AssertError(
+           "The second argument of ndJsonSerialize should be a sequence, but instead it is:\n42",
+           ndJsonSerialize("target/json/test.json", 42 ))
+
+
 =============================================================================

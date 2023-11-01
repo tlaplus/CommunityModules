@@ -42,7 +42,10 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.JsonPrimitive;
 
+import tlc2.output.EC;
+import tlc2.tool.EvalException;
 import tlc2.value.IValue;
+import tlc2.value.Values;
 import tlc2.value.impl.BoolValue;
 import tlc2.value.impl.FcnLambdaValue;
 import tlc2.value.impl.FcnRcdValue;
@@ -144,7 +147,11 @@ public class Json {
    */
   @TLAPlusOperator(identifier = "ndJsonSerialize", module = "Json", warn = false)
   public synchronized static BoolValue ndSerialize(final StringValue path, final Value v) throws IOException {
-	TupleValue value = (TupleValue) v.toTuple();
+	final TupleValue value = (TupleValue) v.toTuple();
+	if (value == null) {
+		throw new EvalException(EC.TLC_MODULE_ARGUMENT_ERROR,
+				new String[] { "second", "ndJsonSerialize", "sequence", Values.ppr(v.toString()) });
+	}
     File file = new File(path.val.toString());
     if (file.getParentFile() != null) {file.getParentFile().mkdirs();} // Cannot create parent dir for relative path.
     try (BufferedWriter writer = new BufferedWriter(new FileWriter(new File(path.val.toString())))) {
@@ -164,7 +171,11 @@ public class Json {
    */
   @TLAPlusOperator(identifier = "JsonSerialize", module = "Json", warn = false)
   public synchronized static BoolValue serialize(final StringValue path, final Value v) throws IOException {
-	TupleValue value = (TupleValue) v.toTuple();
+	final TupleValue value = (TupleValue) v.toTuple();
+	if (value == null) {
+		throw new EvalException(EC.TLC_MODULE_ARGUMENT_ERROR,
+				new String[] { "second", "JsonSerialize", "sequence", Values.ppr(v.toString()) });
+	}
     File file = new File(path.val.toString());
     if (file.getParentFile() != null) {file.getParentFile().mkdirs();} // Cannot create parent dir for relative path.
     try (BufferedWriter writer = new BufferedWriter(new FileWriter(new File(path.val.toString())))) {
