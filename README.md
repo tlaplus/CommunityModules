@@ -26,6 +26,13 @@ The Modules
 | [`IOUtils.tla`](https://github.com/tlaplus/CommunityModules/blob/master/modules/IOUtils.tla) | Input/Output of TLA+ values & Spawn system commands from a spec. | [&#10004;](https://github.com/tlaplus/CommunityModules/blob/master/modules/tlc2/overrides/IOUtils.java) | [@lemmy](https://github.com/lemmy), [@lvanengelen](https://github.com/lvanengelen), [@afonsof](https://github.com/afonsof) |
 | [`Combinatorics.tla`](https://github.com/tlaplus/CommunityModules/blob/master/modules/Combinatorics.tla) | (n choose k), factorial, .... | [&#10004;](https://github.com/tlaplus/CommunityModules/blob/master/modules/tlc2/overrides/Combinatorics.java) | [@lemmy](https://github.com/lemmy) |
 | [`BagsExt.tla`](https://github.com/tlaplus/CommunityModules/blob/master/modules/BagsExt.tla) | BagAdd, BagRemove, FoldBag, ... | [&#10004;](https://github.com/tlaplus/CommunityModules/blob/master/modules/tlc2/overrides/BagsExt.java) | [@muenchnerkindl](https://github.com/muenchnerkindl), [@lemmy](https://github.com/lemmy) |
+| [`CSV.tla`](https://github.com/tlaplus/CommunityModules/blob/master/modules/CSV.tla) | Operations on CSV files  | [&#10004;](https://github.com/tlaplus/CommunityModules/blob/master/modules/tlc2/overrides/CSV.java) | [@lemmy](https://github.com/lemmy) |
+| [`DyadicRationals.tla`]() | Operations on [dyadic rational numbers](https://en.wikipedia.org/wiki/Dyadic_rational) | [&#10004;](https://github.com/tlaplus/CommunityModules/blob/master/modules/tlc2/overrides/DyadicRationals.java) | [@lemmy](https://github.com/lemmy) |
+| [`GraphViz.tla`](https://github.com/tlaplus/CommunityModules/blob/master/modules/GraphViz.tla) | Generate GraphViz file through TLC | [&#10004;](https://github.com/tlaplus/CommunityModules/blob/master/modules/tlc2/overrides/GraphViz.java) | [@lemmy](https://github.com/lemmy) |
+| [`HTML.tla`](https://github.com/tlaplus/CommunityModules/blob/master/modules/HTML.tla) | Format strings into HTML tags |  | [@afonsof](https://github.com/afonsof) |
+| [`Statistics.tla`](https://github.com/tlaplus/CommunityModules/blob/master/modules/Statistics.tla) | Statistics operators (Chi-square, etc.) | [&#10004;](https://github.com/tlaplus/CommunityModules/blob/master/modules/tlc2/overrides/Statistics.java) | [@lemmy](https://github.com/lemmy) |
+| [`VectorClocks.tla`](https://github.com/tlaplus/CommunityModules/blob/master/modules/VectorClocks.tla) | Operations related to vector clocks and causal order | [&#10004;](https://github.com/tlaplus/CommunityModules/blob/master/modules/tlc2/overrides/VectorClocks.java) | [@lemmy](https://github.com/lemmy) |
+
 
 How to use it
 -------------
