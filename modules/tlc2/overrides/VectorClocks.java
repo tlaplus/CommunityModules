@@ -1,5 +1,6 @@
 /*******************************************************************************
  * Copyright (c) 2023 Microsoft Research. All rights reserved.
+ * Copyright (c) 2023, Oracle and/or its affiliates.
  *
  * The MIT License (MIT)
  *
@@ -35,9 +36,9 @@ import java.util.Map;
 import java.util.Set;
 
 import tlc2.tool.EvalControl;
-import tlc2.value.impl.Applicable;
 import tlc2.value.impl.Enumerable;
 import tlc2.value.impl.IntValue;
+import tlc2.value.impl.OpValue;
 import tlc2.value.impl.TupleValue;
 import tlc2.value.impl.Value;
 import tlc2.value.impl.ValueEnumeration;
@@ -96,18 +97,18 @@ public class VectorClocks {
 	 * ff02d48ed2bcda065f326aa25409cb317be9feb9/js/model/modelGraph.js
 	 */
 	@TLAPlusOperator(identifier = "CausalOrder", module = "VectorClocks", warn = false)
-	public static Value causalOrder(final TupleValue v, final Applicable opClock, final Applicable opNode,
-			final Applicable opDomain) {
+	public static Value causalOrder(final TupleValue v, final OpValue opClock, final OpValue opNode,
+			final OpValue opDomain) {
 
 		// A1) Sort each node's individual log which can be totally ordered.
 		final Map<Value, LinkedList<GraphNode>> n2l = new HashMap<>();
 		for (int j = 0; j < v.elems.length; j++) {
 			final Value val = v.elems[j];
 
-			final Value nodeId = opNode.apply(new Value[] { val }, EvalControl.Clear);
-			final Value vc = opClock.apply(new Value[] { val }, EvalControl.Clear);
+			final Value nodeId = opNode.eval(new Value[] { val }, EvalControl.Clear);
+			final Value vc = opClock.eval(new Value[] { val }, EvalControl.Clear);
 			final Value nodeTime = vc.select(new Value[] { nodeId });
-			final Enumerable dom = (Enumerable) opDomain.apply(new Value[] { vc }, EvalControl.Clear).toSetEnum();
+			final Enumerable dom = (Enumerable) opDomain.eval(new Value[] { vc }, EvalControl.Clear).toSetEnum();
 
 			final LinkedList<GraphNode> list = n2l.computeIfAbsent(nodeId, k -> new LinkedList<GraphNode>());
 			list.add(new GraphNode(vc, nodeTime, dom, val));

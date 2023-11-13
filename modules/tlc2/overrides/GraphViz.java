@@ -1,5 +1,6 @@
 /*******************************************************************************
  * Copyright (c) 2023 Microsoft Research. All rights reserved.
+ * Copyright (c) 2023, Oracle and/or its affiliates.
  *
  * The MIT License (MIT)
  *
@@ -27,7 +28,7 @@ package tlc2.overrides;
 
 import tlc2.tool.EvalControl;
 import tlc2.util.FP64;
-import tlc2.value.impl.Applicable;
+import tlc2.value.impl.OpValue;
 import tlc2.value.impl.RecordValue;
 import tlc2.value.impl.SetEnumValue;
 import tlc2.value.impl.StringValue;
@@ -38,23 +39,11 @@ import tlc2.value.impl.ValueEnumeration;
 public class GraphViz {
 
 	@TLAPlusOperator(identifier = "DotDiGraph", module = "GraphViz", warn = false)
-	public static Value dotDiGraph(final Value v1, final Value v2, final Value v3) throws Exception {
+	public static Value dotDiGraph(final Value v1, final OpValue vl, final OpValue el) throws Exception {
 		if (!(v1 instanceof RecordValue) || v1.toRcd() == null) {
 			throw new Exception("An DiGraph must be a record. Value given is of type: " + v1.getClass().getName());
 		}
 		final RecordValue g = (RecordValue) v1.toRcd();
-
-		if (!(v2 instanceof Applicable)) {
-			throw new Exception(
-					"Second parameter must be an Applicable. Value given is of type: " + v2.getClass().getName());
-		}
-		final Applicable vl = (Applicable) v2;
-
-		if (!(v3 instanceof Applicable)) {
-			throw new Exception(
-					"Third parameter must be an Applicable. Value given is of type: " + v2.getClass().getName());
-		}
-		final Applicable el = (Applicable) v3;
 
 		String dotString = "digraph MyGraph {";
 
@@ -65,7 +54,7 @@ public class GraphViz {
 		Value val = null;
 		while ((val = elements.nextElement()) != null) {
 			dotString += String.format("%s[label=%s];", val.fingerPrint(FP64.New()),
-					vl.apply(new Value[] { val }, EvalControl.Clear));
+					vl.eval(new Value[] { val }, EvalControl.Clear));
 		}
 
 		// Edges
@@ -75,7 +64,7 @@ public class GraphViz {
 		while ((val = elements.nextElement()) != null) {
 			TupleValue tv = (TupleValue) val.toTuple();
 			dotString += String.format("%s->%s[label=%s];", tv.elems[0].fingerPrint(FP64.New()),
-					tv.elems[1].fingerPrint(FP64.New()), el.apply(new Value[] { tv }, EvalControl.Clear));
+					tv.elems[1].fingerPrint(FP64.New()), el.eval(new Value[] { tv }, EvalControl.Clear));
 		}
 
 		dotString += "}";

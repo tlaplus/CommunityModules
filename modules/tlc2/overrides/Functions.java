@@ -1,5 +1,6 @@
 /*******************************************************************************
  * Copyright (c) 2019 Microsoft Research. All rights reserved. 
+ * Copyright (c) 2023, Oracle and/or its affiliates.
  *
  * The MIT License (MIT)
  * 
@@ -31,10 +32,10 @@ import tlc2.output.EC;
 import tlc2.tool.EvalControl;
 import tlc2.tool.EvalException;
 import tlc2.value.Values;
-import tlc2.value.impl.Applicable;
 import tlc2.value.impl.BoolValue;
 import tlc2.value.impl.Enumerable;
 import tlc2.value.impl.FcnRcdValue;
+import tlc2.value.impl.FunctionValue;
 import tlc2.value.impl.OpValue;
 import tlc2.value.impl.SetOfRcdsValue;
 import tlc2.value.impl.TupleValue;
@@ -123,11 +124,11 @@ public final class Functions {
 		// Can assume type of OpValue because tla2sany.semantic.Generator.java will
 		// make sure that the first parameter is a binary operator.
 		
-		if (!(fun instanceof Applicable)) {
+		if (!(fun instanceof FunctionValue)) {
 			throw new EvalException(EC.TLC_MODULE_ARGUMENT_ERROR,
 					new String[] { "third", "FoldFunction", "function", Values.ppr(fun.toString()) });
 		}
-		return foldFunctionOnSet(op, base, fun, ((Applicable) fun).getDomain());
+		return foldFunctionOnSet(op, base, fun, ((FunctionValue) fun).getDomain());
 	}
 
 	@TLAPlusOperator(identifier = "FoldFunctionOnSet", module = "Functions", warn = false)
@@ -135,11 +136,11 @@ public final class Functions {
 		// Can assume type of OpValue because tla2sany.semantic.Generator.java will
 		// make sure that the first parameter is a binary operator.
 
-		if (!(v3 instanceof Applicable)) {
+		if (!(v3 instanceof FunctionValue)) {
 			throw new EvalException(EC.TLC_MODULE_ARGUMENT_ERROR,
 					new String[] { "third", "FoldFunctionOnSet", "function", Values.ppr(v3.toString()) });
 		}
-		final Applicable fun = (Applicable) v3;
+		final FunctionValue fun = (FunctionValue) v3;
 		if (!(v4 instanceof Enumerable)) {
 			throw new EvalException(EC.TLC_MODULE_ARGUMENT_ERROR,
 					new String[] { "fourth", "FoldFunctionOnSet", "set", Values.ppr(v4.toString()) });
@@ -152,10 +153,10 @@ public final class Functions {
 
 		final ValueEnumeration ve = subdomain.elements();
 
-		Value v = null;
+		Value v;
 		while ((v = ve.nextElement()) != null) {
-			args[0] = fun.select(v);
-			args[1] = op.apply(args, EvalControl.Clear);
+			args[0] = fun.apply(v, EvalControl.Clear);
+			args[1] = op.eval(args, EvalControl.Clear);
 		}
 		
 		return args[1];

@@ -1,5 +1,6 @@
 /*******************************************************************************
  * Copyright (c) 2020 Microsoft Research. All rights reserved. 
+ * Copyright (c) 2023, Oracle and/or its affiliates.
  *
  * The MIT License (MIT)
  * 
@@ -30,7 +31,6 @@ import tlc2.tool.EvalControl;
 import tlc2.tool.EvalException;
 import tlc2.value.IBoolValue;
 import tlc2.value.Values;
-import tlc2.value.impl.Applicable;
 import tlc2.value.impl.BoolValue;
 import tlc2.value.impl.Enumerable;
 import tlc2.value.impl.EnumerableValue;
@@ -49,25 +49,19 @@ public class FiniteSetsExt {
 	}
 
 	@TLAPlusOperator(identifier = "Quantify", module = "FiniteSetsExt", warn = false)
-	public static Value quantify(final Value set, final Value pred) {
+	public static Value quantify(final Value set, final OpValue test) {
 		if (!(set instanceof EnumerableValue)) {
 			throw new EvalException(EC.TLC_MODULE_ARGUMENT_ERROR,
 					new String[] { "first", "Quantify", "set", Values.ppr(set.toString()) });
 		}
-		if (!(pred instanceof Applicable)) {
-			throw new EvalException(EC.TLC_MODULE_ARGUMENT_ERROR,
-					new String[] { "second", "Quantify", "boolean-valued operator", Values.ppr(pred.toString()) });
-		}
-		
 		
 		int size = 0;
-		final Applicable test = (Applicable) pred;
 		final ValueEnumeration enumSet = ((SetEnumValue) set.toSetEnum()).elements();
         Value elem;
         final Value[] args = new Value[1];
 		while ((elem = enumSet.nextElement()) != null) {
 			args[0] = elem;
-			Value val = test.apply(args, EvalControl.Clear);
+			Value val = test.eval(args, EvalControl.Clear);
 			if (val instanceof IBoolValue) {
 				if (((BoolValue) val).val) {
 					size++;
@@ -112,10 +106,10 @@ public class FiniteSetsExt {
 		
 		final ValueEnumeration ve = set.elements();
 
-		Value v = null;
+		Value v;
 		while ((v = ve.nextElement()) != null) {
 			args[0] = v;
-			args[1] = op.apply(args, EvalControl.Clear);
+			args[1] = op.eval(args, EvalControl.Clear);
 		}
 		
 		return args[1];
