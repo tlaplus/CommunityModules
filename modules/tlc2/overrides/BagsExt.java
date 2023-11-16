@@ -1,5 +1,6 @@
 /*******************************************************************************
  * Copyright (c) 2022 Inria. All rights reserved. 
+ * Copyright (c) 2023, Oracle and/or its affiliates.
  *
  * The MIT License (MIT)
  * 
@@ -64,7 +65,7 @@ public final class BagsExt {
 									+ Values.ppr(domain[i].toString()) + ":>" + Values.ppr(values[i].toString()) + ")" });
 			}
 			for (int j = 0; j < ((IntValue) values[i]).val; j++) {
-				acc[0] = op.apply(acc, EvalControl.Clear);
+				acc[0] = op.eval(acc, EvalControl.Clear);
 			}
 		}
 
