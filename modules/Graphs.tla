@@ -61,11 +61,18 @@ IsStronglyConnected(G) ==
 -----------------------------------------------------------------------------
 IsTreeWithRoot(G, r) ==
   /\ IsDirectedGraph(G)
-  /\ \A e \in G.edge : /\ e[1] # r
-                       /\ \A f \in G.edge : (e[1] = f[1]) => (e = f)
-  /\ \A n \in G.node : AreConnectedIn(n, r, G)
+  /\ (Cardinality(G.node) = 1 => G.node = {r})
+     \* Handles single-node tree case
+  /\ \A n \in G.node \ {r} : \E! f \in G.edge : f[2] = n
+     \* Every node except the root has exactly one incoming edge
+  /\ \A n \in G.node \ {r} : AreConnectedIn(r, n, G)
+     \* Every node other than the root is reachable from the root
+  /\ \A n \in G.node \ {r} : ~\E path \in SimplePath(G) : path[1] = n /\ path[Len(path)] = n
+     \* No cycles: No path from a node to itself
+
 =============================================================================
 \* Modification History
+\* Last modified Sun Dec 24 14:31:00 CET 2023 by Younes Akhouayri
 \* Last modified Sun Mar 06 18:10:34 CET 2022 by Stephan Merz
 \* Last modified Tue Dec 21 15:55:45 PST 2021 by Markus Kuppe
 \* Created Tue Jun 18 11:44:08 PST 2002 by Leslie Lamport
