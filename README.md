@@ -43,7 +43,7 @@ Just copy & paste the snippet, the operators, or the set of modules you are inte
 
 Alternatively, clone this repository and pass ```-DTLA-Library=/path/to/CommunityModules/modules``` when running TLC.
 
-Another option is to download a [library archive](https://github.com/tlaplus/CommunityModules/releases) and add it to TLC's or the Toolbox's *TLA+ library path*. The advantage of doing this is that TLC will evaluate an operator faster if the operator comes with a Java implementation (see e.g. [SequencesExt.Java](https://github.com/tlaplus/CommunityModules/blob/master/modules/tlc2/overrides/SequencesExt.java)). The latest release is at the stable URL https://github.com/tlaplus/CommunityModules/releases/latest/download/CommunityModules.jar.
+Another option is to download a [library archive](https://github.com/tlaplus/CommunityModules/releases) and add it to TLC's or the Toolbox's *TLA+ library path*. The advantage of doing this is that TLC will evaluate an operator faster if the operator comes with a Java implementation (see e.g. [SequencesExt.Java](https://github.com/tlaplus/CommunityModules/blob/master/modules/tlc2/overrides/SequencesExt.java)). The latest release is at the stable URL https://github.com/tlaplus/CommunityModules/releases/latest/download/CommunityModules-deps.jar.
 
 If you are using the Toolbox, add the library archive under `File > Preferences > TLA+ Preferences > TLA+ library path locations`.
 [![Screencast how to install the CommunityModules into the TLA+ Toolbox](https://img.youtube.com/vi/w9t6JnmxV2E/0.jpg)](https://www.youtube.com/watch?v=w9t6JnmxV2E)
