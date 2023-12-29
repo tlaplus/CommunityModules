@@ -63,8 +63,9 @@ IsTreeWithRoot(G, r) ==
   /\ IsDirectedGraph(G)
   /\ (Cardinality(G.node) = 1 => G.node = {r})
      \* Handles single-node tree case
-  /\ \A n \in G.node \ {r} : \E! f \in G.edge : f[2] = n
-     \* Every node except the root has exactly one incoming edge
+  /\ \A n \in G.node \ {r} :
+      LET incomingEdges == {f \in G.edge : f[2] = n}
+      IN Cardinality(incomingEdges) = 1
   /\ \A n \in G.node \ {r} : AreConnectedIn(r, n, G)
      \* Every node other than the root is reachable from the root
   /\ \A n \in G.node \ {r} : ~\E path \in SimplePath(G) : path[1] = n /\ path[Len(path)] = n
