@@ -1,5 +1,5 @@
 ------------------------- MODULE FunctionsTests -------------------------
-EXTENDS Functions, Naturals, TLC, TLCExt, FiniteSets, Sequences
+EXTENDS Functions, Integers, TLC, TLCExt, FiniteSets, Sequences
 
 ASSUME LET T == INSTANCE TLC IN T!PrintT("FunctionsTests")
 
@@ -96,5 +96,15 @@ ASSUME
 ASSUME
 	LET F == (0 :> "n1" @@ 2 :> "n2" @@ 1 :> "n3")
 	IN AntiFunction(AntiFunction(F)) = F
+
+ASSUME
+    LET f == ("a" :> 0 @@ "b" :> 1 @@ "c" :> 2)
+        g == ("a" :> 1 @@ "b" :> 1 @@ "c" :> 3)
+    IN Pointwise(f,g,+) = ("a" :> 1 @@ "b" :> 2 @@ "c" :> 5 )
+
+ASSUME
+    LET f == ("a" :> 1 @@ "b" :> 1 @@ "c" :> 2)
+        g == ("a" :> 1 @@ "b" :> 1 @@ "c" :> 3)
+    IN Pointwise(f,g,-) = ("a" :> 0 @@ "b" :> 0 @@ "c" :> (-1) )
 
 =============================================================================

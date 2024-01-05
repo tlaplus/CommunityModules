@@ -52,6 +52,16 @@ RestrictValues(f, Test(_)) ==
 (***************************************************************************)
 Range(f) == { f[x] : x \in DOMAIN f }
 
+(***************************************************************************)
+(* Assuming DOMAIN f \subseteq DOMAIN g, apply the binary operation T to   *)
+(* the corresponding elements of the two functions f and g.                *)
+(*                                                                         *)
+(* Example:                                                                *)
+(*   LET f == ("a" :> 0 @@ "b" :> 1 @@ "c" :> 2)                           *)
+(*       g == ("a" :> 1 @@ "b" :> 1 @@ "c" :> 3)                           *)
+(*   IN Pointwise(f,g,+) = ("a" :> 1 @@ "b" :> 2 @@ "c" :> 5 )             *)
+(***************************************************************************)
+Pointwise(f, g, T(_,_)) == [ e \in DOMAIN f |-> T(f[e], g[e]) ]
 
 (***************************************************************************)
 (* The inverse of a function.                                              *)
