@@ -582,8 +582,8 @@ public final class SequencesExt {
 	public static Value Suffixes(final Value s) {
 		final TupleValue seq = (TupleValue) s.toTuple();
 		if (seq == null) {
-			throw new EvalException(EC.TLC_MODULE_ARGUMENT_ERROR,
-					new String[] { "first", "Suffixes", "sequence", Values.ppr(s.toString()) });
+			throw new EvalException(EC.TLC_MODULE_ONE_ARGUMENT_ERROR,
+					new String[] { "Suffixes", "sequence", Values.ppr(s.toString()) });
 		}
 		
 		final Value[] vals = new Value[seq.elems.length + 1];
@@ -604,5 +604,34 @@ public final class SequencesExt {
 		// over "vals" for a normalized input, still compares elements, which can be
 		// expensive: return new SetEnumValue(vals, false).normalize();
 		return new SetEnumValue(vals, true);
+	}
+
+	/*
+	 * AllSubSeqs(s) ==
+	 *    { FoldFunction(Snoc, <<>>, [ i \in D |-> s[i] ]) : D \in SUBSET DOMAIN s }
+	 */
+	@TLAPlusOperator(identifier = "AllSubSeqs", module = "SequencesExt", warn = false)
+	public static Value AllSubSeqs(final Value s) {
+		final TupleValue seq = (TupleValue) s.toTuple();
+		if (seq == null) {
+			throw new EvalException(EC.TLC_MODULE_ONE_ARGUMENT_ERROR,
+					new String[] { "AllSubSeqs", "sequence", Values.ppr(s.toString()) });
+		}
+
+		final int n = seq.elems.length;
+		final Value[] vals = new Value[(int) Math.pow(2, n)];
+
+		for (int i = 0; i < (1 << n); i++) {
+			int k = 0;
+			final Value[] subSeq = new Value[Long.bitCount(i)];
+			for (int j = 0; j < n; j++) {
+				if ((i & (1 << j)) != 0) {
+					subSeq[k++] = seq.elems[j];
+				}
+			}
+			vals[i] = new TupleValue(subSeq);
+		}
+
+		return new SetEnumValue(vals, false);
 	}
 }
