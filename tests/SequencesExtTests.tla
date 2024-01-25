@@ -243,6 +243,12 @@ ASSUME AllSubSeqs(<<"a","c","b","d","b">>) =
     <<"c","b","d">>, <<"c","b","b">>, <<"b","d","b">>, <<"a","c","d","b">>, <<"a","c","b","d">>, <<"a","c","b","b">>, <<"a","b","d","b">>,
     <<"c","b","d","b">>, <<"a","c","b","d","b">> }
 
+AllSubSeqsPure(s) ==
+	{ FoldFunction(Snoc, <<>>, [ i \in D |-> s[i] ]) : D \in SUBSET DOMAIN s }
+
+ASSUME \A s \in {<<>>, <<1>>, <<1,1>>, <<1,1,1>>, <<1,2,3,4>>, <<"a","c","b","d","b">>}:
+    AllSubSeqs(s) = AllSubSeqsPure(s)
+
 -----------------------------------------------------------------------------
 
 ASSUME ReplaceFirstSubSeq(<<>>,<<>>,<<>>) = <<>>
