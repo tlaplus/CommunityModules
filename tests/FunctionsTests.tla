@@ -107,10 +107,13 @@ ASSUME
         g == ("a" :> 1 @@ "b" :> 1 @@ "c" :> 3)
     IN Pointwise(f,g,-) = ("a" :> 0 @@ "b" :> 0 @@ "c" :> (-1) )
 
+ASSUME IsRestriction(<<>>, <<>>)
+ASSUME IsRestriction(<<>>, [one |-> 1])
 ASSUME IsRestriction([one |-> 1], [one |-> 1, two |-> 2])
 ASSUME IsRestriction([one |-> 1], [one |-> 1])
-ASSUME ~IsRestriction([one |-> 1, two |-> 2], [one |-> 1, two |-> 3])
+ASSUME ~IsRestriction([one |-> 1], <<>>)
 ASSUME ~IsRestriction([one |-> 1], [two |-> 2])
 ASSUME ~IsRestriction([one |-> 1, two |-> 2], [two |-> 2])
+ASSUME ~IsRestriction([one |-> 1, two |-> 2], [one |-> 1, two |-> 3])
 
 =============================================================================

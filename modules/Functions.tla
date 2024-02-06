@@ -46,6 +46,23 @@ RestrictValues(f, Test(_)) ==
   IN  Restrict(f, S)
 
 (***************************************************************************)
+(* Check if a function narrow is a restriction of a function wide, i.e.    *)
+(* Is the domain of narrow a subset of that of wide, and does the          *)
+(* projection of wide on the domain of narrow have the same image as       *)
+(* narrow does.                                                            *)
+(*                                                                         *)
+(* Examples:                                                               *)
+(*   IsRestriction([one |-> 1], [one |-> 1, two |-> 2])                    *)
+(*   IsRestriction([one |-> 1], [one |-> 1])                               *)
+(*  ~IsRestriction([one |-> 1, two |-> 2], [one |-> 1, two |-> 3])         *)
+(*  ~IsRestriction([one |-> 1], [2 |-> two])                               *)
+(*  ~IsRestriction([one |-> 1, two |-> 2], [two |-> 2])                    *)
+(***************************************************************************)
+IsRestriction(narrow, wide) ==
+    /\ DOMAIN narrow \subseteq DOMAIN wide 
+    /\ \A x \in DOMAIN narrow \intersect DOMAIN wide: narrow[x] = wide[x]
+
+(***************************************************************************)
 (* Range of a function.                                                    *)
 (* Note: The image of a set under function f can be defined as             *)
 (*       Range(Restrict(f,S)).                                             *)
@@ -149,23 +166,6 @@ FoldFunctionOnSet(op(_,_), base, fun, indices) ==
   (*  FoldFunctionOnSet(LAMBDA x,y: {x} \cup y, {}, <<1,2>>, {}) = {}        *)
   (***************************************************************************)
   MapThenFoldSet(op, base, LAMBDA i : fun[i], LAMBDA s: CHOOSE x \in s : TRUE, indices)
-
-  (***************************************************************************)
-  (* Check if a function narrow is a restriction of a function wide, i.e.    *)
-  (* Is the domain of narrow a subset of that of wide, and does the          *)
-  (* projection of wide on the domain of narrow have the same image as       *)
-  (* narrow does.                                                            *)
-  (*                                                                         *)
-  (* Examples:                                                               *)
-  (*   IsRestriction([one |-> 1], [one |-> 1, two |-> 2])                    *)
-  (*   IsRestriction([one |-> 1], [one |-> 1])                               *)
-  (*  ~IsRestriction([one |-> 1, two |-> 2], [one |-> 1, two |-> 3])         *)
-  (*  ~IsRestriction([one |-> 1], [2 |-> two])                               *)
-  (*  ~IsRestriction([one |-> 1, two |-> 2], [two |-> 2])                    *)
-  (***************************************************************************)
-IsRestriction(narrow, wide) ==
-    /\ DOMAIN narrow \subseteq DOMAIN wide
-    /\ \A x \in DOMAIN narrow: narrow[x] = wide[x]
 
 =============================================================================
 \* Modification History
