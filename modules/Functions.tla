@@ -150,6 +150,23 @@ FoldFunctionOnSet(op(_,_), base, fun, indices) ==
   (***************************************************************************)
   MapThenFoldSet(op, base, LAMBDA i : fun[i], LAMBDA s: CHOOSE x \in s : TRUE, indices)
 
+  (***************************************************************************)
+  (* Check if a function narrow is a restriction of a function wide, i.e.    *)
+  (* Is the domain of narrow a subset of that of wide, and does the          *)
+  (* projection of wide on the domain of narrow have the same image as       *)
+  (* narrow does.                                                            *)
+  (*                                                                         *)
+  (* Examples:                                                               *)
+  (*   IsRestriction([one |-> 1], [one |-> 1, two |-> 2])                    *)
+  (*   IsRestriction([one |-> 1], [one |-> 1])                               *)
+  (*  ~IsRestriction([one |-> 1, two |-> 2], [one |-> 1, two |-> 3])         *)
+  (*  ~IsRestriction([one |-> 1], [2 |-> two])                               *)
+  (*  ~IsRestriction([one |-> 1, two |-> 2], [two |-> 2])                    *)
+  (***************************************************************************)
+IsRestriction(narrow, wide) ==
+    /\ DOMAIN narrow \subseteq DOMAIN wide
+    /\ \A x \in DOMAIN narrow: narrow[x] = wide[x]
+
 =============================================================================
 \* Modification History
 \* Last modified Tue Nov 01 08:46:11 CET 2022 by merz
