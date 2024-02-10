@@ -13,6 +13,18 @@ FoldSet(op(_,_), base, set) ==
    (*************************************************************************)
    MapThenFoldSet(op, base, LAMBDA x : x, LAMBDA s : CHOOSE x \in s : TRUE, set)
 
+MapThenSumSet(op(_), set) ==
+   (*************************************************************************)
+   (* Calculate the sum of projections of the elements in a set.            *)
+   (*                                                                       *)
+   (* Example:                                                              *)
+   (*         MapThenSumSet(                                                *)
+   (*             LAMBDA e : e.n,                                           *)
+   (*             {[n |-> 0], [n |-> 1], [n |-> 2]}                         *)
+   (*         ) = 3                                                         *)
+   (*************************************************************************)
+   MapThenFoldSet(+, 0, op, LAMBDA s : CHOOSE x \in s : TRUE, set)
+
 SumSet(set) ==
    (*************************************************************************)
    (* Calculate the sum of the elements in set.                             *)
