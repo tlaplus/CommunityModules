@@ -1,8 +1,7 @@
 --------------------------- MODULE FiniteSetsExt ---------------------------
+EXTENDS Folds, Functions \* Replace with LOCAL INSTANCE when https://github.com/tlaplus/tlapm/issues/119 is resolved.
 LOCAL INSTANCE Naturals
 LOCAL INSTANCE FiniteSets
-LOCAL INSTANCE Functions
-LOCAL INSTANCE Folds
 
 FoldSet(op(_,_), base, set) ==
    (*************************************************************************)
@@ -12,18 +11,6 @@ FoldSet(op(_,_), base, set) ==
    (*         FoldSet(LAMBA x,y : x + y, 0, 0 .. 10) = 55                   *)
    (*************************************************************************)
    MapThenFoldSet(op, base, LAMBDA x : x, LAMBDA s : CHOOSE x \in s : TRUE, set)
-
-MapThenSumSet(op(_), set) ==
-   (*************************************************************************)
-   (* Calculate the sum of projections of the elements in a set.            *)
-   (*                                                                       *)
-   (* Example:                                                              *)
-   (*         MapThenSumSet(                                                *)
-   (*             LAMBDA e : e.n,                                           *)
-   (*             {[n |-> 0], [n |-> 1], [n |-> 2]}                         *)
-   (*         ) = 3                                                         *)
-   (*************************************************************************)
-   MapThenFoldSet(+, 0, op, LAMBDA s : CHOOSE x \in s : TRUE, set)
 
 SumSet(set) ==
    (*************************************************************************)
@@ -50,6 +37,17 @@ ReduceSet(op(_, _), set, acc) ==
    (*************************************************************************)
    FoldSet(op, acc, set)
 
+MapThenSumSet(op(_), set) ==
+   (*************************************************************************)
+   (* Calculate the sum of projections of the elements in a set.            *)
+   (*                                                                       *)
+   (* Example:                                                              *)
+   (*         MapThenSumSet(                                                *)
+   (*             LAMBDA e : e.n,                                           *)
+   (*             {[n |-> 0], [n |-> 1], [n |-> 2]}                         *)
+   (*         ) = 3                                                         *)
+   (*************************************************************************)
+   MapThenFoldSet(+, 0, op, LAMBDA s : CHOOSE x \in s : TRUE, set)
 
 FlattenSet(S) ==
    UNION S

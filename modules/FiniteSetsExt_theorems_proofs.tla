@@ -1,5 +1,5 @@
 ---- MODULE FiniteSetsExt_theorems_proofs ----
-EXTENDS FiniteSetsExt, FiniteSets, Functions, FunctionTheorems, FiniteSetTheorems, TLAPS \*, Folds
+EXTENDS FiniteSetsExt, FiniteSets, Functions, FunctionTheorems, FiniteSetTheorems, TLAPS
 (*
 Initial hints are found [Proofs on recursive functions](https://groups.google.com/g/tlaplus/c/eHJYc_voNB0).
 The general idea is taken from `FiniteSetTheorems_proofs.tla'.
