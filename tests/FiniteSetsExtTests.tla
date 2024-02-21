@@ -95,15 +95,15 @@ ASSUME FoldSet(LAMBDA x,y : x + y, 0, 0 .. 10000) = 50005000
 ASSUME ChooseUnique({2, 3, 4, 5}, LAMBDA x : x % 3 = 1) = 4
 
 ASSUME AssertError(
-           "Attempted to compute the value of an expression of form\nCHOOSE x \\in S: P, but no element of S satisfied P.\nline 124, col 26 to line 125, col 64 of module FiniteSetsExt", 
+           "Attempted to compute the value of an expression of form\nCHOOSE x \\in S: P, but no element of S satisfied P.\nline 134, col 26 to line 135, col 64 of module FiniteSetsExt", 
            ChooseUnique({2, 3, 4, 5}, LAMBDA x : TRUE))
 
 ASSUME AssertError(
-           "Attempted to compute the value of an expression of form\nCHOOSE x \\in S: P, but no element of S satisfied P.\nline 124, col 26 to line 125, col 64 of module FiniteSetsExt", 
+           "Attempted to compute the value of an expression of form\nCHOOSE x \\in S: P, but no element of S satisfied P.\nline 134, col 26 to line 135, col 64 of module FiniteSetsExt", 
            ChooseUnique({}, LAMBDA x : TRUE))
 
 ASSUME AssertError(
-           "Attempted to compute the value of an expression of form\nCHOOSE x \\in S: P, but no element of S satisfied P.\nline 124, col 26 to line 125, col 64 of module FiniteSetsExt", 
+           "Attempted to compute the value of an expression of form\nCHOOSE x \\in S: P, but no element of S satisfied P.\nline 134, col 26 to line 135, col 64 of module FiniteSetsExt", 
            ChooseUnique({2, 3, 4, 5}, LAMBDA x : FALSE))
 
 -----------------------------------------------------------------------------
