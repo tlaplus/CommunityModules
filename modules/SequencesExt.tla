@@ -332,6 +332,20 @@ FoldRight(op(_, _), seq, base) ==
                  LAMBDA S : Min(S),
                  DOMAIN seq)
 
+FoldLeftDomain(op(_, _), base, seq) == 
+  (***************************************************************************)
+  (* FoldLeftDomain folds op on the domain of seq, i.e., the seq's indices,  *)
+  (* starting at the lowest index.                                           *) 
+  (***************************************************************************)
+  FoldLeft(op, base, [i \in DOMAIN seq |-> i])
+
+FoldRightDomain(op(_, _), seq, base) == 
+  (***************************************************************************)
+  (* FoldRightDomain folds op on the domain of seq, i.e., the seq's indices, *)
+  (* starting at the highest index.                                          *) 
+  (***************************************************************************)
+  FoldRight(op, [i \in DOMAIN seq |-> i], base)
+
 -----------------------------------------------------------------------------
 
 FlattenSeq(seqs) ==

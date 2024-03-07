@@ -304,6 +304,44 @@ public final class SequencesExt {
 
 		return args[1];
 	}
+
+	@TLAPlusOperator(identifier = "FoldLeftDomain", module = "SequencesExt", warn = false)
+	public static Value foldLeftDomain(final OpValue op, final Value base, final Value val) {
+		final TupleValue tv = (TupleValue) val.toTuple();
+		if (tv == null) {
+			throw new EvalException(EC.TLC_MODULE_ARGUMENT_ERROR,
+					new String[] { "third", "FoldLeftDomain", "sequence", Values.ppr(val.toString()) });
+		}
+
+		final Value[] args = new Value[2];
+		args[0] = base;
+
+		for (int i = 0; i < tv.size(); i++) {
+			args[1] = IntValue.gen(i+1);
+			args[0] = op.eval(args, EvalControl.Clear);
+		}
+
+		return args[0];
+	}
+
+	@TLAPlusOperator(identifier = "FoldRightDomain", module = "SequencesExt", warn = false)
+	public static Value foldRightDomain(final OpValue op, final Value val, final Value base) {
+		final TupleValue tv = (TupleValue) val.toTuple();
+		if (tv == null) {
+			throw new EvalException(EC.TLC_MODULE_ARGUMENT_ERROR,
+					new String[] { "second", "FoldRightDomain", "sequence", Values.ppr(val.toString()) });
+		}
+
+		final Value[] args = new Value[2];
+		args[1] = base;
+
+		for (int i = tv.size() - 1; i >= 0; i--) {
+			args[0] = IntValue.gen(i+1);
+			args[1] = op.eval(args, EvalControl.Clear);
+		}
+
+		return args[1];
+	}
 	
 	@Evaluation(definition = "ReplaceFirstSubSeq", module = "SequencesExt", warn = false, silent = true)
 	public static Value replaceFirstSubSeq(final Tool tool, final ExprOrOpArgNode[] args, final Context c,

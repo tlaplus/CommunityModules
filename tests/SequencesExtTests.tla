@@ -407,4 +407,8 @@ ASSUME AssertEq(RemoveFirstMatch(<<1,2>>, LAMBDA e: e = 1), <<2>>)
 ASSUME AssertEq(RemoveFirstMatch(<<1,2,1>>, LAMBDA e: e = 1), <<2,1>>)
 ASSUME AssertEq(RemoveFirstMatch(<<1,2,1,2>>, LAMBDA e: e = 2), <<1,1,2>>)
 
+-----------------------------------------------------------------------------
+
+ASSUME LET seq == <<"a","b","c","d","e">> IN AssertEq(FoldLeftDomain (LAMBDA acc, idx : acc \o seq[idx], "", seq), "abcde")
+ASSUME LET seq == <<"a","b","c","d","e">> IN AssertEq(FoldRightDomain(LAMBDA idx, acc : acc \o seq[idx], seq, ""), "edcba")
 =============================================================================
