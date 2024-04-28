@@ -138,7 +138,7 @@ ExistsBijection(S,T)  == Bijection(S,T) # {}
 
 FoldFunction(op(_,_), base, fun) ==
   (***************************************************************************)
-  (* Applies the binary function op on all elements of seq in arbitrary      *)
+  (* Applies the binary function op on all elements of fun in arbitrary      *)
   (* order starting with op(f[k], base). The resulting function is:          *)
   (*    op(f[i],op(f[j], ..., op(f[k],base) ...))                            *)
   (*                                                                         *)
@@ -153,7 +153,7 @@ FoldFunction(op(_,_), base, fun) ==
 
 FoldFunctionOnSet(op(_,_), base, fun, indices) ==
   (***************************************************************************)
-  (* Applies the binary function op on the given indices of seq in arbitrary *)
+  (* Applies the binary function op on the given indices of fun in arbitrary *)
   (* order starting with op(f[k], base). The resulting function is:          *)
   (*    op(f[i],op(f[j], ..., op(f[k],base) ...))                            *)
   (*                                                                         *)
