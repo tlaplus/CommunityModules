@@ -42,8 +42,6 @@ SetToSortSeq(S, op(_,_)) ==
   (* Convert a set to a sorted sequence that contains all the elements of   *)
   (* the set exactly once, and contains no other elements.                  *)
   (**************************************************************************)
-  \* Not defined via CHOOSE like SetToSeq but with an additional conjunct,
-  \* because this variant works efficiently without a dedicated TLC override.
   SortSeq(SetToSeq(S), op)
 
 SetToAllKPermutations(S) ==
