@@ -4,7 +4,8 @@
 (* Add new tests (the ones with ASSUME statements) *)
 (* to the comma-separated list of EXTENDS below.   *)
 (***************************************************)
-EXTENDS SequencesExtTests,
+EXTENDS RelationTests,
+        SequencesExtTests,
         SVGTests,
         JsonTests,
         BitwiseTests,
