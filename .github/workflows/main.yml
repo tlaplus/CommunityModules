@@ -78,3 +78,10 @@ jobs:
         asset_path: dist/CommunityModules-deps.jar
         asset_name: CommunityModules-deps.jar
         asset_content_type: application/zip
+    - name: Repository Dispatch
+      uses: peter-evans/repository-dispatch@v3
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        repository: tlaplus/tlaplus
+        event-type: tlaplus-dispatch
+        client-payload: '{"source": "CommunityModules"}'
