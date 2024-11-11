@@ -61,17 +61,9 @@ IsStronglyConnected(G) ==
 -----------------------------------------------------------------------------
 IsTreeWithRoot(G, r) ==
   /\ IsDirectedGraph(G)
-  /\ r \in G.node
-  /\ \* root has no incoming edges
-     \A n \in G.node : <<n, r>> \notin G.edge
-  /\ \* every non-root node has exactly one incoming edge
-     \A n \in G.node \ {r} : 
-        /\ \E m \in G.node : <<m, n>> \in G.edge
-        /\ \A x \in G.node : <<x, n>> \in G.edge => x = m
-  /\ \* graph is connected from the root
-     \A n \in G.node \ {r} : AreConnectedIn(r, n, G)
-  /\ \* no cycles
-     \A n \in G.node : ~AreConnectedIn(n, n, G)
+  /\ \A e \in G.edge : /\ e[2] # r
+                       /\ \A f \in G.edge : (e[2] = f[2]) => (e = f)
+  /\ \A n \in G.node : AreConnectedIn(n, r, G)
 
 =============================================================================
 \* Modification History
