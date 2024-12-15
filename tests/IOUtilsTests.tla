@@ -165,5 +165,35 @@ TXTDeserializeResult == Deserialize(file, [format |-> "TXT", charset |-> "UTF-8"
 ASSUME(LET ret == TXTDeserializeResult IN /\ ret.exitValue = 0
                                           /\ ret.stdout = payloadTXT
                                           /\ ret.stderr = "")
+                                          
+---------------------------------------------------------------------------------------------------------------------------                                      
+
+\* Simple round-trip test with a variety of different small structures
+
+file2 == "/tmp/bin-serialize-test.vos"
+payloadBIN == <<
+	"foo",
+	{"bar"},
+	42,
+	1..3,
+	[x |-> 1, y |-> 2]
+>>
+
+ASSUME /\ IOSerialize(payloadBIN, file2, FALSE)
+       /\ LET value == IODeserialize(file2, FALSE)
+          IN  value = payloadBIN
+
+\* Test: can we read a string TLC has never encountered before?
+\* !Danger: writing the string literal at any point in the TLA+ breaks the test!
+
+\* The bug this tests for is that TLC can only read string values that are already interned in its
+\* in-memory string table. If the string is so much as in the spec at all, TLC can load it.
+\* If the string has was never interned however, then TLC would crash when accessing the value
+\* (e.g., printing it), because the string table gives `null` on lookup.
+\* The weird long name is chosen to avoid any other tests mentioning this string.
+ASSUME LET strValue == IODeserialize("tests/Hippopotomonstrosesquippedaliophobia.vos", FALSE)
+       IN /\ PrintT(strValue)
+          \* Intended value (in a comment, so not "seen" by TLC)
+          \* /\ strValue = "Hippopotomonstrosesquippedaliophobia"
 
 =============================================================================
