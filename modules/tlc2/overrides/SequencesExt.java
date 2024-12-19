@@ -28,8 +28,6 @@ package tlc2.overrides;
 
 import java.util.ArrayList;
 
-import org.apache.commons.lang3.StringUtils;
-
 import tla2sany.semantic.ExprOrOpArgNode;
 import tlc2.output.EC;
 import tlc2.tool.EvalControl;
@@ -357,7 +355,11 @@ public final class SequencesExt {
 			
 			if(ss.equals("")) { return new StringValue(sr+st); }
 			
-			return new StringValue(StringUtils.replaceOnce(st, ss, sr));
+			try {				
+				return new StringValue(org.apache.commons.lang3.StringUtils.replaceOnce(st, ss, sr));
+			} catch (NoClassDefFoundError e) {
+				return null; // Handle with pure TLA+ definition of operator.
+			}
 		}
 		
 		return null; // Non-string functions handled by pure TLA+ definition of operator.
@@ -384,7 +386,7 @@ public final class SequencesExt {
 				return new StringValue(result.toString());
 			}
 			
-			return new StringValue(StringUtils.replace(st, ss, sr));
+			return new StringValue(org.apache.commons.lang3.StringUtils.replace(st, ss, sr));
 		}
 		
 		return null; // Non-string functions handled by pure TLA+ definition of operator.
