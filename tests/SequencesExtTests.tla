@@ -291,6 +291,54 @@ ASSUME(ReplaceFirstSubSeq("\r", "%%", "Properly escape the %% char") = "Properly
 ASSUME ReplaceFirstSubSeq("\\\\", "\\", "Properly escape the \\quotes") = "Properly escape the \\\\quotes"
 ASSUME ReplaceFirstSubSeq("replaces", "%pattern%", "This %pattern% the pattern") = "This replaces the pattern"
 
+ReplaceFirstSubSeqPure(r, s, t) ==
+  (**************************************************************************)
+  (* The sequence  t  with its subsequence  s  replaced by the sequence  r  *)
+  (**************************************************************************)
+  IF s \in SubSeqs(t)
+  THEN ReplaceSubSeqAt(IndexFirstSubSeq(s, t), r, s, t)
+  ELSE t
+
+ASSUME ReplaceFirstSubSeqPure(<<>>,<<>>,<<>>) = <<>>
+ASSUME ReplaceFirstSubSeqPure(<<4>>,<<>>,<<>>) = <<4>>
+ASSUME ReplaceFirstSubSeqPure(<<4>>,<<4>>,<<>>) = <<>>
+ASSUME ReplaceFirstSubSeqPure(<<>>,<<>>,<<3,2,3,4>>) = <<3,2,3,4>>
+ASSUME ReplaceFirstSubSeqPure(<<4,4>>,<<3,2,3,4>>,<<3,2,3,4>>) = <<4,4>>
+ASSUME ReplaceFirstSubSeqPure(<<4,4>>,<<>>,<<3,2,3,4>>) = <<4,4,3,2,3,4>>
+
+ASSUME ReplaceFirstSubSeqPure(<<4,4>>,<<4>>,<<3,2,3,4>>) = <<3,2,3,4,4>>
+ASSUME ReplaceFirstSubSeqPure(<<>>,<<4>>,<<3,2,3,4>>) = <<3,2,3>>
+ASSUME ReplaceFirstSubSeqPure(<<>>,<<4>>,<<3,2,3,4,4>>) = <<3,2,3,4>>
+ASSUME ReplaceFirstSubSeqPure(<<4,4>>,<<3>>,<<3,2,3,4>>) = <<4,4,2,3,4>>
+ASSUME ReplaceFirstSubSeqPure(<<4>>, <<1,2>>, <<1,2,1,2>>) = <<4,1,2>>
+ASSUME ReplaceFirstSubSeqPure(<<4,4>>, <<1,2>>, <<1,2,1,2>>) = <<4,4,1,2>>
+ASSUME ReplaceFirstSubSeqPure(<<4,4,4>>, <<1,2>>, <<1,2,1,2>>) = <<4,4,4,1,2>>
+
+ASSUME ReplaceFirstSubSeqPure(<<1,2>>, <<1,2>>, <<1,2,2,1>>) = <<1,2,2,1>>
+ASSUME ReplaceFirstSubSeqPure(<<2,1>>, <<1,2>>, <<1,2,2,1>>) = <<2,1,2,1>>
+
+ASSUME \A seq \in (BoundedSeq(1..5, 5) \ {<<>>}):
+    /\ ReplaceFirstSubSeqPure(<<6>>, <<>>, seq) = <<6>> \o seq
+    /\ ReplaceFirstSubSeqPure(<<6>>, <<Head(seq)>>, seq) = <<6>> \o Tail(seq)
+
+ASSUME ReplaceFirstSubSeqPure("", "", "") = ""
+ASSUME ReplaceFirstSubSeqPure("a", "", "") = "a"
+ASSUME ReplaceFirstSubSeqPure("a", "b", "") = ""
+ASSUME ReplaceFirstSubSeqPure("a", "d", "abc") = "abc"
+ASSUME ReplaceFirstSubSeqPure("ddd", "ab", "abab") = "dddab"
+ASSUME ReplaceFirstSubSeqPure("ddd", "aa", "aaa") = "ddda"
+ASSUME ReplaceFirstSubSeqPure("ddd", "abab", "abab") = "ddd"
+
+ASSUME(ReplaceFirstSubSeqPure("\\", "%%", "Properly escape the %% char") = "Properly escape the \\ char")
+ASSUME(ReplaceFirstSubSeqPure("\"", "%%", "Properly escape the %% char") = "Properly escape the \" char")
+ASSUME(ReplaceFirstSubSeqPure("\n", "%%", "Properly escape the %% char") = "Properly escape the \n char")
+ASSUME(ReplaceFirstSubSeqPure("\t", "%%", "Properly escape the %% char") = "Properly escape the \t char")
+ASSUME(ReplaceFirstSubSeqPure("\f", "%%", "Properly escape the %% char") = "Properly escape the \f char")
+ASSUME(ReplaceFirstSubSeqPure("\r", "%%", "Properly escape the %% char") = "Properly escape the \r char")
+
+ASSUME ReplaceFirstSubSeqPure("\\\\", "\\", "Properly escape the \\quotes") = "Properly escape the \\\\quotes"
+ASSUME ReplaceFirstSubSeqPure("replaces", "%pattern%", "This %pattern% the pattern") = "This replaces the pattern"
+
 -----------------------------------------------------------------------------
 
 ASSUME AssertEq(ReplaceAllSubSeqs(<<4>>,<<1>>,<<>>), <<>>)
