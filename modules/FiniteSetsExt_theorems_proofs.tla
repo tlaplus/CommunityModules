@@ -172,6 +172,76 @@ LEMMA CardSumMonotonic ==
     <1>q. QED BY <1>1, <1>2, CardSumType
 
 
+LEMMA CardSumMonotonicOpGE ==
+    ASSUME
+        NEW S, IsFiniteSet(S),
+        NEW op1(_), \A s \in S : op1(s) \in Nat,
+        NEW op2(_), \A s \in S : op2(s) \in Nat,
+        \A s \in S : op2(s) >= op1(s)
+    PROVE
+        CardSum(S, op2) >= CardSum(S, op1)
+PROOF
+    <1> DEFINE P(s) == s \subseteq S => CardSum(s, op2) >= CardSum(s, op1)
+    <1> HIDE DEF P
+    <1> SUFFICES P(S) BY DEF P
+    <1>1. IsFiniteSet(S) OBVIOUS
+    <1>2. P({}) BY CardSumEmpty, Isa DEF P
+    <1>3. ASSUME
+            NEW CONSTANT T,
+            NEW CONSTANT x,
+            IsFiniteSet(T) ,
+            P(T) ,
+            x \notin T
+        PROVE P(T \cup {x})
+        <2> SUFFICES ASSUME
+                T \cup {x} \subseteq S
+            PROVE CardSum(T \cup {x}, op2) >= CardSum(T \cup {x}, op1)
+            BY DEF P
+        <2>2. \A s \in T : op1(s) \in Nat OBVIOUS
+        <2>3. \A s \in T : op2(s) \in Nat OBVIOUS
+        <2>4. op1(x) \in Nat OBVIOUS
+        <2>5. op2(x) \in Nat OBVIOUS
+        <2>6. CardSum(T \cup {x}, op1) = CardSum(T, op1) + op1(x) BY ONLY <1>3, <2>2, <2>4, CardSumAddElem, Isa
+        <2>7. CardSum(T \cup {x}, op2) = CardSum(T, op2) + op2(x) BY ONLY <1>3, <2>3, <2>5, CardSumAddElem, Isa
+        <2>8. CardSum(T, op2) >= CardSum(T, op1) BY <1>3 DEF P
+        <2>9. op2(x) >= op1(x) BY <1>3
+        <2>10. CardSum(T, op1) \in Nat BY CardSumType, <1>3, <2>2
+        <2>11. CardSum(T, op2) \in Nat BY CardSumType, <1>3, <2>3
+        <2>q. QED BY <2>4, <2>5, <2>6, <2>7, <2>8, <2>9, <2>10, <2>11
+    <1>q. QED BY ONLY FS_Induction, <1>1, <1>2, <1>3, Isa
+
+
+LEMMA CardSumMonotonicOpGT ==
+    ASSUME
+        NEW S, IsFiniteSet(S),
+        NEW op1(_), \A s \in S : op1(s) \in Nat,
+        NEW op2(_), \A s \in S : op2(s) \in Nat,
+        \A s \in S : op2(s) >= op1(s),
+        \E s \in S : op2(s) > op1(s)
+    PROVE
+        CardSum(S, op2) > CardSum(S, op1)
+PROOF
+    <1>1. PICK x \in S : op2(x) > op1(x) OBVIOUS
+    <1> DEFINE T == S \ {x}
+    <1> HIDE DEF T
+    <1>2. S = T \cup {x} BY <1>1 DEF T
+    <1>3. IsFiniteSet(T) BY FS_Singleton, FS_Difference DEF T
+    <1>4. \A t \in T : op1(t) \in Nat BY DEF T
+    <1>5. \A t \in T : op2(t) \in Nat BY DEF T
+    <1>6. CardSum(T, op2) >= CardSum(T, op1)
+        <2>4. \A t \in T : op2(t) >= op1(t) BY DEF T
+        <2>q. QED BY ONLY CardSumMonotonicOpGE, <1>3, <1>4, <1>5, <2>4, Isa
+    <1>7. op1(x) \in Nat OBVIOUS
+    <1>8. op2(x) \in Nat OBVIOUS
+    <1>9. x \notin T BY DEF T
+    <1>10. CardSum(T \cup {x}, op1) = CardSum(T, op1) + op1(x) BY ONLY <1>3, <1>4, <1>9, <1>7, CardSumAddElem, Isa
+    <1>11. CardSum(T \cup {x}, op2) = CardSum(T, op2) + op2(x) BY ONLY <1>3, <1>5, <1>9, <1>8, CardSumAddElem, Isa
+    <1>12. op2(x) > op1(x) BY <1>1
+    <1>13. CardSum(T, op1) \in Nat BY CardSumType, <1>3, <1>4
+    <1>14. CardSum(T, op2) \in Nat BY CardSumType, <1>3, <1>5
+    <1>q. QED BY <1>1, <1>2, <1>6, <1>7, <1>8, <1>10, <1>11, <1>12, <1>13, <1>14
+
+
 LEMMA CardSumZero ==
     ASSUME NEW S, IsFiniteSet(S),
            NEW op(_), \A e \in S: op(e) \in Nat,
@@ -379,6 +449,49 @@ LEMMA MapThenSumSetMonotonic ==
 PROOF
     <1>1. IsFiniteSet(S \cup {e}) BY FS_Union, FS_Singleton
     <1>q. QED BY <1>1, CardSumMonotonic, MapThenSumSetDefined
+
+LEMMA MapThenSumSetMonotonicOpGE ==
+    ASSUME
+        NEW S, IsFiniteSet(S),
+        NEW op1(_), \A s \in S : op1(s) \in Nat,
+        NEW op2(_), \A s \in S : op2(s) \in Nat,
+        \A s \in S : op2(s) >= op1(s)
+    PROVE
+        MapThenSumSet(op2, S) >= MapThenSumSet(op1, S)
+PROOF
+    <1> DEFINE
+        C1 == CardSum(S, op1)
+        C2 == CardSum(S, op2)
+        M1 == MapThenSumSet(op1, S)
+        M2 == MapThenSumSet(op2, S)
+    <1> HIDE DEF C1, C2, M1, M2
+    <1> SUFFICES M2 >= M1 BY DEF M1, M2
+    <1>1. C2 >= C1 BY CardSumMonotonicOpGE, Isa DEF C1, C2
+    <1>2. M1 = C1 BY MapThenSumSetDefined, Isa DEF M1, C1
+    <1>3. M2 = C2 BY MapThenSumSetDefined, Isa DEF M2, C2
+    <1>q. QED BY <1>1, <1>2, <1>3
+
+LEMMA MapThenSumSetMonotonicOpGT ==
+    ASSUME
+        NEW S, IsFiniteSet(S),
+        NEW op1(_), \A s \in S : op1(s) \in Nat,
+        NEW op2(_), \A s \in S : op2(s) \in Nat,
+        \A s \in S : op2(s) >= op1(s),
+        \E s \in S : op2(s) > op1(s)
+    PROVE
+        MapThenSumSet(op2, S) > MapThenSumSet(op1, S)
+PROOF
+    <1> DEFINE
+        C1 == CardSum(S, op1)
+        C2 == CardSum(S, op2)
+        M1 == MapThenSumSet(op1, S)
+        M2 == MapThenSumSet(op2, S)
+    <1> HIDE DEF C1, C2, M1, M2
+    <1> SUFFICES M2 > M1 BY DEF M1, M2
+    <1>1. C2 > C1 BY CardSumMonotonicOpGT, Isa DEF C1, C2
+    <1>2. M1 = C1 BY MapThenSumSetDefined, Isa DEF M1, C1
+    <1>3. M2 = C2 BY MapThenSumSetDefined, Isa DEF M2, C2
+    <1>q. QED BY <1>1, <1>2, <1>3
 
 LEMMA MapThenSumSetZero ==
     ASSUME NEW S, IsFiniteSet(S),
