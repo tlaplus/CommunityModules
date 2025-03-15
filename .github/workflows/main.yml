@@ -10,7 +10,10 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
-
+    permissions:
+      contents: write # Required by actions/create-release@v1
+      packages: read
+ 
     steps:
     - uses: actions/checkout@v2
     - name: Setup tmate session
