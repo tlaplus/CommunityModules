@@ -82,6 +82,7 @@ jobs:
         asset_name: CommunityModules-deps.jar
         asset_content_type: application/zip
     - name: Repository Dispatch
+      if: github.event.client_payload.source != 'tlaplus'
       uses: peter-evans/repository-dispatch@v3
       with:
         token: ${{ secrets.REPO_DISPATCH_TOKEN }}
