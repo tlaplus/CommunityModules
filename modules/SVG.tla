@@ -57,121 +57,121 @@ LOCAL SVGElem(_name, _attrs, _children, _innerText) ==
 (*                                                                            *)
 (******************************************************************************)
 
+(**************************************************************************)
+(* Line element.  'x1', 'y1', 'x2', and 'y2' should be given as integers. *)
+(**************************************************************************)
 Line(x1, y1, x2, y2, attrs) == 
-    (**************************************************************************)
-    (* Line element.  'x1', 'y1', 'x2', and 'y2' should be given as integers. *)
-    (**************************************************************************)
     LET svgAttrs == [x1 |-> ToString(x1), 
                      y1 |-> ToString(y1), 
                      x2 |-> ToString(x2),
                      y2 |-> ToString(y2)] IN
     SVGElem("line", Merge(svgAttrs, attrs), <<>>, "")
 
+(**************************************************************************)
+(* Circle element. 'cx', 'cy', and 'r' should be given as integers.       *)
+(**************************************************************************)
 Circle(cx, cy, r, attrs) == 
-    (**************************************************************************)
-    (* Circle element. 'cx', 'cy', and 'r' should be given as integers.       *)
-    (**************************************************************************)
     LET svgAttrs == [cx |-> ToString(cx), 
                      cy |-> ToString(cy), 
                      r  |-> ToString(r)] IN
     SVGElem("circle", Merge(svgAttrs, attrs), <<>>, "")
 
+(**************************************************************************)
+(* Rectangle element.  'x', 'y', 'w', and 'h' should be given as          *)
+(* integers.                                                              *)
+(**************************************************************************)
 Rect(x, y, w, h, attrs) == 
-    (**************************************************************************)
-    (* Rectangle element.  'x', 'y', 'w', and 'h' should be given as          *)
-    (* integers.                                                              *)
-    (**************************************************************************)
     LET svgAttrs == [x      |-> ToString(x), 
                      y      |-> ToString(y), 
                      width  |-> ToString(w), 
                      height |-> ToString(h)] IN
     SVGElem("rect", Merge(svgAttrs, attrs), <<>>, "")
 
+(**************************************************************************)
+(* Text element.'x' and 'y' should be given as integers, and 'text' given *)
+(* as a string.                                                           *)
+(**************************************************************************)
 Text(x, y, text, attrs) == 
-    (**************************************************************************)
-    (* Text element.'x' and 'y' should be given as integers, and 'text' given *)
-    (* as a string.                                                           *)
-    (**************************************************************************)
     LET svgAttrs == [x |-> ToString(x), 
                      y |-> ToString(y)] IN
     SVGElem("text", Merge(svgAttrs, attrs), <<>>, text) 
 
+(**************************************************************************)
+(* Group element.  'children' is a sequence of elements that will be      *)
+(* contained in this group.                                               *)
+(**************************************************************************)
 Group(children, attrs) == 
-    (**************************************************************************)
-    (* Group element.  'children' is a sequence of elements that will be      *)
-    (* contained in this group.                                               *)
-    (**************************************************************************)
     SVGElem("g", attrs, children, "")
 
+(**************************************************************************)
+(* Svg container.  'children' is a sequence of elements that will be      *)
+(* contained in this svg container.                                       *)
+(**************************************************************************)
 Svg(children, attrs) == 
-    (**************************************************************************)
-    (* Svg container.  'children' is a sequence of elements that will be      *)
-    (* contained in this svg container.                                       *)
-    (**************************************************************************)
     SVGElem("svg", attrs, children, "")
 
+(**************************************************************************)
+(* Convert an SVG element record into its string representation.          *)
+(*                                                                        *)
+(* This operator is expected to be replaced by a Java module override.    *)
+(* We do not implement it in pure TLA+ because doing non-trivial string   *)
+(* manipulation in TLA+ is tedious.  Also, the performance of             *)
+(* implementing this in TLA+ has been demonstrated to be prohibitively    *)
+(* slow.                                                                  *)
+(**************************************************************************)
 SVGElemToString(elem) == 
-    (**************************************************************************)
-    (* Convert an SVG element record into its string representation.          *)
-    (*                                                                        *)
-    (* This operator is expected to be replaced by a Java module override.    *)
-    (* We do not implement it in pure TLA+ because doing non-trivial string   *)
-    (* manipulation in TLA+ is tedious.  Also, the performance of             *)
-    (* implementing this in TLA+ has been demonstrated to be prohibitively    *)
-    (* slow.                                                                  *)
-    (**************************************************************************)
     TRUE
 
 -------------------------------------------------------------------------------
 
+(**************************************************************************)
+(* Equals the Cartesian coordinates of the n-th of m nodes in a ring      *)
+(* (https://en.wikipedia.org/wiki/Ring_network), such that the circle     *)
+(* on which the nodes are placed has radius r and is centered at the      *)
+(* coordinates cx, cy.                                                    *)
+(*                                                                        *)
+(* ASSUME /\ n \in 0..360 /\ m \in 0..360 /\ n <= m                       *)
+(*        /\ cx \in Nat /\ cy \in Nat /\ r \in Nat                        *)
+(*                                                                        *)
+(* Example to create a ring network of M nodes (Rects with dimension 15)  *)
+(* with center (10,10) and radius 5:                                      *)
+(*                                                                        *)
+(*      ASSUME M \in Nat                                                  *)
+(*                                                                        *)
+(*      RN[ n \in 1..M ] ==                                               *)
+(*           LET c == NodeOfRingNetwork(10, 10, 5, n, M)                  *)
+(*               node == Rect(c.x, c.y, 15, 15, <<>>)                     *)
+(*           IN Group(<<node>>,  <<>>)                                    *)
+(*                                                                        *)
+(* Note: It would have been more elegant to provide the basic geometric   *)
+(*       operators, such as polar to Cartesian conversion.  However,      *)
+(*       TLC's lack of floats makes this impractical due to intermediate  *)
+(*       rounding errors.                                                 *)
+(*                                                                        *)
+(* For this operator's actual definition, please consult the Java module  *)
+(* override at:                                                           *)
+(*         modules/tlc2/overrides/SVG.java#ringNetwork                    *)
+(**************************************************************************)
 NodeOfRingNetwork(cx, cy, r, n, m) ==
-    (**************************************************************************)
-    (* Equals the Cartesian coordinates of the n-th of m nodes in a ring      *)
-    (* (https://en.wikipedia.org/wiki/Ring_network), such that the circle     *)
-    (* on which the nodes are placed has radius r and is centered at the      *)
-    (* coordinates cx, cy.                                                    *)
-    (*                                                                        *)
-    (* ASSUME /\ n \in 0..360 /\ m \in 0..360 /\ n <= m                       *)
-    (*        /\ cx \in Nat /\ cy \in Nat /\ r \in Nat                        *)
-    (*                                                                        *)
-    (* Example to create a ring network of M nodes (Rects with dimension 15)  *)
-    (* with center (10,10) and radius 5:                                      *)
-    (*                                                                        *)
-    (*      ASSUME M \in Nat                                                  *)
-    (*                                                                        *)
-    (*      RN[ n \in 1..M ] ==                                               *)
-    (*           LET c == NodeOfRingNetwork(10, 10, 5, n, M)                  *)
-    (*               node == Rect(c.x, c.y, 15, 15, <<>>)                     *)
-    (*           IN Group(<<node>>,  <<>>)                                    *)
-    (*                                                                        *)
-    (* Note: It would have been more elegant to provide the basic geometric   *)
-    (*       operators, such as polar to Cartesian conversion.  However,      *)
-    (*       TLC's lack of floats makes this impractical due to intermediate  *)
-    (*       rounding errors.                                                 *)
-    (*                                                                        *)
-    (* For this operator's actual definition, please consult the Java module  *)
-    (* override at:                                                           *)
-    (*         modules/tlc2/overrides/SVG.java#ringNetwork                    *)
-    (**************************************************************************)
     [ x |-> 0, y |-> 0 ]
 
+(**************************************************************************)
+(* Example to layout a graph with the given Nodes and Edges:              *)
+(*                                                                        *)
+(*      Nodes == {"v1", "v2", "v3"}  \* v3 is not connected               *)
+(*      Edges == {<<"v1", "v2">>, <<"v2", "v1">>}                         *)
+(*      Graph == NodesOfDirectedMultiGraph(Nodes, Edges, [algo |-> ...])  *)
+(*                                                                        *)
+(*      RN[ n \in Nodes ] ==                                              *)
+(*           LET c == Graph[n]                                            *)
+(*               node == Rect(c.x, c.y, 23, 42, <<>>)                     *)
+(*           IN Group(<<node>>,  <<>>)                                    *)
+(*                                                                        *)
+(* For this operator's actual definition, please consult the Java module  *)
+(* override at:                                                           *)
+(*         modules/tlc2/overrides/SVG.java#directedMultiGraph             *)
+(**************************************************************************)
 NodesOfDirectedMultiGraph(nodes, edges, options) ==
-    (**************************************************************************)
-    (* Example to layout a graph with the given Nodes and Edges:              *)
-    (*                                                                        *)
-    (*      Nodes == {"v1", "v2", "v3"}  \* v3 is not connected               *)
-    (*      Edges == {<<"v1", "v2">>, <<"v2", "v1">>}                         *)
-    (*      Graph == NodesOfDirectedMultiGraph(Nodes, Edges, [algo |-> ...])  *)
-    (*                                                                        *)
-    (*      RN[ n \in Nodes ] ==                                              *)
-    (*           LET c == Graph[n]                                            *)
-    (*               node == Rect(c.x, c.y, 23, 42, <<>>)                     *)
-    (*           IN Group(<<node>>,  <<>>)                                    *)
-    (*                                                                        *)
-    (* For this operator's actual definition, please consult the Java module  *)
-    (* override at:                                                           *)
-    (*         modules/tlc2/overrides/SVG.java#directedMultiGraph             *)
-    (**************************************************************************)
     CHOOSE f \in [ nodes -> [x: Int, y: Int] ]: TRUE
 
 PointOnLine(from, to, segment) ==
