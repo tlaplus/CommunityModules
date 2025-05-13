@@ -12,130 +12,130 @@ LOCAL INSTANCE TLC
 
 -----------------------------------------------------------------------------
 
+(*************************************************************************)
+(* The image of the given sequence s. Cardinality(ToSet(s)) <= Len(s)    *)
+(* see https://en.wikipedia.org/wiki/Image_(mathematics)                 *)
+(*************************************************************************)
 ToSet(s) ==
-  (*************************************************************************)
-  (* The image of the given sequence s. Cardinality(ToSet(s)) <= Len(s)    *)
-  (* see https://en.wikipedia.org/wiki/Image_(mathematics)                 *)
-  (*************************************************************************)
   { s[i] : i \in DOMAIN s }
 
+(**************************************************************************)
+(* Convert a set to some sequence that contains all the elements of the   *)
+(* set exactly once, and contains no other elements.                      *)
+(**************************************************************************)
 SetToSeq(S) == 
-  (**************************************************************************)
-  (* Convert a set to some sequence that contains all the elements of the   *)
-  (* set exactly once, and contains no other elements.                      *)
-  (**************************************************************************)
   CHOOSE f \in [1..Cardinality(S) -> S] : IsInjective(f)
 
+(**************************************************************************)
+(* Convert the set S to a set containing all sequences containing the     *)
+(* elements of S exactly once and no other elements.                      *)
+(* Example:                                                               *)
+(*    SetToSeqs({}), {<<>>}                                               *)
+(*    SetToSeqs({"t","l"}) = {<<"t","l">>, <<"l","t">>}                   *) 
+(**************************************************************************)
 SetToSeqs(S) == 
-  (**************************************************************************)
-  (* Convert the set S to a set containing all sequences containing the     *)
-  (* elements of S exactly once and no other elements.                      *)
-  (* Example:                                                               *)
-  (*    SetToSeqs({}), {<<>>}                                               *)
-  (*    SetToSeqs({"t","l"}) = {<<"t","l">>, <<"l","t">>}                   *) 
-  (**************************************************************************)
   LET D == 1..Cardinality(S)
   IN { f \in [D -> S] : \A i,j \in D : i # j => f[i] # f[j] }
 
+(**************************************************************************)
+(* Convert a set to a sorted sequence that contains all the elements of   *)
+(* the set exactly once, and contains no other elements.                  *)
+(**************************************************************************)
 SetToSortSeq(S, op(_,_)) ==
-  (**************************************************************************)
-  (* Convert a set to a sorted sequence that contains all the elements of   *)
-  (* the set exactly once, and contains no other elements.                  *)
-  (**************************************************************************)
   SortSeq(SetToSeq(S), op)
 
+(**************************************************************************)
+(* Convert the set S to a set containing all k-permutations of elements   *)
+(* of S for k \in 0..Cardinality(S).                                      *)
+(* Example:                                                               *)
+(*    SetToAllKPermutations({}) = {<<>>}                                  *)
+(*    SetToAllKPermutations({"a"}) = {<<>>, <<"a">>}                      *)
+(*    SetToAllKPermutations({"a","b"}) =                                  *)
+(*                    {<<>>, <<"a">>, <<"b">>,<<"a","b">>, <<"b","a">>}   *)
+(**************************************************************************)
 SetToAllKPermutations(S) ==
-  (**************************************************************************)
-  (* Convert the set S to a set containing all k-permutations of elements   *)
-  (* of S for k \in 0..Cardinality(S).                                      *)
-  (* Example:                                                               *)
-  (*    SetToAllKPermutations({}) = {<<>>}                                  *)
-  (*    SetToAllKPermutations({"a"}) = {<<>>, <<"a">>}                      *)
-  (*    SetToAllKPermutations({"a","b"}) =                                  *)
-  (*                    {<<>>, <<"a">>, <<"b">>,<<"a","b">>, <<"b","a">>}   *)
-  (**************************************************************************)
   UNION { SetToSeqs(s) : s \in SUBSET S  }
 
+(***************************************************************************)
+(* TupleOf(s, 3) = s \X s \X s                                             *)
+(***************************************************************************)
 TupleOf(set, n) == 
-  (***************************************************************************)
-  (* TupleOf(s, 3) = s \X s \X s                                             *)
-  (***************************************************************************)
   [1..n -> set]
 
+(***************************************************************************)
+(* All sequences up to length n with all elements in set.  Includes empty  *)
+(* sequence.                                                               *)
+(***************************************************************************)
 SeqOf(set, n) == 
-  (***************************************************************************)
-  (* All sequences up to length n with all elements in set.  Includes empty  *)
-  (* sequence.                                                               *)
-  (***************************************************************************)
   UNION {[1..m -> set] : m \in 0..n}
 
+(***************************************************************************)
+(* An alias for SeqOf to make the connection to Sequences!Seq, which is    *)
+(* the unbounded version of BoundedSeq.                                    *)
+(***************************************************************************)
 BoundedSeq(S, n) ==
-  (***************************************************************************)
-  (* An alias for SeqOf to make the connection to Sequences!Seq, which is    *)
-  (* the unbounded version of BoundedSeq.                                    *)
-  (***************************************************************************)
   SeqOf(S, n)
 
 -----------------------------------------------------------------------------
 
+(**************************************************************************)
+(* TRUE iff the element e \in ToSet(s).                                   *)
+(**************************************************************************)
 Contains(s, e) ==
-  (**************************************************************************)
-  (* TRUE iff the element e \in ToSet(s).                                   *)
-  (**************************************************************************)
   \E i \in 1..Len(s) : s[i] = e
 
+(**************************************************************************)
+(* Reverse the given sequence s:  Let l be Len(s) (length of s).          *)
+(* Equals a sequence s.t. << S[l], S[l-1], ..., S[1]>>                    *)
+(**************************************************************************)
 Reverse(s) ==
-  (**************************************************************************)
-  (* Reverse the given sequence s:  Let l be Len(s) (length of s).          *)
-  (* Equals a sequence s.t. << S[l], S[l-1], ..., S[1]>>                    *)
-  (**************************************************************************)
   [ i \in 1..Len(s) |-> s[(Len(s) - i) + 1] ]
 
+(************************************************************************)
+(* The sequence s with e removed or s iff e \notin Range(s)             *)
+(************************************************************************)
 Remove(s, e) ==
-    (************************************************************************)
-    (* The sequence s with e removed or s iff e \notin Range(s)             *)
-    (************************************************************************)
     SelectSeq(s, LAMBDA t: t # e)
 
+(*************************************************************************)
+(* Equals the sequence s except that all occurrences of element old are  *)
+(* replaced with the element new.                                        *)
+(*************************************************************************)
 ReplaceAll(s, old, new) ==
-  (*************************************************************************)
-  (* Equals the sequence s except that all occurrences of element old are  *)
-  (* replaced with the element new.                                        *)
-  (*************************************************************************)
   [i \in 1 .. Len(s) |-> IF s[i] = old THEN new ELSE s[i]]
 
 -----------------------------------------------------------------------------
 
+(*************************************************************************)
+(* Selects the index of the first element such that Test(seq[i]) is true *)
+(* Equals 0 if Test(seq[i]) is FALSE for all elements.                   *)
+(*************************************************************************)
 SelectInSeq(seq, Test(_)) ==
-  (*************************************************************************)
-  (* Selects the index of the first element such that Test(seq[i]) is true *)
-  (* Equals 0 if Test(seq[i]) is FALSE for all elements.                   *)
-  (*************************************************************************)
   LET I == { i \in 1..Len(seq) : Test(seq[i]) }
   IN IF I # {} THEN Min(I) ELSE 0
 
+(*************************************************************************)
+(* Selects the index of the first element in seq such that Test(seq[i])  *)
+(* is TRUE for this elements in from..to.  Equals 0 if Test(seq[i]) is   *)
+(* FALSE for all elements.                                               *)
+(*************************************************************************)
 SelectInSubSeq(seq, from, to, Test(_)) ==
-  (*************************************************************************)
-  (* Selects the index of the first element in seq such that Test(seq[i])  *)
-  (* is TRUE for this elements in from..to.  Equals 0 if Test(seq[i]) is   *)
-  (* FALSE for all elements.                                               *)
-  (*************************************************************************)
   SelectInSeq(SubSeq(seq, from, to), Test)
 
+(*************************************************************************)
+(* Selects the index of the last element such that Test(seq[i]) is true  *)
+(* Equals 0 if Test(seq[i]) is FALSE for all elements.                   *)
+(*************************************************************************)
 SelectLastInSeq(seq, Test(_)) ==
-  (*************************************************************************)
-  (* Selects the index of the last element such that Test(seq[i]) is true  *)
-  (* Equals 0 if Test(seq[i]) is FALSE for all elements.                   *)
-  (*************************************************************************)
   LET I == { i \in 1..Len(seq) : Test(seq[i]) }
   IN IF I # {} THEN Max(I) ELSE 0
 
+(*************************************************************************)
+(* Selects the index of the last element in seq such that Test(seq[i])   *)
+(* is TRUE for this elements in from..to.  Equals 0 if Test(seq[i]) is   *)
+(* FALSE for all elements.                                               *)
+(*************************************************************************)
 SelectLastInSubSeq(seq, from, to, Test(_)) ==
-  (*************************************************************************)
-  (* Selects the index of the last element in seq such that Test(seq[i])   *)
-  (* is TRUE for this elements in from..to.  Equals 0 if Test(seq[i]) is   *)
-  (* FALSE for all elements.                                               *)
-  (*************************************************************************)
   SelectLastInSeq(SubSeq(seq, from, to), Test)
 
 -----------------------------------------------------------------------------
@@ -144,254 +144,254 @@ SelectLastInSubSeq(seq, from, to, Test(_)) ==
 \* from the TLAPS module SequencesTheorems.tla as of 10/14/2019.  The original
 \* comments have been partially rewritten.
 
+(**************************************************************************)
+(* Inserts element e at the position i moving the original element to i+1 *)
+(* and so on.  In other words, a sequence t s.t.:                         *)
+(*   /\ Len(t) = Len(s) + 1                                               *)
+(*   /\ t[i] = e                                                          *)
+(*   /\ \A j \in 1..(i - 1): t[j] = s[j]                                  *)
+(*   /\ \A k \in (i + 1)..Len(s): t[k + 1] = s[k]                         *)
+(**************************************************************************)
 InsertAt(s, i, e) ==
-  (**************************************************************************)
-  (* Inserts element e at the position i moving the original element to i+1 *)
-  (* and so on.  In other words, a sequence t s.t.:                         *)
-  (*   /\ Len(t) = Len(s) + 1                                               *)
-  (*   /\ t[i] = e                                                          *)
-  (*   /\ \A j \in 1..(i - 1): t[j] = s[j]                                  *)
-  (*   /\ \A k \in (i + 1)..Len(s): t[k + 1] = s[k]                         *)
-  (**************************************************************************)
   SubSeq(s, 1, i-1) \o <<e>> \o SubSeq(s, i, Len(s))
 
+(**************************************************************************)
+(* Replaces the element at position i with the element e.                 *)
+(**************************************************************************)
 ReplaceAt(s, i, e) ==
-  (**************************************************************************)
-  (* Replaces the element at position i with the element e.                 *)
-  (**************************************************************************)
   [s EXCEPT ![i] = e]
   
+(**************************************************************************)
+(* Replaces the element at position i shortening the length of s by one.  *)
+(**************************************************************************)
 RemoveAt(s, i) == 
-  (**************************************************************************)
-  (* Replaces the element at position i shortening the length of s by one.  *)
-  (**************************************************************************)
   SubSeq(s, 1, i-1) \o SubSeq(s, i+1, Len(s))
 
+(************************************************************************)
+(* The sequence s with the first occurrence of e removed or s           *)
+(* iff e \notin Range(s)                                                *)
+(************************************************************************)
 RemoveFirst(s, e) ==
-    (************************************************************************)
-    (* The sequence s with the first occurrence of e removed or s           *)
-    (* iff e \notin Range(s)                                                *)
-    (************************************************************************)
     IF \E i \in 1..Len(s): s[i] = e
     THEN RemoveAt(s, SelectInSeq(s, LAMBDA v: v = e))
     ELSE s
 
+(************************************************************************)
+(* The sequence s with the first element removed s.t. Test(e) or s      *)
+(* iff e \notin Range(s)                                                *)
+(************************************************************************)
 RemoveFirstMatch(s, Test(_)) ==
-    (************************************************************************)
-    (* The sequence s with the first element removed s.t. Test(e) or s      *)
-    (* iff e \notin Range(s)                                                *)
-    (************************************************************************)
     IF \E i \in 1..Len(s): Test(s[i])
     THEN RemoveAt(s, SelectInSeq(s, Test))
     ELSE s
 
 -----------------------------------------------------------------------------
 
+(************************************************************************)
+(* Cons prepends an element at the beginning of a sequence.             *)
+(************************************************************************)
 Cons(elt, seq) == 
-    (************************************************************************)
-    (* Cons prepends an element at the beginning of a sequence.             *)
-    (************************************************************************)
     <<elt>> \o seq
 
+(************************************************************************)
+(* Reverses the operands of Sequences!Append for better compatibility   *)
+(* with FoldFunction below.                                             *)
+(* Example:                                                             *)
+(*  FoldSeq(LAMBDA x,y: {x} \cup y, {}, <<1,2,1>>) = Range(<<1,2,1>>)   *)
+(************************************************************************)
 Snoc(elt, seq) == 
-    (************************************************************************)
-    (* Reverses the operands of Sequences!Append for better compatibility   *)
-    (* with FoldFunction below.                                             *)
-    (* Example:                                                             *)
-    (*  FoldSeq(LAMBDA x,y: {x} \cup y, {}, <<1,2,1>>) = Range(<<1,2,1>>)   *)
-    (************************************************************************)
     Append(seq, elt)
 
+(**************************************************************************)
+(* The sequence formed by removing its last element.                      *)
+(**************************************************************************)
 Front(s) == 
-  (**************************************************************************)
-  (* The sequence formed by removing its last element.                      *)
-  (**************************************************************************)
   SubSeq(s, 1, Len(s)-1)
 
+(**************************************************************************)
+(* The last element of the sequence.                                      *)
+(**************************************************************************)
 Last(s) ==
-  (**************************************************************************)
-  (* The last element of the sequence.                                      *)
-  (**************************************************************************)
   s[Len(s)]
 
 -----------------------------------------------------------------------------
 
+(**************************************************************************)
+(* TRUE iff the sequence s is a prefix of the sequence t, s.t.            *)
+(* \E u \in Seq(Range(t)) : t = s \o u. In other words, there exists      *)
+(* a suffix u that with s prepended equals t.                             *)
+(**************************************************************************)
 IsPrefix(s, t) ==
-  (**************************************************************************)
-  (* TRUE iff the sequence s is a prefix of the sequence t, s.t.            *)
-  (* \E u \in Seq(Range(t)) : t = s \o u. In other words, there exists      *)
-  (* a suffix u that with s prepended equals t.                             *)
-  (**************************************************************************)
   Len(s) <= Len(t) /\ SubSeq(s, 1, Len(s)) = SubSeq(t, 1, Len(s))
 
+(**************************************************************************)
+(* TRUE iff the sequence s is a prefix of the sequence t and s # t        *)
+(**************************************************************************)
 IsStrictPrefix(s,t) ==
-  (**************************************************************************)
-  (* TRUE iff the sequence s is a prefix of the sequence t and s # t        *)
-  (**************************************************************************)
   IsPrefix(s, t) /\ s # t
 
+(**************************************************************************)
+(* TRUE iff the sequence s is a suffix of the sequence t, s.t.            *)
+(* \E u \in Seq(Range(t)) : t = u \o s. In other words, there exists a    *)
+(* prefix that with s appended equals t.                                  *)
+(**************************************************************************)
 IsSuffix(s, t) ==
-  (**************************************************************************)
-  (* TRUE iff the sequence s is a suffix of the sequence t, s.t.            *)
-  (* \E u \in Seq(Range(t)) : t = u \o s. In other words, there exists a    *)
-  (* prefix that with s appended equals t.                                  *)
-  (**************************************************************************)
   IsPrefix(Reverse(s), Reverse(t))
 
+(**************************************************************************)
+(* TRUE iff the sequence s is a suffix of the sequence t and s # t        *)
+(**************************************************************************)
 IsStrictSuffix(s, t) ==
-  (**************************************************************************)
-  (* TRUE iff the sequence s is a suffix of the sequence t and s # t        *)
-  (**************************************************************************)
   IsSuffix(s,t) /\ s # t
   
 -----------------------------------------------------------------------------
 
+(**************************************************************************)
+(* The set of prefixes of the sequence s, including the empty sequence.   *)
+(**************************************************************************)
 Prefixes(s) ==
-  (**************************************************************************)
-  (* The set of prefixes of the sequence s, including the empty sequence.   *)
-  (**************************************************************************)
   { SubSeq(s, 1, l) : l \in 0..Len(s) } \* 0.. for <<>>
 
+(**************************************************************************)
+(* The set of all sequences that are prefixes of the set of sequences S.  *)
+(**************************************************************************)
 CommonPrefixes(S) ==
-  (**************************************************************************)
-  (* The set of all sequences that are prefixes of the set of sequences S.  *)
-  (**************************************************************************)
   LET P == UNION { Prefixes(seq) : seq \in S }
   IN { prefix \in P : \A t \in S: IsPrefix(prefix, t) }
 
+(**************************************************************************)
+(* The longest common prefix of the sequences in the set S.               *)
+(**************************************************************************)
 LongestCommonPrefix(S) ==
-  (**************************************************************************)
-  (* The longest common prefix of the sequences in the set S.               *)
-  (**************************************************************************)
   CHOOSE longest \in CommonPrefixes(S):  \* there can only be one LCP => CHOOSE
           \A other \in CommonPrefixes(S):
               Len(other) <= Len(longest)
 
+(**************************************************************************)
+(* The set of suffixes of the sequence s, including the empty sequence.   *)
+(**************************************************************************)
 Suffixes(s) ==
-  (**************************************************************************)
-  (* The set of suffixes of the sequence s, including the empty sequence.   *)
-  (**************************************************************************)
   { SubSeq(s, l, Len(s)) : l \in 1..Len(s) } \cup {<<>>}
 
 -----------------------------------------------------------------------------
 
+(***************************************************************************)
+(*   Range(a % b) = 0..b-1, but DOMAIN seq = 1..Len(seq).                  *)
+(*   So to do modular arithmetic on sequences we need to                   *)
+(*   map 0 to b.                                                           *)
+(***************************************************************************)
 SeqMod(a, b) == 
-  (***************************************************************************)
-  (*   Range(a % b) = 0..b-1, but DOMAIN seq = 1..Len(seq).                  *)
-  (*   So to do modular arithmetic on sequences we need to                   *)
-  (*   map 0 to b.                                                           *)
-  (***************************************************************************)
   IF a % b = 0 THEN b ELSE a % b
 
 
+(***************************************************************************)
+(* An alias of FoldFunction that op on all elements of seq an arbitrary    *)
+(* order. The resulting function is:                                       *)
+(*    op(f[i],op(f[j], ..., op(f[k],base) ...))                            *)
+(*                                                                         *)
+(* op must be associative and commutative, because we can not assume a     *)
+(* particular ordering of i, j, and k                                      *)
+(*                                                                         *)
+(* Example:                                                                *)
+(*  FoldSeq(LAMBDA x,y: {x} \cup y, {}, <<1,2,1>>) = Range(<<1,2,1>>)      *)
+(***************************************************************************)
 FoldSeq(op(_, _), base, seq) == 
-  (***************************************************************************)
-  (* An alias of FoldFunction that op on all elements of seq an arbitrary    *)
-  (* order. The resulting function is:                                       *)
-  (*    op(f[i],op(f[j], ..., op(f[k],base) ...))                            *)
-  (*                                                                         *)
-  (* op must be associative and commutative, because we can not assume a     *)
-  (* particular ordering of i, j, and k                                      *)
-  (*                                                                         *)
-  (* Example:                                                                *)
-  (*  FoldSeq(LAMBDA x,y: {x} \cup y, {}, <<1,2,1>>) = Range(<<1,2,1>>)      *)
-  (***************************************************************************)
   FoldFunction(op, base, seq)
 
+(***************************************************************************)
+(* FoldLeft folds op on all elements of seq from left to right, starting   *)
+(* with the first element and base. The resulting function is:             *)
+(*    op(op(...op(base,f[0]), ...f[n-1]), f[n])                            *)
+(*                                                                         *)
+(*                                                                         *)
+(* Example:                                                                *)
+(*    LET cons(x,y) == <<x,y>>                                             *)
+(*    IN FoldLeft(cons, 0, <<3,1,2>>) = << << <<0,3>>, 1>>, 2>>            *)
+(***************************************************************************)
 FoldLeft(op(_, _), base, seq) == 
-  (***************************************************************************)
-  (* FoldLeft folds op on all elements of seq from left to right, starting   *)
-  (* with the first element and base. The resulting function is:             *)
-  (*    op(op(...op(base,f[0]), ...f[n-1]), f[n])                            *)
-  (*                                                                         *)
-  (*                                                                         *)
-  (* Example:                                                                *)
-  (*    LET cons(x,y) == <<x,y>>                                             *)
-  (*    IN FoldLeft(cons, 0, <<3,1,2>>) = << << <<0,3>>, 1>>, 2>>            *) 
-  (***************************************************************************)
   MapThenFoldSet(LAMBDA x,y : op(y,x), base,
                  LAMBDA i : seq[i],
                  LAMBDA S : Max(S),
                  DOMAIN seq)
 
+(***************************************************************************)
+(* FoldRight folds op on all elements of seq from right to left, starting  *)
+(* with the last element and base. The resulting function is:              *)
+(*    op(f[0],op(f[1], ..., op(f[n],base) ...))                            *)
+(*                                                                         *)
+(*                                                                         *)
+(* Example:                                                                *)
+(*    LET cons(x,y) == <<x,y>>                                             *)
+(*    IN FoldRight(cons, <<3,1,2>>, 0 ) = << 3, << 1, <<2,0>> >> >>        *)
+(***************************************************************************)
 FoldRight(op(_, _), seq, base) == 
-  (***************************************************************************)
-  (* FoldRight folds op on all elements of seq from right to left, starting  *)
-  (* with the last element and base. The resulting function is:              *)
-  (*    op(f[0],op(f[1], ..., op(f[n],base) ...))                            *)
-  (*                                                                         *)
-  (*                                                                         *)
-  (* Example:                                                                *)
-  (*    LET cons(x,y) == <<x,y>>                                             *)
-  (*    IN FoldRight(cons, <<3,1,2>>, 0 ) = << 3, << 1, <<2,0>> >> >>        *) 
-  (***************************************************************************)
   MapThenFoldSet(op, base,
                  LAMBDA i : seq[i],
                  LAMBDA S : Min(S),
                  DOMAIN seq)
 
+(***************************************************************************)
+(* FoldLeftDomain folds op on the domain of seq, i.e., the seq's indices,  *)
+(* starting at the lowest index.                                           *) 
+(***************************************************************************)
 FoldLeftDomain(op(_, _), base, seq) == 
-  (***************************************************************************)
-  (* FoldLeftDomain folds op on the domain of seq, i.e., the seq's indices,  *)
-  (* starting at the lowest index.                                           *) 
-  (***************************************************************************)
   FoldLeft(op, base, [i \in DOMAIN seq |-> i])
 
+(***************************************************************************)
+(* FoldRightDomain folds op on the domain of seq, i.e., the seq's indices, *)
+(* starting at the highest index.                                          *)
+(***************************************************************************)
 FoldRightDomain(op(_, _), seq, base) == 
-  (***************************************************************************)
-  (* FoldRightDomain folds op on the domain of seq, i.e., the seq's indices, *)
-  (* starting at the highest index.                                          *) 
-  (***************************************************************************)
   FoldRight(op, [i \in DOMAIN seq |-> i], base)
 
 -----------------------------------------------------------------------------
 
+(**************************************************************************)
+(* A sequence of all elements from all sequences in the sequence  seqs  . *)
+(*                                                                        *)
+(* Examples:                                                              *)
+(*                                                                        *)
+(*  FlattenSeq(<< <<1,2>>, <<1>> >>) = << 1, 2, 1 >>                      *)
+(*  FlattenSeq(<< <<"a">>, <<"b">> >>) = <<"a", "b">>                     *)
+(*  FlattenSeq(<< "a", "b" >>) = "ab"                                     *)
+(**************************************************************************)
 FlattenSeq(seqs) ==
-  (**************************************************************************)
-  (* A sequence of all elements from all sequences in the sequence  seqs  . *)
-  (*                                                                        *)
-  (* Examples:                                                              *)
-  (*                                                                        *)
-  (*  FlattenSeq(<< <<1,2>>, <<1>> >>) = << 1, 2, 1 >>                      *)
-  (*  FlattenSeq(<< <<"a">>, <<"b">> >>) = <<"a", "b">>                     *)
-  (*  FlattenSeq(<< "a", "b" >>) = "ab"                                     *)
-  (**************************************************************************)
   IF Len(seqs) = 0 THEN seqs ELSE
     \* Not via  FoldSeq(\o, <<>>, seqs)  here to support strings with TLC.
     LET flatten[i \in 1..Len(seqs)] ==
         IF i = 1 THEN seqs[i] ELSE flatten[i-1] \o seqs[i]
     IN flatten[Len(seqs)]
 
+(**************************************************************************)
+(* A sequence of pairs where the i-th pair is formed from the i-th        *)
+(* element of s and the i-th element of t. The length of the result       *)
+(* sequence is the minimum of the lengths of s and t.                     *)
+(*                                                                        *)
+(* Examples:                                                              *)
+(*                                                                        *)
+(*  Zip(<< >>, << >>) = << >>                                             *)
+(*  Zip(<<"a">>, <<"b">>) = << <<"a", "b">> >>                            *)
+(*  Zip(<<1, 3>>, <<2, 4>>) = <<<<1, 2>>, <<3, 4>>>>                      *)
+(*  FlattenSeq(Zip(<<1, 3>>, <<2, 4>>)) = <<1, 2, 3, 4>>>>                *)
+(*  Zip(<< >>, <<1, 2, 3>>) = << >>                                       *)
+(*  Zip(<<"a", "b", "c">>, <<1>>) = << <<"a", 1>> >>                      *)
+(**************************************************************************)
 Zip(s, t) ==
-  (**************************************************************************)
-  (* A sequence of pairs where the i-th pair is formed from the i-th        *)
-  (* element of s and the i-th element of t. The length of the result       *)
-  (* sequence is the minimum of the lengths of s and t.                     *)
-  (*                                                                        *)
-  (* Examples:                                                              *)
-  (*                                                                        *)
-  (*  Zip(<< >>, << >>) = << >>                                             *)
-  (*  Zip(<<"a">>, <<"b">>) = << <<"a", "b">> >>                            *)
-  (*  Zip(<<1, 3>>, <<2, 4>>) = <<<<1, 2>>, <<3, 4>>>>                      *)
-  (*  FlattenSeq(Zip(<<1, 3>>, <<2, 4>>)) = <<1, 2, 3, 4>>>>                *)
-  (*  Zip(<< >>, <<1, 2, 3>>) = << >>                                       *)
-  (*  Zip(<<"a", "b", "c">>, <<1>>) = << <<"a", 1>> >>                      *)
-  (**************************************************************************)
   LET l == IF Len(s) <= Len(t) THEN Len(s) ELSE Len(t)
   IN  [ i \in 1 .. l |-> <<s[i], t[i] >> ]
 
+(**************************************************************************)
+(* A sequence where the i-th tuple contains the i-th element of  s  and   *)
+(*   t  in this order.  Not defined for  Len(s) # Len(t)                  *)
+(*                                                                        *)
+(* Examples:                                                              *)
+(*                                                                        *)
+(*  Interleave(<< >>, << >>) = << >>                                      *)
+(*  Interleave(<<"a">>, <<"b">>) = <<"a", "b">>                           *)
+(*  Interleave(<<1,3>>, <<2,4>>) = <<<<1>>, <<2>>, <<3>>, <<4>>>>         *)
+(*  FlattenSeq(Interleave(<<1,3>>,<<2,4>>)) = <<1, 2, 3, 4>>              *)
+(**************************************************************************)
 Interleave(s, t) ==
-  (**************************************************************************)
-  (* A sequence where the i-th tuple contains the i-th element of  s  and   *)
-  (*   t  in this order.  Not defined for  Len(s) # Len(t)                  *)
-  (*                                                                        *)
-  (* Examples:                                                              *)
-  (*                                                                        *)
-  (*  Interleave(<< >>, << >>) = << >>                                      *)
-  (*  Interleave(<<"a">>, <<"b">>) = <<"a", "b">>                           *)
-  (*  Interleave(<<1,3>>, <<2,4>>) = <<<<1>>, <<2>>, <<3>>, <<4>>>>         *)
-  (*  FlattenSeq(Interleave(<<1,3>>,<<2,4>>)) = <<1, 2, 3, 4>>              *)
-  (**************************************************************************)
   CASE Len(s) = Len(t) /\ Len(s) > 0 ->
         LET u[ i \in 1..Len(s) ] == 
                 IF i = 1 THEN << <<s[i]>> >> \o << <<t[i]>> >>
@@ -400,71 +400,71 @@ Interleave(s, t) ==
     [] Len(s) = Len(t) /\ Len(s) = 0 -> << <<>>, <<>> >>
     \* error "Interleave: sequences must have same length"
 
+(**************************************************************************)
+(* The set of all subsequences of the sequence  s  .  Note that the empty *)
+(* sequence  <<>>  is defined to be a subsequence of any sequence.        *)
+(**************************************************************************)
 SubSeqs(s) ==
-  (**************************************************************************)
-  (* The set of all subsequences of the sequence  s  .  Note that the empty *)
-  (* sequence  <<>>  is defined to be a subsequence of any sequence.        *)
-  (**************************************************************************)
   { SubSeq(s, i+1, j) : i, j \in 0..Len(s) }
 
+(**************************************************************************)
+(* SubSeqs(s)                                                             *)
+(*      \cup                                                              *)
+(*         { subsequences of s, with arbitrarily many elts removed }      *)
+(*                                                                        *)
+(* Example:                                                               *)
+(*  AllSubSeqs(<<1,2,3,4>>) =                                             *)
+(*       {<<>>, <<1>>, <<2>>, <<3>>, <<4>>,                               *)
+(*        <<1, 2>>, <<1, 3>>, <<1, 4>>,                                   *)
+(*        <<2, 3>>, <<2, 4>>, <<3, 4>>,                                   *)
+(*        <<1, 2, 3>>, <<1, 2, 4>>, <<1, 3, 4>>, <<2, 3, 4>>,             *)
+(*        <<1, 2, 3, 4>>}                                                 *)
+(**************************************************************************)
 AllSubSeqs(s) ==
-  (**************************************************************************)
-  (* SubSeqs(s)                                                             *)
-  (*      \cup                                                              *)
-  (*         { subsequences of s, with arbitrarily many elts removed }      *)
-  (*                                                                        *)
-  (* Example:                                                               *)
-  (*  AllSubSeqs(<<1,2,3,4>>) =                                             *)
-  (*       {<<>>, <<1>>, <<2>>, <<3>>, <<4>>,                               *)
-  (*        <<1, 2>>, <<1, 3>>, <<1, 4>>,                                   *)
-  (*        <<2, 3>>, <<2, 4>>, <<3, 4>>,                                   *)
-  (*        <<1, 2, 3>>, <<1, 2, 4>>, <<1, 3, 4>>, <<2, 3, 4>>,             *)
-  (*        <<1, 2, 3, 4>>}                                                 *)
-  (**************************************************************************)
   { FoldFunction(Snoc, <<>>, [ i \in D |-> s[i] ]) : D \in SUBSET DOMAIN s }
 
+(**************************************************************************)
+(* The (1-based) index of the beginning of the subsequence  s  of the     *)
+(* sequence  t  .  If  s  appears in  t  multiple times, this equals the  *)
+(* lowest index.                                                          *)
+(* For example:  IndexFirstSubSeq(<<1>>, <<1,1,1>>) = 1                   *)
+(**************************************************************************)
 IndexFirstSubSeq(s, t) ==
-  (**************************************************************************)
-  (* The (1-based) index of the beginning of the subsequence  s  of the     *)
-  (* sequence  t  .  If  s  appears in  t  multiple times, this equals the  *)
-  (* lowest index.                                                          *)
-  (* For example:  IndexFirstSubSeq(<<1>>, <<1,1,1>>) = 1                   *)
-  (**************************************************************************)
   LET last == CHOOSE i \in 0..Len(t) :
                 /\ s \in SubSeqs(SubSeq(t, 1, i))
                 /\ \A j \in 0..i-1 : s \notin SubSeqs(SubSeq(t, 1, j))
   IN last - (Len(s) - 1)
 
+(**************************************************************************)
+(* The sequence  t  with its subsequence  s  at position  i  replaced by  *)
+(* the sequence  r  .                                                     *)
+(**************************************************************************)
 ReplaceSubSeqAt(i, r, s, t) ==
-  (**************************************************************************)
-  (* The sequence  t  with its subsequence  s  at position  i  replaced by  *)
-  (* the sequence  r  .                                                     *)
-  (**************************************************************************)
   LET prefix == SubSeq(t, 1, i - 1)
       suffix == SubSeq(t, i + Len(s), Len(t))
   IN prefix \o r \o suffix 
 
+(**************************************************************************)
+(* The sequence  t  with its subsequence  s  replaced by the sequence  r  *)
+(**************************************************************************)
 ReplaceFirstSubSeq(r, s, t) ==
-  (**************************************************************************)
-  (* The sequence  t  with its subsequence  s  replaced by the sequence  r  *)
-  (**************************************************************************)
   IF s \in SubSeqs(t)
   THEN ReplaceSubSeqAt(IndexFirstSubSeq(s, t), r, s, t)
   ELSE t
 
+(**************************************************************************)
+(* The sequence  t  with all subsequences  s  replaced by the sequence  r *)
+(* Overlapping replacements are disambiguated by choosing the occurrence  *)
+(* closer to the beginning of the sequence.                               *)
+(*                                                                        *)
+(* Examples:                                                              *)
+(*                                                                        *)
+(*  ReplaceAllSubSeqs(<<>>,<<>>,<<>>) = <<>>                              *)
+(*  ReplaceAllSubSeqs(<<4>>,<<>>,<<>>) = <<4>>                            *)
+(*  ReplaceAllSubSeqs(<<2>>,<<3>>,<<1,3>>) = <<1,2>>                      *)
+(*  ReplaceAllSubSeqs(<<2,2>>,<<1,1>>,<<1,1,1>>) = <<2,2,1>>              *)
+(**************************************************************************)
 ReplaceAllSubSeqs(r, s, t) ==
-  (**************************************************************************)
-  (* The sequence  t  with all subsequences  s  replaced by the sequence  r *)
-  (* Overlapping replacements are disambiguated by choosing the occurrence  *)
-  (* closer to the beginning of the sequence.                               *)
-  (*                                                                        *)
-  (* Examples:                                                              *)
-  (*                                                                        *)
-  (*  ReplaceAllSubSeqs(<<>>,<<>>,<<>>) = <<>>                              *)
-  (*  ReplaceAllSubSeqs(<<4>>,<<>>,<<>>) = <<4>>                            *)
-  (*  ReplaceAllSubSeqs(<<2>>,<<3>>,<<1,3>>) = <<1,2>>                      *)
-  (*  ReplaceAllSubSeqs(<<2,2>>,<<1,1>>,<<1,1,1>>) = <<2,2,1>>              *)
-  (**************************************************************************)
   CASE s = t -> r
     [] r = s -> t  \* TLC optimization
     [] s # t /\ Len(s) = 0 ->

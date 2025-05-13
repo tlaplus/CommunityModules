@@ -43,63 +43,63 @@ LOCAL ToJsonString(F, D) == \* LOCAL just a hint for humans.
   ELSE
     ToJsonObjectString(F, D)
 
+(*************************************************************************)
+(* Converts the given value to a JSON string. Records are converted to   *)
+(* JSON objects, tuples to JSON arrays, and scalar values as their JSON  *)
+(* representation.                                                       *)
+(*************************************************************************)
 ToJson(value) ==
-  (*************************************************************************)
-  (* Converts the given value to a JSON string. Records are converted to   *)
-  (* JSON objects, tuples to JSON arrays, and scalar values as their JSON  *)
-  (* representation.                                                       *)
-  (*************************************************************************)
   IF DOMAIN value = {} THEN
     "{}"
   ELSE
     ToJsonString(value, DOMAIN value)
 
+(*************************************************************************)
+(* Converts the given tuple value to a JSON array.                       *)
+(*************************************************************************)
 ToJsonArray(value) ==
-  (*************************************************************************)
-  (* Converts the given tuple value to a JSON array.                       *)
-  (*************************************************************************)
   IF DOMAIN value = {} THEN
     "[]"
   ELSE
     ToJsonArrayString(value, DOMAIN value)
 
+(*************************************************************************)
+(* Converts the given tuple value to a JSON object.                      *)
+(*************************************************************************)
 ToJsonObject(value) ==
-  (*************************************************************************)
-  (* Converts the given tuple value to a JSON object.                      *)
-  (*************************************************************************)
   IF DOMAIN value = {} THEN
     "{}"
   ELSE
     ToJsonObjectString(value, DOMAIN value)
 
+(*************************************************************************)
+(* Serializes a tuple of values to the given file as (plain) JSON.       *)
+(* Records will be serialized as a JSON objects, and tuples as arrays.   *)
+(*************************************************************************)
 JsonSerialize(absoluteFilename, value) ==
-  (*************************************************************************)
-  (* Serializes a tuple of values to the given file as (plain) JSON.       *)
-  (* Records will be serialized as a JSON objects, and tuples as arrays.   *)
-  (*************************************************************************)
   TRUE
 
+(*************************************************************************)
+(* Deserializes JSON values from the given file. JSON objects will be    *)
+(* deserialized to records, and arrays will be deserialized to tuples.   *)
+(*************************************************************************)
 JsonDeserialize(absoluteFilename) ==
-  (*************************************************************************)
-  (* Deserializes JSON values from the given file. JSON objects will be    *)
-  (* deserialized to records, and arrays will be deserialized to tuples.   *)
-  (*************************************************************************)
   CHOOSE val : TRUE
 
+(*************************************************************************)
+(* Serializes a tuple of values to the given file as newline delimited   *)
+(* JSON. Records will be serialized as a JSON objects, and tuples as     *)
+(* arrays.                                                               *)
+(*************************************************************************)
 ndJsonSerialize(absoluteFilename, value) ==
-  (*************************************************************************)
-  (* Serializes a tuple of values to the given file as newline delimited   *)
-  (* JSON. Records will be serialized as a JSON objects, and tuples as     *)
-  (* arrays.                                                               *)
-  (*************************************************************************)
   TRUE
 
+(*************************************************************************)
+(* Deserializes JSON values from the given file. JSON values must be     *)
+(* separated by newlines. JSON objects will be deserialized to records,  *)
+(* and arrays will be deserialized to tuples.                            *)
+(*************************************************************************)
 ndJsonDeserialize(absoluteFilename) ==
-  (*************************************************************************)
-  (* Deserializes JSON values from the given file. JSON values must be     *)
-  (* separated by newlines. JSON objects will be deserialized to records,  *)
-  (* and arrays will be deserialized to tuples.                            *)
-  (*************************************************************************)
   CHOOSE val : TRUE
 
 =============================================================================
