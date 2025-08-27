@@ -12,9 +12,20 @@ LOCAL INSTANCE TLC
 
 -----------------------------------------------------------------------------
 
-(*************************************************************************)
-(* The image of the given sequence s. Cardinality(ToSet(s)) <= Len(s)    *)
-(* see https://en.wikipedia.org/wiki/Image_(mathematics)                 *)
+(*************************************************************************)  
+(* Convert a sequence to the set of its elements (sequence image).       *)
+(*                                                                       *)
+(* Returns the set of all elements that appear in the sequence,          *)
+(* effectively removing duplicates and order. The cardinality of the     *)
+(* result is at most the length of the sequence.                         *)
+(*                                                                       *)
+(* Examples:                                                             *)
+(*   ToSet(<<>>) = {}                                                    *)
+(*   ToSet(<<1>>) = {1}                                                  *)
+(*   ToSet(<<1,2,3>>) = {1,2,3}                                          *)
+(*   ToSet(<<1,1,2>>) = {1,2}                                            *)
+(*                                                                       *)
+(* See: https://en.wikipedia.org/wiki/Image_(mathematics)                *)
 (*************************************************************************)
 ToSet(s) ==
   { s[i] : i \in DOMAIN s }

@@ -49,15 +49,33 @@ ReduceSet(op(_, _), set, acc) ==
 MapThenSumSet(op(_), set) ==
    MapThenFoldSet(+, 0, op, LAMBDA s : CHOOSE x \in s : TRUE, set)
 
+(***************************************************************************)
+(* Flattens a set of sets into a single set containing all elements.       *)
+(*                                                                         *)
+(* This is equivalent to TLA+ UNION operator.                              *)
+(*                                                                         *)
+(* NOTE: Use UNION directly instead of this operator. FlattenSet is only   *)
+(* kept for backward compatibility.                                        *)
+(*                                                                         *)
+(* Example:                                                                *)
+(*   FlattenSet({{1,2}, {2,3}, {4}}) = {1,2,3,4}                           *)
+(*   FlattenSet({}) = {}                                                   *)
+(*   FlattenSet({{}}) = {}                                                 *)
+(***************************************************************************)
 FlattenSet(S) ==
    UNION S
 
 (***************************************************************************)
 (* The symmetric difference of two sets.                                   *)
 (*                                                                         *)
-(* The symmetric difference of sets A and B is the set containing all      *)
-(* elements that are present in either A or B but not in their             *)
-(* intersection.                                                           *)
+(* The symmetric difference of sets A and B contains elements that are     *)
+(* in exactly one of A or B, but not in both. This is equivalent to        *)
+(* (A ∪ B) \ (A ∩ B).                                                      *)
+(*                                                                         *)
+(* Examples:                                                               *)
+(*   SymDiff({1,2,3}, {2,3,4}) = {1,4}                                     *)
+(*   SymDiff({1,2}, {3,4}) = {1,2,3,4}                                     *)
+(*   SymDiff({1,2}, {1,2}) = {}                                            *)
 (***************************************************************************)
 SymDiff(A, B) == (A \ B) \cup (B \ A)
 
@@ -105,13 +123,24 @@ Min(S) == CHOOSE x \in S : \A y \in S : x =< y
 
 -----------------------------------------------------------------------------
 
-(***************************************************************************) 
-(* Compute all sets that contain one element from each of the input sets:  *)
+(***************************************************************************)
+(* Compute all possible choice sets from a collection of sets.             *)
 (*                                                                         *)
-(* Example:                                                                *)
-(*          Choices({{1,2}, {2,3}, {5}}) =                                 *)
-(*                         {{2, 5}, {1, 2, 5}, {1, 3, 5}, {2, 3, 5}}       *)
-(***************************************************************************) 
+(* Given a collection of sets, this operator equals all possible sets      *)
+(* that can be formed by choosing exactly one element from each input set. *)
+(* This is related to the Cartesian product.                               *)
+(*                                                                         *)
+(* The implementation uses choice functions: functions that map each       *)
+(* input set to one of its elements. The range of each such function       *)
+(* gives us one possible choice set.                                       *)
+(*                                                                         *)
+(* Examples:                                                               *)
+(*   Choices({{1,2}, {3}}) = {{1,3}, {2,3}}                                *)
+(*   Choices({{1,2}, {2,3}, {5}}) =                                        *)
+(*     {{1,2,5}, {1,3,5}, {2,3,5}, {2,5}}                                  *)
+(*     (Note: {2,5} appears because we choose 2 from both sets)            *)
+(*   Choices({}) = {{}}  (empty choice from empty collection)              *)
+(***************************************************************************)
 Choices(Sets) == LET ChoiceFunction(Ts) == { f \in [Ts -> UNION Ts] : 
                                                \A T \in Ts : f[T] \in T }
                  IN  { Range(f) : f \in ChoiceFunction(Sets) }

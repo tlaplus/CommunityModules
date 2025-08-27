@@ -1,4 +1,18 @@
 ------------------------------ MODULE IOUtils ------------------------------
+(***************************************************************************)
+(* This module provides operators for input/output operations and          *)
+(* external process execution. All operators are overridden by Java        *)
+(* implementations that perform the actual I/O operations.                 *)
+(*                                                                         *)
+(* The module enables TLA+ specifications to:                              *)
+(*   - Execute external commands and capture their output                  *)
+(*   - Serialize/deserialize TLA+ values to/from files                     *)
+(*   - Access environment variables                                        *)
+(*   - Interface with external systems during model checking               *)
+(*                                                                         *)
+(* Note: Some operators in this module evaluate to TRUE in TLA+ but        *)
+(* perform side effects when executed by TLC with the Java overrides.      *)
+(***************************************************************************)
 
 LOCAL INSTANCE TLC
 LOCAL INSTANCE Integers
@@ -6,8 +20,27 @@ LOCAL INSTANCE Integers
   (* Imports the definitions from the modules, but doesn't export them.    *)
   (*************************************************************************)
 
+(***************************************************************************)
+(* Serializes the given value to the file in Java's object serialization   *)
+(* format.                                                                 *)
+(*                                                                         *)
+(* Parameters:                                                             *)
+(*   - val: The TLA+ value to serialize                                    *)
+(*   - absoluteFilename: Absolute path to the output file                  *)
+(*   - compress: Boolean indicating whether to compress the output         *)
+(***************************************************************************)
 IOSerialize(val, absoluteFilename, compress) == TRUE
 
+(***************************************************************************)
+(* Deserializes a TLA+ value from a file in Java's object serialization    *)
+(* format.                                                                 *)
+(*                                                                         *)
+(* Parameters:                                                             *)
+(*   - absoluteFilename: Absolute path to the input file                   *)
+(*   - compressed: Boolean indicating whether the file is compressed       *)
+(*                                                                         *)
+(* Returns the deserialized TLA+ value.                                    *)
+(***************************************************************************)
 IODeserialize(absoluteFilename, compressed) == CHOOSE val : TRUE
 
 (*******************************************************************************)
@@ -45,7 +78,7 @@ IOExec(command) ==
 (*******************************************************************************)
 (* See IOExec                                                                  *)
 (*     LET ENV = {<<"Var1", "SomeVal">>, <<"Var2", 42>>}                       *)
-(*     IN IOEnvExec(ENV, <<"ls", "-lah", "/tmp">>)                            *)
+(*     IN IOEnvExec(ENV, <<"ls", "-lah", "/tmp">>)                             *)
 (*******************************************************************************)
 IOEnvExec(env, command) ==
   CHOOSE r \in [exitValue : Int, stdout : STRING, stderr : STRING] : TRUE
@@ -75,10 +108,21 @@ IOEnvExecTemplate(env, commandTemplate, parameters) ==
 IOEnv ==
   CHOOSE r \in [STRING -> STRING] : TRUE
 
-(*************************************************************************)
-(* Assuming the environment variable  SomeEnvVar  is set to  42,         *)
-(*  atoi(IOEnv.SomeEnvVar)  equals  42  .                                *)
-(*************************************************************************)
+(***************************************************************************)
+(* Converts a string representation of a number to a number.               *)
+(*                                                                         *)
+(* This is useful for processing environment variables or command output   *)
+(* that contains numeric values as strings.                                *)
+(*                                                                         *)
+(* Examples:                                                               *)
+(*   atoi("42") = 42                                                       *)
+(*   atoi("-17") = -17                                                     *)
+(*   atoi("0") = 0                                                         *)
+(*                                                                         *)
+(* Usage with environment variables:                                       *)
+(*   Assuming environment variable PORT is set to "8080":                  *)
+(*   atoi(IOEnv.PORT) = 8080                                               *)
+(***************************************************************************)
 atoi(str) ==
   CHOOSE i \in Int : ToString(i) = str
 

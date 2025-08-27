@@ -1,4 +1,18 @@
 -------------------------------- MODULE CSV --------------------------------
+(***************************************************************************)
+(* This module provides operators for reading and writing CSV (Comma       *)
+(* Separated Values) files. These operators are overridden by Java         *)
+(* implementations that perform the actual file I/O operations.            *)
+(*                                                                         *)
+(* The CSV module is particularly useful for:                              *)
+(*   - Logging TLA+ values during model checking                           *)
+(*   - Exporting computation results for analysis                          *)
+(*   - Creating test data files                                            *)
+(*   - Interfacing with external data processing tools                     *)
+(*                                                                         *)
+(* Note: All operators in this module evaluate to TRUE in TLA+ but         *)
+(* perform side effects when executed by TLC with the Java overrides.      *)
+(***************************************************************************)
 
 LOCAL INSTANCE TLC
 LOCAL INSTANCE Integers
@@ -6,31 +20,82 @@ LOCAL INSTANCE Integers
   (* Imports the definitions from the modules, but doesn't export them.    *)
   (*************************************************************************)
 
+(***************************************************************************)
+(* Writes a sequence of values to a CSV file using a format template.      *)
+(*                                                                         *)
+(* Parameters:                                                             *)
+(*   - template: Printf-style format string with placeholders              *)
+(*   - val: Sequence of values to write                                    *)
+(*   - file: Absolute path to the output file                              *)
+(*                                                                         *)
+(* The template uses Java's String.format syntax:                          *)
+(*   - %1$s refers to the first element in val                             *)
+(*   - %2$s refers to the second element in val, etc.                      *)
+(*                                                                         *)
+(* Example:                                                                *)
+(*   CSVWrite("%1$s#%2$s#%3$s",                                            *)
+(*            <<"abc", 42, {"x", "y"}>>,                                   *)
+(*            "/tmp/output.csv")                                           *)
+(*   Writes: "abc#42#{\"x\", \"y\"}" to /tmp/output.csv                    *)
+(***************************************************************************)
 CSVWrite(template, val, file) == 
-   (*
-       CSVWrite("%1$s#%2$s#%3$s", 
-           <<"abc", 42, {"x", "y"} >>, "/tmp/out.csv")
-    *)
    TRUE
 
+(***************************************************************************)
+(* Writes a record to a CSV file with optional headers.                    *)
+(*                                                                         *)
+(* Parameters:                                                             *)
+(*   - record: A record (function) to write                                *)
+(*   - delim: Field delimiter string                                       *)
+(*   - headers: Boolean indicating whether to write headers                *)
+(*   - file: Absolute path to the output file                              *)
+(*                                                                         *)
+(* If headers is TRUE and the file is empty, field names are written       *)
+(* as the first row. The record values are then written as a data row.     *)
+(*                                                                         *)
+(* Example:                                                                *)
+(*   CSVWriteRecord([name |-> "Alice", age |-> 30],                        *)
+(*                  ",",                                                   *)
+(*                  CSVRecords("/tmp/people.csv") = 0,                     *)
+(*                  "/tmp/people.csv")                                     *)
+(*   First call writes: "name,age" then "Alice,30"                         *)
+(*   Subsequent calls write only data rows                                 *)
+(***************************************************************************)
 CSVWriteRecord(record, delim, headers, file) == 
-   (*
-       CSVWriteRecord([foo |-> 42] @@ [bar |-> "frob"], 
-           CSVRecords("/tmp/out.csv") = 0, "#", "/tmp/out.csv")
-    *)
    TRUE
 
+(***************************************************************************)
+(* Reads a CSV file and returns the data as a sequence of records.         *)
+(*                                                                         *)
+(* Parameters:                                                             *)
+(*   - columns: Sequence of column names for the records                   *)
+(*   - delimiter: Field delimiter character                                *)
+(*   - file: Absolute path to the input file                               *)
+(*                                                                         *)
+(* Returns a sequence where each element is a record mapping column        *)
+(* names to their string values. All values are strings and must be        *)
+(* converted if numeric processing is needed.                              *)
+(*                                                                         *)
+(* Example:                                                                *)
+(*   CSVRead(<<"name", "age", "city">>, ",", "/tmp/people.csv")            *)
+(*   might return:                                                         *)
+(*   <<[name |-> "Alice", age |-> "30", city |-> "NYC"],                   *)
+(*     [name |-> "Bob", age |-> "25", city |-> "LA"]>>                     *)
+(***************************************************************************)
 CSVRead(columns, delimiter, file) == 
-   (*
-       CSVRead(<<"C1", "C2", "C3">>, "#", "/tmp/out.csv")
-       
-       << [ C1 |-> "\"abc\"", C2 |-> "42", C3 |-> "{"\"x\"", "\"y\""}" ] >>
-    *)
    TRUE
 
-
+(***************************************************************************)
+(* Returns the number of records in a CSV file.                           *)
+(*                                                                         *)
+(* This includes all rows in the file, including any header row.          *)
+(* For files that don't exist, returns 0.                                 *)
+(*                                                                         *)
+(* Example:                                                                *)
+(*   CSVRecords("/tmp/data.csv") = 5  \* File has 5 rows                  *)
+(*   CSVRecords("/nonexistent.csv") = 0                                   *)
+(***************************************************************************)
 CSVRecords(file) == 
-   (* The number of records in the given file (including headers if any). *)
    CHOOSE n : n \in Nat
 
 ============================================================================

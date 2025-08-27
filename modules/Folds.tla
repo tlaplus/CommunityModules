@@ -1,4 +1,15 @@
 ------------------------------- MODULE Folds -------------------------------
+(***************************************************************************)
+(* This module provides a general framework for folding operations over    *)
+(* sets with flexible element selection and transformation.                *)
+(*                                                                         *)
+(* The main operator MapThenFoldSet is the foundation for many other       *)
+(* folding operations found in:                                            *)
+(*   - FiniteSetsExt.FoldSet (simplified for sets)                         *)
+(*   - Functions.FoldFunction (specialized for functions)                  *)
+(*   - SequencesExt.FoldSeq (specialized for sequences)                    *)
+(*                                                                         *)
+(***************************************************************************)
 
 MapThenFoldSet(op(_,_), base, f(_), choose(_), S) ==
 (******************************************************************************)
