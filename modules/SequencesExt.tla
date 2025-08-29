@@ -261,7 +261,8 @@ IsStrictSuffix(s, t) ==
 (* The set of prefixes of the sequence s, including the empty sequence.   *)
 (**************************************************************************)
 Prefixes(s) ==
-  { SubSeq(s, 1, l) : l \in 0..Len(s) } \* 0.. for <<>>
+  \* 0.. for <<>>
+  { SubSeq(s, 1, l) : l \in 0..Len(s) }
 
 (**************************************************************************)
 (* The set of all sequences that are prefixes of the set of sequences S.  *)
@@ -408,8 +409,8 @@ Interleave(s, t) ==
                 IF i = 1 THEN << <<s[i]>> >> \o << <<t[i]>> >>
                 ELSE u[i-1] \o << <<s[i]>> >> \o << <<t[i]>> >>
         IN Last(u)
-    [] Len(s) = Len(t) /\ Len(s) = 0 -> << <<>>, <<>> >>
     \* error "Interleave: sequences must have same length"
+    [] Len(s) = Len(t) /\ Len(s) = 0 -> << <<>>, <<>> >>
 
 (**************************************************************************)
 (* The set of all subsequences of the sequence  s  .  Note that the empty *)
