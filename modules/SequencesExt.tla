@@ -408,8 +408,8 @@ Interleave(s, t) ==
                 IF i = 1 THEN << <<s[i]>> >> \o << <<t[i]>> >>
                 ELSE u[i-1] \o << <<s[i]>> >> \o << <<t[i]>> >>
         IN Last(u)
-    [] Len(s) = Len(t) /\ Len(s) = 0 -> << <<>>, <<>> >>
     \* error "Interleave: sequences must have same length"
+    [] Len(s) = Len(t) /\ Len(s) = 0 -> << <<>>, <<>> >>
 
 (**************************************************************************)
 (* The set of all subsequences of the sequence  s  .  Note that the empty *)
