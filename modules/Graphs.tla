@@ -3,6 +3,7 @@ LOCAL INSTANCE Naturals
 LOCAL INSTANCE Sequences
 LOCAL INSTANCE SequencesExt
 LOCAL INSTANCE FiniteSets
+LOCAL INSTANCE Relation
 
 IsDirectedGraph(G) ==
    /\ G = [node |-> G.node, edge |-> G.edge]
@@ -146,6 +147,30 @@ Predecessors(G, n) == {m \in G.node: << m, n >> \in G.edge}
 (*   AllPredecessors(G, {1, 2}) = {2, 3}                                      *)
 (******************************************************************************)
 AllPredecessors(G, S) == UNION {Predecessors(G, n): n \in S}
+
+(***************************************************************************)
+(* Returns the set of all nodes in graph G that have a path to node n.     *)
+(*                                                                         *)
+(* Example:                                                                *)
+(*   G == [node |-> {1, 2, 3, 4}, edge |-> {<<4, 2>>, <<2, 1>>, <<3, 1>>}] *)
+(*   Ancestors(G, 1) = {2, 3, 4}                                           *)
+(***************************************************************************)
+Ancestors(G, n) ==
+  LET EdgeRelation ==
+        [<<x, y>> \in G.node \X G.node |-> <<x, y>> \in G.edge]
+  IN  { m \in G.node : TransitiveClosure(EdgeRelation, G.node)[m, n] }
+
+(***************************************************************************)
+(* Returns the set of all nodes in graph G that are reachable from node n *)
+(*                                                                         *)
+(* Example:                                                                *)
+(*   G == [node |-> {1, 2, 3, 4}, edge |-> {<<4, 2>>, <<2, 1>>, <<3, 1>>}] *)
+(*   Descendants(G, 4) = {1, 2}                                            *)
+(***************************************************************************)
+Descendants(G, n) ==
+  LET EdgeRelation ==
+        [<<x, y>> \in G.node \X G.node |-> <<x, y>> \in G.edge]
+  IN  { m \in G.node : TransitiveClosure(EdgeRelation, G.node)[n, m] }
 
 (*************************************************************)
 (* Returns the in-degree of node n in directed graph G.      *)
