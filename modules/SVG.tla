@@ -19,17 +19,17 @@ LOCAL Merge(r1, r2) ==
         D2 == DOMAIN r2 IN
     [k \in (D1 \cup D2) |-> IF k \in D1 THEN r1[k] ELSE r2[k]]
 
-LOCAL SVGElem(_name, _attrs, _children, _innerText) == 
-    (**************************************************************************)
-    (* SVG element constructor.                                               *)
-    (*                                                                        *)
-    (* An SVG element like:                                                   *)
-    (*                                                                        *)
-    (* [name |-> "elem", attrs |-> [k1 |-> "0", k2 |-> "1"], children |->     *)
-    (* <<>>, innerText |-> ""]                                                *)
-    (*                                                                        *)
-    (* would represent the SVG element '<elem k1="0" k2="1"></elem>'          *)
-    (**************************************************************************)
+(**************************************************************************)
+(* SVG element constructor.                                               *)
+(*                                                                        *)
+(* An SVG element like:                                                   *)
+(*                                                                        *)
+(* [name |-> "elem", attrs |-> [k1 |-> "0", k2 |-> "1"], children |->     *)
+(* <<>>, innerText |-> ""]                                                *)
+(*                                                                        *)
+(* would represent the SVG element '<elem k1="0" k2="1"></elem>'          *)
+(**************************************************************************)
+SVGElem(_name, _attrs, _children, _innerText) == 
     [name       |-> _name, 
      attrs      |-> _attrs, 
      children   |-> _children,
@@ -95,6 +95,18 @@ Text(x, y, text, attrs) ==
     LET svgAttrs == [x |-> ToString(x), 
                      y |-> ToString(y)] IN
     SVGElem("text", Merge(svgAttrs, attrs), <<>>, text) 
+
+(**************************************************************************)
+(* Image element. 'x', 'y', 'width', and 'height' should be given as      *)
+(* integers, and 'href' given as a string specifying the image source.    *)
+(**************************************************************************)
+Image(x, y, width, height, href, attrs) == 
+    LET svgAttrs == ("xlink:href" :> href @@
+                     "x"         :> ToString(x) @@
+                     "y"         :> ToString(y) @@
+                     "width"     :> ToString(width) @@
+                     "height"    :> ToString(height)) IN
+    SVGElem("image", Merge(svgAttrs, attrs), <<>>, "")
 
 (**************************************************************************)
 (* Group element.  'children' is a sequence of elements that will be      *)
