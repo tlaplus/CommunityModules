@@ -3,6 +3,8 @@ name: CI
 on: 
  repository_dispatch:
  push:
+    branches:
+      - 'master'
     paths-ignore:
       - README.md
 
