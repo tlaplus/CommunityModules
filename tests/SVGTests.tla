@@ -138,5 +138,62 @@ ASSUME(LET
       IN
         AssertEq(SVGElemToString(elem), "<text x='0' y='0'>&lt;&lt;1, 2, 3&gt;&gt;</text>"))
 
+(******************************************************************************)
+(* Test SVGDoc operator                                                       *)
+(******************************************************************************)
+
+\* Test SVGDoc with basic elements and viewBox
+ASSUME(LET 
+        circle == Circle(50, 50, 20, [fill |-> "blue"])
+        rect == Rect(10, 10, 30, 40, [fill |-> "red"])
+        doc == SVGDoc(<<circle, rect>>, 0, 0, 100, 100, [width |-> "200", height |-> "200"])
+        expected == [ name |-> "svg", 
+                      attrs |-> ("xmlns:xlink" :> "http://www.w3.org/1999/xlink" @@
+                                 "xmlns" :> "http://www.w3.org/2000/svg" @@
+                                 "viewBox" :> "0 0 100 100" @@
+                                 "width" :> "200" @@
+                                 "height" :> "200"), 
+                      children |-> <<<<circle, rect>>>>, 
+                      innerText |-> ""] IN
+        AssertEq(doc, expected))
+
+\* Test SVGDoc with empty children and no additional attributes
+ASSUME(LET 
+        doc == SVGDoc(<<>>, 10, 20, 800, 600, <<>>)
+        expected == [ name |-> "svg", 
+                      attrs |-> ("xmlns:xlink" :> "http://www.w3.org/1999/xlink" @@
+                                 "xmlns" :> "http://www.w3.org/2000/svg" @@
+                                 "viewBox" :> "10 20 800 600"), 
+                      children |-> <<<<>>>>, 
+                      innerText |-> ""] IN
+        AssertEq(doc, expected))
+
+\* Test SVGDoc string conversion
+ASSUME(LET 
+        text == Text(25, 25, "Hello SVG", [fill |-> "green"])
+        doc == SVGDoc(text, 0, 0, 50, 50, [id |-> "test-svg"])
+        expectedString == "<svg id='test-svg' xmlns:xlink='http://www.w3.org/1999/xlink' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 50 50'><text x='25' y='25' fill='green'>Hello SVG</text></svg>" IN
+        AssertEq(SVGElemToString(doc), expectedString))
+
+(******************************************************************************)
+(* Test SVGSerialize operator                                                 *)
+(******************************************************************************)
+
+\* Test SVGSerialize creates a file (we can't directly test file creation in TLA+,
+\* but we can test that the operator doesn't crash and returns the expected result)
+ASSUME(LET 
+        circle == Circle(25, 25, 15, [fill |-> "purple"])
+        doc == SVGDoc(circle, 0, 0, 50, 50, [width |-> "100", height |-> "100"])
+        result == SVGSerialize(doc, "test_frame_", 1) IN
+        \* SVGSerialize should return TRUE if successful (based on IOUtils pattern)
+        result.exitValue = 0)
+
+\* Test SVGSerialize with different frame numbers
+ASSUME(LET 
+        line == Line(0, 0, 50, 50, "stroke" :> "black" @@ "stroke-width" :> "2")
+        doc == SVGDoc(line, 0, 0, 50, 50, <<>>)
+        result == SVGSerialize(doc, "animation_", 42) IN
+        result.exitValue = 0)
+
 
 =============================================================================
