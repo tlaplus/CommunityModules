@@ -123,6 +123,28 @@ Svg(children, attrs) ==
     SVGElem("svg", attrs, children, "")
 
 (**************************************************************************)
+(* Creates a complete SVG document with viewBox and additional attributes.*)
+(*                                                                        *)
+(* Parameters:                                                            *)
+(*   children: A sequence of SVG elements to include in the document      *)
+(*   vbX, vbY: The x,y coordinates of the top-left corner of the viewBox  *)
+(*   vbW, vbH: The width and height of the viewBox                        *)
+(*   attrs:    Additional attributes to merge with the SVG root element   *)
+(*                                                                        *)
+(* The viewBox defines the coordinate system and viewport dimensions for  *)
+(* the SVG content. This is essential for proper scaling and positioning  *)
+(* of elements within the document.                                       *)
+(**************************************************************************)
+SVGDoc(children, vbX, vbY, vbW, vbH, attrs) ==
+    LET svgAttrs == ("xmlns:xlink" :> "http://www.w3.org/1999/xlink" @@
+                     "xmlns"       :> "http://www.w3.org/2000/svg" @@
+                     "viewBox" :> ToString(vbX) \o " " \o
+                                  ToString(vbY) \o " " \o
+                                  ToString(vbW) \o " " \o
+                                  ToString(vbH)) IN
+    Svg(<<children>>, Merge(svgAttrs, attrs))
+
+(**************************************************************************)
 (* Convert an SVG element record into its string representation.          *)
 (*                                                                        *)
 (* This operator is expected to be replaced by a Java module override.    *)
@@ -189,5 +211,34 @@ NodesOfDirectedMultiGraph(nodes, edges, options) ==
 PointOnLine(from, to, segment) ==
     [x |-> from.x + ((to.x - from.x) \div segment), 
      y |-> from.y + ((to.y - from.y) \div segment)]
+
+-------------------------------------------------------------------------------
+
+(**************************************************************************)
+(* Serializes an SVG element to a file on disk.                           *)
+(*                                                                        *)
+(* Parameters:                                                            *)
+(*   svg:             The SVG element/document to serialize               *)
+(*   frameNamePrefix: String prefix for the output filename               *)
+(*   frameNumber:     Numeric identifier appended to create unique files  *)
+(*                                                                        *)
+(* Creates a file named "<frameNamePrefix><frameNumber>.svg" containing   *)
+(* the serialized SVG content. This is useful for generating animation    *)
+(* frames or saving visualization snapshots during model checking.        *)
+(*                                                                        *)
+(* Example usage:                                                         *)
+(*   SVGSerialize(SVGDoc(myElements, 0, 0, 800, 600, <<>>),               *)
+(*                "svg_frame_", TLCGet("level"))                          *)
+(*                                                                        *)
+(* This creates files like: svg_frame_1.svg,                              *)
+(*                          svg_frame_2.svg, etc.                         *)
+(**************************************************************************)
+SVGSerialize(svg, frameNamePrefix, frameNumber) ==
+    LET IO == INSTANCE IOUtils IN
+    IO!Serialize(
+        SVGElemToString(svg),
+        frameNamePrefix \o ToString(frameNumber) \o ".svg",
+        [format |-> "TXT", charset |-> "UTF-8", 
+         openOptions |-> <<"WRITE", "CREATE", "TRUNCATE_EXISTING">>])
 
 =============================================================================
