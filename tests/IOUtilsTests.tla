@@ -98,6 +98,15 @@ ASSUME AssertError(
            "The argument of atoi should be a string, but instead it is:\n\"foo\"", 
            atoi("foo"))
 
+\* Test zeroPadN function with various inputs
+ASSUME(AssertEq(zeroPadN(42, 5), "00042"))
+ASSUME(AssertEq(zeroPadN(123, 3), "123"))
+ASSUME(AssertEq(zeroPadN(7, 1), "7"))
+ASSUME(AssertEq(zeroPadN(0, 4), "0000"))
+ASSUME(AssertEq(zeroPadN(999, 2), "999"))
+ASSUME(AssertEq(zeroPadN(1000, 6), "001000"))
+ASSUME(AssertEq(zeroPadN(0, 1), "0"))
+
 ---------------------------------------------------------------------------------------------------------------------------
 
 ASSUME PrintT("IOUtilsTests!C")

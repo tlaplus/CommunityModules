@@ -16,6 +16,8 @@
 
 LOCAL INSTANCE TLC
 LOCAL INSTANCE Integers
+LOCAL INSTANCE Sequences
+LOCAL INSTANCE SequencesExt
   (*************************************************************************)
   (* Imports the definitions from the modules, but doesn't export them.    *)
   (*************************************************************************)
@@ -126,4 +128,32 @@ IOEnv ==
 atoi(str) ==
   CHOOSE i \in Int : ToString(i) = str
 
+(***************************************************************************)
+(* Pads a natural number with leading zeros to achieve a specified width.  *)
+(*                                                                         *)
+(* This function converts a natural number to a string and pads it with    *)
+(* leading zeros if necessary to reach the specified width. If the         *)
+(* number's string representation is already equal to or longer than the   *)
+(* specified width, no padding is added.                                   *)
+(*                                                                         *)
+(* Parameters:                                                             *)
+(*   - n: The natural number to be padded (must be >= 0)                   *)
+(*   - width: The desired total width of the resulting string              *)
+(*                                                                         *)
+(* Examples:                                                               *)
+(*   zeroPadN(42, 5) = "00042"                                             *)
+(*   zeroPadN(123, 3) = "123"                                              *)
+(*   zeroPadN(7, 1) = "7"                                                  *)
+(*   zeroPadN(0, 4) = "0000"                                               *)
+(*                                                                         *)
+(* Note: Negative numbers are not supported and may produce unexpected     *)
+(* results.                                                                *)
+(*                                                                         *)
+(* Returns a sequence of characters representing the zero-padded number.   *)
+(***************************************************************************)
+zeroPadN(n, width) ==
+    LET s == ToString(n)
+        padLen == width - Len(s)
+        zeros == [i \in 1..padLen |-> "0"]
+    IN FoldLeft(LAMBDA acc, z: acc \o z, "", zeros) \o s
 ============================================================================
