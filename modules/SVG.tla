@@ -230,14 +230,16 @@ PointOnLine(from, to, segment) ==
 (*   SVGSerialize(SVGDoc(myElements, 0, 0, 800, 600, <<>>),               *)
 (*                "svg_frame_", TLCGet("level"))                          *)
 (*                                                                        *)
-(* This creates files like: svg_frame_1.svg,                              *)
-(*                          svg_frame_2.svg, etc.                         *)
+(* This creates files like: svg_frame_01.svg,                             *)
+(*                          svg_frame_02.svg, etc.                        *)
 (**************************************************************************)
 SVGSerialize(svg, frameNamePrefix, frameNumber) ==
     LET IO == INSTANCE IOUtils IN
     IO!Serialize(
         SVGElemToString(svg),
-        frameNamePrefix \o ToString(frameNumber) \o ".svg",
+        \* Construct the filename using the prefix and a zero-padded frame
+        \* number so that files sort correctly lexicographically.
+        frameNamePrefix \o IO!zeroPadN(frameNumber, 2) \o ".svg",
         [format |-> "TXT", charset |-> "UTF-8", 
          openOptions |-> <<"WRITE", "CREATE", "TRUNCATE_EXISTING">>])
 
