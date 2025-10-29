@@ -37,6 +37,27 @@ LEMMA MapThenSumSetMonotonic ==
     PROVE MapThenSumSet(op, S \cup {e}) >= MapThenSumSet(op, S)
 PROOF OMITTED \* Proof in FiniteSetsExt_theorems_proofs.tla
 
+LEMMA MapThenSumSetMonotonicOpGE ==
+    ASSUME
+        NEW S, IsFiniteSet(S),
+        NEW op1(_), \A s \in S : op1(s) \in Nat,
+        NEW op2(_), \A s \in S : op2(s) \in Nat,
+        \A s \in S : op2(s) >= op1(s)
+    PROVE
+        MapThenSumSet(op2, S) >= MapThenSumSet(op1, S)
+PROOF OMITTED \* Proof in FiniteSetsExt_theorems_proofs.tla
+
+LEMMA MapThenSumSetMonotonicOpGT ==
+    ASSUME
+        NEW S, IsFiniteSet(S),
+        NEW op1(_), \A s \in S : op1(s) \in Nat,
+        NEW op2(_), \A s \in S : op2(s) \in Nat,
+        \A s \in S : op2(s) >= op1(s),
+        \E s \in S : op2(s) > op1(s)
+    PROVE
+        MapThenSumSet(op2, S) > MapThenSumSet(op1, S)
+PROOF OMITTED \* Proof in FiniteSetsExt_theorems_proofs.tla
+
 LEMMA MapThenSumSetZero ==
     ASSUME NEW S, IsFiniteSet(S),
            NEW op(_), \A e \in S: op(e) \in Nat,

@@ -3,6 +3,8 @@ name: CI
 on: 
  repository_dispatch:
  push:
+    branches:
+      - 'master'
     paths-ignore:
       - README.md
 
@@ -10,7 +12,10 @@ jobs:
   build:
 
     runs-on: ubuntu-latest
-
+    permissions:
+      contents: write # Required by actions/create-release@v1
+      packages: read
+ 
     steps:
     - uses: actions/checkout@v2
     - name: Setup tmate session
@@ -79,6 +84,7 @@ jobs:
         asset_name: CommunityModules-deps.jar
         asset_content_type: application/zip
     - name: Repository Dispatch
+      if: github.event.client_payload.source != 'tlaplus'
       uses: peter-evans/repository-dispatch@v3
       with:
         token: ${{ secrets.REPO_DISPATCH_TOKEN }}
