@@ -49,7 +49,7 @@ import util.UniqueString;
 
 public class CSV {
 
-	@TLAPlusOperator(identifier = "CSVWriteRecord", module = "CSV", minLevel = 1, warn = false)
+	@TLAPlusOperator(identifier = "CSVWriteRecord", module = "CSV", warn = false)
 	public static Value writeRecord(final Value parameter, final StringValue delim, final BoolValue headers,
 			final StringValue absolutePath) throws IOException {
 		
@@ -80,7 +80,7 @@ public class CSV {
 		return BoolValue.ValTrue;
 	}
 
-	@TLAPlusOperator(identifier = "CSVWrite", module = "CSV", minLevel = 1, warn = false)
+	@TLAPlusOperator(identifier = "CSVWrite", module = "CSV", warn = false)
 	public static Value write(final StringValue template, final Value parameter, final StringValue absolutePath)
 			throws IOException {
 		final TupleValue tv = (TupleValue) parameter.toTuple();
@@ -97,7 +97,7 @@ public class CSV {
 		return BoolValue.ValTrue;
 	}
 
-	@TLAPlusOperator(identifier = "CSVRead", module = "CSV", minLevel = 1, warn = false)
+	@TLAPlusOperator(identifier = "CSVRead", module = "CSV", warn = false)
 	public static Value read(final Value columns, final StringValue delim, final StringValue absolutePath)
 			throws IOException {
 		
@@ -127,7 +127,7 @@ public class CSV {
 		return new TupleValue(records);
 	}
 
-	@TLAPlusOperator(identifier = "CSVRecords", module = "CSV", minLevel = 1, warn = false)
+	@TLAPlusOperator(identifier = "CSVRecords", module = "CSV", warn = false)
 	public static Value records(final StringValue absolutePath)
 			throws IOException {
 		final Path path = Paths.get(absolutePath.val.toString());
