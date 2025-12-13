@@ -14,21 +14,19 @@ BY MapThenFoldSetEmpty, Zenon DEF FoldSet
 THEOREM FoldSetNonempty ==
     ASSUME NEW op(_,_), NEW base, NEW S, S # {}, IsFiniteSet(S)
     PROVE  \E x \in S : FoldSet(op, base, S) = op(x, FoldSet(op, base, S \ {x}))
-<1>1. \A T \in SUBSET S : T # {} => (CHOOSE y \in T : TRUE) \in T
+<1>1. \A T : T # {} => (CHOOSE y \in T : TRUE) \in T
   OBVIOUS
-<1>. QED
-  BY <1>1, MapThenFoldSetNonempty, Isa DEF FoldSet
+<1>. QED  BY <1>1, MapThenFoldSetNonempty, Isa DEF FoldSet
 
 THEOREM FoldSetType ==
     ASSUME NEW Typ, NEW op(_,_), NEW base \in Typ,
            NEW S \in SUBSET Typ, IsFiniteSet(S),
            \A t,u \in Typ : op(t,u) \in Typ
     PROVE  FoldSet(op, base, S) \in Typ
-<1>1. /\ \A T \in SUBSET S : T # {} => (CHOOSE y \in T : TRUE) \in T
+<1>1. /\ \A T : T # {} => (CHOOSE y \in T : TRUE) \in T
       /\ \A x \in S : x \in Typ
   OBVIOUS
-<1>. QED
-  BY <1>1, MapThenFoldSetType, Isa DEF FoldSet
+<1>. QED  BY <1>1, MapThenFoldSetType, Isa DEF FoldSet
 
 THEOREM FoldSetAC ==
     ASSUME NEW Typ, NEW op(_,_), NEW base \in Typ, 
@@ -38,10 +36,25 @@ THEOREM FoldSetAC ==
            NEW S \in SUBSET Typ, IsFiniteSet(S),
            NEW x \in S
     PROVE  FoldSet(op, base, S) = op(x, FoldSet(op, base, S \ {x}))
-<1>. /\ \A T \in SUBSET S : T # {} => (CHOOSE t \in T : TRUE) \in T 
+<1>. /\ \A T : T # {} => (CHOOSE t \in T : TRUE) \in T 
      /\ \A s \in S : s \in Typ
   OBVIOUS
-<1>. QED  BY MapThenFoldSetAC, IsaM("iprover") DEF FoldSet
+<1>. QED  BY MapThenFoldSetAC, Isa DEF FoldSet
+
+THEOREM FoldSetDisjointUnion ==
+    ASSUME NEW Typ, NEW op(_,_), NEW base \in Typ, 
+           \A t,u \in Typ : op(t,u) \in Typ,
+           \A t,u \in Typ : op(t,u) = op(u,t),
+           \A t,u,v \in Typ : op(t, op(u,v)) = op(op(t,u),v),
+           \A t \in Typ : op(base, t) = t,
+           NEW S \in SUBSET Typ, IsFiniteSet(S),
+           NEW T \in SUBSET Typ, IsFiniteSet(T), S \cap T = {}
+    PROVE  FoldSet(op, base, S \union T) = 
+           op(FoldSet(op, base, S), FoldSet(op, base, T))
+<1>. /\ \A U : U # {} => (CHOOSE u \in U : TRUE) \in U 
+     /\ \A x \in S \union T : x \in Typ
+  OBVIOUS 
+<1>. QED  BY MapThenFoldSetDisjointUnion, Isa DEF FoldSet
 
 (***************************************************************************)
 (* Theorems about SumSet.                                                  *)
@@ -79,6 +92,39 @@ THEOREM SumSetNonempty ==
 <1>2. FoldSet(op, 0, S) = op(x, FoldSet(op, 0, S \ {x}))
   BY <1>1, FoldSetAC, IsaM("iprover")
 <1>. QED  BY <1>2 DEF SumSet, op
+
+THEOREM SumSetDisjointUnion ==
+    ASSUME NEW S \in SUBSET Int, IsFiniteSet(S),
+           NEW T \in SUBSET Int, IsFiniteSet(T), S \cap T = {}
+    PROVE  SumSet(S \union T) = SumSet(S) + SumSet(T)
+<1>. DEFINE op(i,j) == i + j
+<1>1. /\ 0 \in Int
+      /\ \A i,j \in Int : op(i,j) \in Int
+      /\ \A i,j \in Int : op(i,j) = op(j,i)
+      /\ \A i,j,k \in Int : op(i, op(j,k)) = op(op(i,j), k)
+      /\ \A i \in Int : op(0, i) = i
+  OBVIOUS
+<1>. HIDE DEF op 
+<1>2. FoldSet(op, 0, S \union T) = op(FoldSet(op, 0, S), FoldSet(op, 0, T))
+  BY <1>1, FoldSetDisjointUnion, IsaM("iprover")
+<1>. QED   BY <1>2 DEF SumSet, op 
+
+THEOREM SumSetNatSubset ==
+    ASSUME NEW S \in SUBSET Nat, IsFiniteSet(S),
+           NEW T \in SUBSET S
+    PROVE  SumSet(T) <= SumSet(S)
+<1>. DEFINE U == S \ T
+<1>1. /\ IsFiniteSet(T)
+      /\ IsFiniteSet(U)
+  BY FS_Subset, FS_Difference
+<1>2. SumSet(S) = SumSet(T \union U)
+  BY Zenon
+<1>3. @ = SumSet(T) + SumSet(U)
+  BY <1>1, SumSetDisjointUnion
+<1>4. /\ SumSet(T) \in Nat 
+      /\ SumSet(U) \in Nat 
+  BY <1>1, SumSetNat 
+<1>. QED   BY <1>2, <1>3, <1>4
 
 THEOREM SumSetNatZero ==
     ASSUME NEW S \in SUBSET Nat, IsFiniteSet(S)
@@ -141,6 +187,22 @@ THEOREM ProductSetNonempty ==
   BY <1>1, FoldSetAC, IsaM("iprover")
 <1>. QED  BY <1>2 DEF ProductSet, op
 
+THEOREM ProductSetDisjointUnion ==
+    ASSUME NEW S \in SUBSET Int, IsFiniteSet(S),
+           NEW T \in SUBSET Int, IsFiniteSet(T), S \cap T = {}
+    PROVE  ProductSet(S \union T) = ProductSet(S) * ProductSet(T)
+<1>. DEFINE op(i,j) == i * j
+<1>1. /\ 1 \in Int
+      /\ \A i,j \in Int : op(i,j) \in Int
+      /\ \A i,j \in Int : op(i,j) = op(j,i)
+      /\ \A i,j,k \in Int : op(i, op(j,k)) = op(op(i,j), k)
+      /\ \A i \in Int : op(1, i) = i
+  OBVIOUS
+<1>. HIDE DEF op 
+<1>2. FoldSet(op, 1, S \union T) = op(FoldSet(op, 1, S), FoldSet(op, 1, T))
+  BY <1>1, FoldSetDisjointUnion, IsaM("iprover")
+<1>. QED   BY <1>2 DEF ProductSet, op 
+
 THEOREM ProductSetNatOne ==
     ASSUME NEW S \in SUBSET Nat, IsFiniteSet(S)
     PROVE  ProductSet(S) = 1 <=> S \subseteq {1}
@@ -191,6 +253,26 @@ THEOREM ProductSetZero ==
   <2>. P(S)  BY <1>1, <1>2, FS_Induction, IsaM("iprover")
   <2>. QED   BY DEF P
 
+THEOREM ProductSetNatSubset ==
+    ASSUME NEW S \in SUBSET Nat, IsFiniteSet(S), 0 \notin S,
+           NEW T \in SUBSET S
+    PROVE  ProductSet(T) <= ProductSet(S)
+<1>. DEFINE U == S \ T
+<1>1. /\ IsFiniteSet(T)
+      /\ IsFiniteSet(U)
+  BY FS_Subset, FS_Difference
+<1>2. ProductSet(S) = ProductSet(T \union U)
+  BY Zenon
+<1>3. @ = ProductSet(T) * ProductSet(U)
+  BY <1>1, ProductSetDisjointUnion
+<1>4. /\ ProductSet(T) \in Nat 
+      /\ ProductSet(U) \in Nat 
+  BY <1>1, ProductSetNat 
+<1>5. /\ ProductSet(T) # 0
+      /\ ProductSet(U) # 0 
+  BY <1>1, ProductSetZero
+<1>. QED   BY <1>2, <1>3, <1>4, <1>5
+
 
 (***************************************************************************)
 (* Theorems about MapThenSumSet.                                           *)
@@ -234,6 +316,45 @@ THEOREM MapThenSumSetNonempty ==
      /\ \A i,j,k \in Int : i+(j+k) = (i+j)+k
   OBVIOUS
 <1>. QED  BY MapThenFoldSetAC, IsaM("iprover") DEF MapThenSumSet 
+
+THEOREM MapThenSumSetDisjointUnion ==
+    ASSUME NEW S, IsFiniteSet(S),
+           NEW T, IsFiniteSet(T), S \cap T = {},
+           NEW op(_), \A x \in S \union T : op(x) \in Int
+    PROVE  MapThenSumSet(op, S \union T) = 
+           MapThenSumSet(op, S) + MapThenSumSet(op, T)
+<1>1. \A U \in SUBSET (S \union T) : U # {} => (CHOOSE u \in U : TRUE) \in U 
+  OBVIOUS
+<1>2. /\ 0 \in Int 
+      /\ \A i,j \in Int : i+j \in Int
+      /\ \A i,j \in Int : i+j = j+i
+      /\ \A i,j,k \in Int : i+(j+k) = (i+j)+k
+      /\ \A i \in Int : 0+i = i
+  OBVIOUS
+<1>. QED  BY <1>1, <1>2, MapThenFoldSetDisjointUnion, IsaM("iprover") DEF MapThenSumSet 
+
+THEOREM MapThenSumSetNatSubset ==
+    ASSUME NEW S, IsFiniteSet(S),
+           NEW T \in SUBSET S,
+           NEW op(_), \A x \in S : op(x) \in Nat
+    PROVE  MapThenSumSet(op, T) <= MapThenSumSet(op, S)
+<1>. DEFINE U == S \ T
+<1>1. /\ IsFiniteSet(T)
+      /\ IsFiniteSet(U)
+      /\ T \cap U = {}
+      /\ \A x \in T \union U : op(x) \in Int
+  BY FS_Subset, FS_Difference
+<1>2. MapThenSumSet(op, S) = MapThenSumSet(op, T \union U)
+  BY Zenon
+<1>3. @ = MapThenSumSet(op, T) + MapThenSumSet(op, U)
+  BY <1>1, MapThenSumSetDisjointUnion, IsaM("iprover")
+<1>4. /\ \A x \in T : op(x) \in Nat 
+      /\ \A x \in U : op(x) \in Nat 
+  OBVIOUS
+<1>5. /\ MapThenSumSet(op, T) \in Nat 
+      /\ MapThenSumSet(op, U) \in Nat 
+  BY <1>1, <1>4, MapThenSumSetNat, IsaM("iprover")
+<1>. QED   BY <1>2, <1>3, <1>5
 
 THEOREM MapThenSumSetZero ==
     ASSUME NEW S, IsFiniteSet(S),

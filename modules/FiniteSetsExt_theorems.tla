@@ -19,7 +19,7 @@ THEOREM FoldSetType ==
            \A t,u \in Typ : op(t,u) \in Typ
     PROVE  FoldSet(op, base, S) \in Typ
 
-\* more useful version for an associative-commutative operator op
+\* more useful than FoldSetNonempty when op is associative and commutative
 THEOREM FoldSetAC ==
     ASSUME NEW Typ, NEW op(_,_), NEW base \in Typ, 
            \A t,u \in Typ : op(t,u) \in Typ,
@@ -28,6 +28,17 @@ THEOREM FoldSetAC ==
            NEW S \in SUBSET Typ, IsFiniteSet(S),
            NEW x \in S
     PROVE  FoldSet(op, base, S) = op(x, FoldSet(op, base, S \ {x}))
+
+THEOREM FoldSetDisjointUnion ==
+    ASSUME NEW Typ, NEW op(_,_), NEW base \in Typ, 
+           \A t,u \in Typ : op(t,u) \in Typ,
+           \A t,u \in Typ : op(t,u) = op(u,t),
+           \A t,u,v \in Typ : op(t, op(u,v)) = op(op(t,u),v),
+           \A t \in Typ : op(base, t) = t,
+           NEW S \in SUBSET Typ, IsFiniteSet(S),
+           NEW T \in SUBSET Typ, IsFiniteSet(T), S \cap T = {}
+    PROVE  FoldSet(op, base, S \union T) = 
+           op(FoldSet(op, base, S), FoldSet(op, base, T))
 
 ---------------------------------------------------------------------------
 
@@ -44,6 +55,16 @@ THEOREM SumSetEmpty == SumSet({}) = 0
 THEOREM SumSetNonempty ==
     ASSUME NEW S \in SUBSET Int, IsFiniteSet(S), NEW x \in S 
     PROVE  SumSet(S) = x + SumSet(S \ {x})
+
+THEOREM SumSetDisjointUnion ==
+    ASSUME NEW S \in SUBSET Int, IsFiniteSet(S),
+           NEW T \in SUBSET Int, IsFiniteSet(T), S \cap T = {}
+    PROVE  SumSet(S \union T) = SumSet(S) + SumSet(T)
+
+THEOREM SumSetNatSubset ==
+    ASSUME NEW S \in SUBSET Nat, IsFiniteSet(S),
+           NEW T \in SUBSET S
+    PROVE  SumSet(T) <= SumSet(S)
 
 THEOREM SumSetNatZero ==
     ASSUME NEW S \in SUBSET Nat, IsFiniteSet(S)
@@ -63,6 +84,11 @@ THEOREM ProductSetNonempty ==
     ASSUME NEW S \in SUBSET Int, IsFiniteSet(S), NEW x \in S 
     PROVE  ProductSet(S) = x * ProductSet(S \ {x})
 
+THEOREM ProductSetDisjointUnion ==
+    ASSUME NEW S \in SUBSET Int, IsFiniteSet(S),
+           NEW T \in SUBSET Int, IsFiniteSet(T), S \cap T = {}
+    PROVE  ProductSet(S \union T) = ProductSet(S) * ProductSet(T)
+
 THEOREM ProductSetNatOne ==
     ASSUME NEW S \in SUBSET Nat, IsFiniteSet(S)
     PROVE  ProductSet(S) = 1 <=> S \subseteq {1}
@@ -70,6 +96,11 @@ THEOREM ProductSetNatOne ==
 THEOREM ProductSetZero ==
     ASSUME NEW S \in SUBSET Int, IsFiniteSet(S)
     PROVE  ProductSet(S) = 0 <=> 0 \in S 
+
+THEOREM ProductSetNatSubset ==
+    ASSUME NEW S \in SUBSET Nat, IsFiniteSet(S), 0 \notin S,
+           NEW T \in SUBSET S
+    PROVE  ProductSet(T) <= ProductSet(S)
 
 ---------------------------------------------------------------------------
 
@@ -91,6 +122,19 @@ THEOREM MapThenSumSetNonempty ==
     ASSUME NEW S, IsFiniteSet(S), NEW x \in S,
            NEW op(_), \A s \in S : op(s) \in Int
     PROVE  MapThenSumSet(op, S) = op(x) + MapThenSumSet(op, S \ {x})
+
+THEOREM MapThenSumSetDisjointUnion ==
+    ASSUME NEW S, IsFiniteSet(S),
+           NEW T, IsFiniteSet(T), S \cap T = {},
+           NEW op(_), \A x \in S \union T : op(x) \in Int
+    PROVE  MapThenSumSet(op, S \union T) = 
+           MapThenSumSet(op, S) + MapThenSumSet(op, T)
+
+THEOREM MapThenSumSetNatSubset ==
+    ASSUME NEW S, IsFiniteSet(S),
+           NEW T \in SUBSET S,
+           NEW op(_), \A x \in S : op(x) \in Nat
+    PROVE  MapThenSumSet(op, T) <= MapThenSumSet(op, S)
 
 THEOREM MapThenSumSetZero ==
     ASSUME NEW S, IsFiniteSet(S),

@@ -187,5 +187,72 @@ THEOREM MapThenFoldSetAC ==
   <2>. P(S)  BY <1>1, FS_WFInduction, IsaM("iprover")
   <2>. QED   BY DEF P
 
+(*************************************************************************)
+(* Moreover, for an ACI operator with base as the neutral element,       *)
+(* folding commutes with set union, for disjoint sets.                   *)
+(*************************************************************************)
+THEOREM MapThenFoldSetDisjointUnion ==
+    ASSUME NEW Typ, NEW op(_,_), NEW base \in Typ, NEW f(_),
+           \A t,u \in Typ : op(t,u) \in Typ,
+           \A t,u \in Typ : op(t,u) = op(u,t),
+           \A t,u,v \in Typ : op(t, op(u,v)) = op(op(t,u),v),
+           \A t \in Typ : op(base, t) = t,
+           NEW S, IsFiniteSet(S),
+           NEW T, IsFiniteSet(T), S \cap T = {},
+           NEW choose(_), 
+           \A U \in SUBSET (S \union T) : U # {} => choose(U) \in U,
+           \A x \in S \union T : f(x) \in Typ
+    PROVE  MapThenFoldSet(op, base, f, choose, S \union T) = 
+           op(MapThenFoldSet(op, base, f, choose, S),
+              MapThenFoldSet(op, base, f, choose, T))
+<1>. DEFINE P(U) == MapThenFoldSet(op, base, f, choose, U \union T) = 
+                    op(MapThenFoldSet(op, base, f, choose, U),
+                       MapThenFoldSet(op, base, f, choose, T))
+<1>1. MapThenFoldSet(op, base, f, choose, T) \in Typ
+  <2>. /\ \A U \in SUBSET T : U # {} => choose(U) \in U 
+       /\ \A x \in T : f(x) \in Typ
+    OBVIOUS
+  <2>. QED  BY MapThenFoldSetType, IsaM("iprover")
+<1>2. P({})
+  BY <1>1, MapThenFoldSetEmpty, Isa
+<1>3. ASSUME NEW U \in SUBSET S, IsFiniteSet(U), P(U), NEW x \in S \ U
+      PROVE  P(U \union {x})
+  <2>1. /\ IsFiniteSet((U \union {x}) \union T)
+        /\ x \in (U \union {x}) \union T
+        /\ \A y \in (U \union {x}) \union T : f(y) \in Typ
+        /\ \A V \in SUBSET ((U \union {x}) \union T) : V # {} => choose(V) \in V
+    BY <1>3, FS_Union, FS_AddElement
+  <2>2. MapThenFoldSet(op, base, f, choose, (U \union {x}) \union T) =
+        op(f(x), MapThenFoldSet(op, base, f, choose, ((U \union {x}) \union T) \ {x}))
+    BY <2>1, MapThenFoldSetAC, IsaM("iprover")
+  <2>3. ((U \union {x}) \union T) \ {x} = U \union T
+    OBVIOUS
+  <2>4. MapThenFoldSet(op, base, f, choose, U \union T) =
+        op(MapThenFoldSet(op, base, f, choose, U), MapThenFoldSet(op, base, f, choose, T))
+    BY <1>3
+  <2>5. /\ IsFiniteSet(U \union {x})
+        /\ x \in U \union {x}
+        /\ \A y \in U \union {x} : f(y) \in Typ
+        /\ \A V \in SUBSET (U \union {x}) : V # {} => choose(V) \in V
+    BY <1>3, FS_AddElement
+  <2>6. /\ IsFiniteSet(U)
+        /\ \A y \in U  : f(y) \in Typ
+        /\ \A V \in SUBSET U : V # {} => choose(V) \in V
+    BY <1>3
+  <2>7. MapThenFoldSet(op, base, f, choose, U) \in Typ 
+    BY <2>6, MapThenFoldSetType, Isa
+  <2>8. op(f(x), op(MapThenFoldSet(op, base, f, choose, U), MapThenFoldSet(op, base, f, choose, T))) =
+        op(op(f(x), MapThenFoldSet(op, base, f, choose, U)), MapThenFoldSet(op, base, f, choose, T))
+    BY <1>1, <2>7
+  <2>9. MapThenFoldSet(op, base, f, choose, U \union {x}) =
+        op(f(x), MapThenFoldSet(op, base, f, choose, (U \union {x}) \ {x}))
+    BY <2>5, MapThenFoldSetAC, IsaM("iprover")
+  <2>10. (U \union {x}) \ {x} = U 
+    OBVIOUS
+  <2>. QED  BY <2>2, <2>3, <2>4, <2>8, <2>9, <2>10
+<1>. QED
+  <2>. HIDE DEF P 
+  <2>. P(S)  BY <1>2, <1>3, FS_Induction, IsaM("iprover")
+  <2>. QED   BY DEF P 
 
 ===========================================================================
