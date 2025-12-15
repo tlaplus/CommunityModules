@@ -1,5 +1,5 @@
 ----------------- MODULE FiniteSetsExtTheorems_proofs -----------------------
-EXTENDS FiniteSetsExt, Integers, FiniteSets, FiniteSetTheorems, FoldTheorems, TLAPS
+EXTENDS FiniteSetsExt, Integers, FiniteSets, FiniteSetTheorems, FoldsTheorems, TLAPS
 
 (***************************************************************************)
 (* Theorems about FoldSet, derived from those about the underlying         *)
@@ -295,7 +295,7 @@ THEOREM ProductSetZero ==
   <2>. QED   BY DEF P
 
 THEOREM ProductSetNatSubset ==
-    ASSUME NEW S \in SUBSET Nat, IsFiniteSet(S), 0 \notin S,
+    ASSUME NEW S \in SUBSET Nat \ {0}, IsFiniteSet(S),
            NEW T \in SUBSET S
     PROVE  ProductSet(T) <= ProductSet(S)
 <1>. DEFINE U == S \ T
@@ -475,24 +475,22 @@ THEOREM MapThenSumSetStrictlyMonotonic ==
            NEW f(_), \A s \in S : f(s) \in Int,
            NEW g(_), \A s \in S : g(s) \in Int,
            \A s \in S : f(s) <= g(s),
-           \E s \in S : f(s) < g(s)
+           NEW s \in S, f(s) < g(s)
     PROVE  MapThenSumSet(f, S) < MapThenSumSet(g, S)
-<1>1. PICK s \in S : f(s) < g(s)
-  OBVIOUS 
-<1>2. MapThenSumSet(f,S) = f(s) + MapThenSumSet(f, S \ {s})
+<1>1. MapThenSumSet(f,S) = f(s) + MapThenSumSet(f, S \ {s})
   BY MapThenSumSetNonempty, Isa
-<1>3. MapThenSumSet(g,S) = g(s) + MapThenSumSet(g, S \ {s})
+<1>2. MapThenSumSet(g,S) = g(s) + MapThenSumSet(g, S \ {s})
   BY MapThenSumSetNonempty, Isa
-<1>4. /\ IsFiniteSet(S \ {s})
+<1>3. /\ IsFiniteSet(S \ {s})
       /\ \A x \in S \ {s} : f(x) \in Int 
       /\ \A x \in S \ {s} : g(x) \in Int 
       /\ \A x \in S \ {s} : f(x) <= g(x)
   BY FS_RemoveElement
-<1>5. MapThenSumSet(f, S \ {s}) <= MapThenSumSet(g, S \ {s})
-  BY <1>4, MapThenSumSetMonotonic, IsaM("blast")
-<1>6. /\ MapThenSumSet(f, S \ {s}) \in Int 
+<1>4. MapThenSumSet(f, S \ {s}) <= MapThenSumSet(g, S \ {s})
+  BY <1>3, MapThenSumSetMonotonic, IsaM("blast")
+<1>5. /\ MapThenSumSet(f, S \ {s}) \in Int 
       /\ MapThenSumSet(g, S \ {s}) \in Int 
-  BY <1>4, MapThenSumSetInt, Isa
-<1>. QED  BY <1>1, <1>2, <1>3, <1>5, <1>6
+  BY <1>3, MapThenSumSetInt, Isa
+<1>. QED  BY <1>1, <1>2, <1>4, <1>5
 
 ================================================================================

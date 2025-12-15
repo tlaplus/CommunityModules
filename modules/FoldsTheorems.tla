@@ -1,12 +1,15 @@
---------------------------- MODULE FoldTheorems ---------------------------
+--------------------------- MODULE FoldsTheorems --------------------------
 (*************************************************************************)
 (* Theorems about the basic folding operator.                            *)
 (* This module only lists theorem statements for reference. The proofs   *)
-(* can be found in module FoldTheorems_proofs.tla.                       *)
+(* can be found in module FoldsTheorems_proofs.tla.                      *)
 (*************************************************************************)
-EXTENDS Folds, FiniteSets, TLAPS
+EXTENDS Folds, FiniteSets
 
-\* MapThenFoldSet is well-defined
+(*************************************************************************)
+(* MapThenFoldSet is well-defined, i.e., it conforms to the equation     *)
+(* used for defining the operator.                                       *)
+(*************************************************************************)
 THEOREM MapThenFoldSetDef ==
     ASSUME NEW op(_,_), NEW base, NEW f(_), NEW choose(_), NEW S,
            IsFiniteSet(S),
@@ -16,7 +19,10 @@ THEOREM MapThenFoldSetDef ==
             ELSE LET x == choose(S)
                  IN  op(f(x), MapThenFoldSet(op, base, f, choose, S \ {x}))
 
-\* folding the empty set yields the base value
+(*************************************************************************)
+(* The following two theorems correspond to the two cases in the         *)
+(* equation in theorem MapThenFoldSetDef, but are easier to use.         *)
+(*************************************************************************)
 THEOREM MapThenFoldSetEmpty ==
     ASSUME NEW op(_,_), NEW base, NEW f(_), NEW choose(_)
     PROVE  MapThenFoldSet(op, base, f, choose, {}) = base
@@ -30,7 +36,10 @@ THEOREM MapThenFoldSetNonempty ==
             LET x == choose(S)
             IN  op(f(x), MapThenFoldSet(op, base, f, choose, S \ {x}))
 
-\* type of a fold
+(*************************************************************************)
+(* The type of a fold corresponds to the type associated with the binary *)
+(* operator that underlies the fold.                                     *)
+(*************************************************************************)
 THEOREM MapThenFoldSetType ==
     ASSUME NEW S, IsFiniteSet(S),
            NEW Typ, NEW op(_,_), NEW base \in Typ, NEW f(_), NEW choose(_),
