@@ -187,8 +187,32 @@ THEOREM MapThenFoldSetAC ==
   <2>. P(S)  BY <1>1, FS_WFInduction, IsaM("iprover")
   <2>. QED   BY DEF P
 
+\* reformulation for adding an element to the set
+THEOREM MapThenFoldSetACAddElement ==
+    ASSUME NEW Typ, NEW op(_,_), NEW base \in Typ, NEW f(_),
+           \A t,u \in Typ : op(t,u) \in Typ,
+           \A t,u \in Typ : op(t,u) = op(u,t),
+           \A t,u,v \in Typ : op(t, op(u,v)) = op(op(t,u),v),
+           NEW S, IsFiniteSet(S), NEW x, x \notin S,
+           NEW choose(_), \A T \in SUBSET S \union {x} : T # {} => choose(T) \in T,
+           \A s \in S \union {x} : f(s) \in Typ
+    PROVE  MapThenFoldSet(op, base, f, choose, S \union {x}) = 
+           op(f(x), MapThenFoldSet(op, base, f, choose, S))
+<1>. DEFINE U == S \union {x}
+<1>1. MapThenFoldSet(op, base, f, choose, U) = 
+      op(f(x), MapThenFoldSet(op, base, f, choose, U \ {x}))
+  <2>. /\ IsFiniteSet(U)
+       /\ x \in U 
+       /\ U \ {x} = S 
+       /\ \A T \in SUBSET U : T # {} => choose(T) \in T 
+       /\ \A s \in U : f(s) \in Typ 
+    BY FS_AddElement
+  <2>. HIDE DEF U 
+  <2>. QED  BY MapThenFoldSetAC, IsaM("iprover")
+<1>. QED  BY <1>1, Zenon
+
 (*************************************************************************)
-(* Moreover, for an ACI operator with base as the neutral element,       *)
+(* Moreover, for an AC operator with base as the neutral element,        *)
 (* folding commutes with set union, for disjoint sets.                   *)
 (*************************************************************************)
 THEOREM MapThenFoldSetDisjointUnion ==

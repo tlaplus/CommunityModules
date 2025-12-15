@@ -55,8 +55,20 @@ THEOREM MapThenFoldSetAC ==
     PROVE  MapThenFoldSet(op, base, f, choose, S) = 
            op(f(x), MapThenFoldSet(op, base, f, choose, S \ {x}))
 
+\* reformulation for adding an element to the set
+THEOREM MapThenFoldSetACAddElement ==
+    ASSUME NEW Typ, NEW op(_,_), NEW base \in Typ, NEW f(_),
+           \A t,u \in Typ : op(t,u) \in Typ,
+           \A t,u \in Typ : op(t,u) = op(u,t),
+           \A t,u,v \in Typ : op(t, op(u,v)) = op(op(t,u),v),
+           NEW S, IsFiniteSet(S), NEW x, x \notin S,
+           NEW choose(_), \A T \in SUBSET S \union {x} : T # {} => choose(T) \in T,
+           \A s \in S \union {x} : f(s) \in Typ
+    PROVE  MapThenFoldSet(op, base, f, choose, S \union {x}) = 
+           op(f(x), MapThenFoldSet(op, base, f, choose, S))
+
 (*************************************************************************)
-(* Moreover, for an ACI operator with base as the neutral element,       *)
+(* Moreover, for an AC operator with base as the neutral element,        *)
 (* folding commutes with set union, for disjoint sets.                   *)
 (*************************************************************************)
 THEOREM MapThenFoldSetDisjointUnion ==

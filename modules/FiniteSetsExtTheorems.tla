@@ -1,4 +1,4 @@
--------------------------- MODULE FiniteSetsExt_theorems ------------------
+-------------------------- MODULE FiniteSetsExtTheorems -------------------
 EXTENDS FiniteSetsExt, FiniteSets, Integers
 (*************************************************************************)
 (* This module only lists theorem statements for reference. The proofs   *)
@@ -29,6 +29,15 @@ THEOREM FoldSetAC ==
            NEW x \in S
     PROVE  FoldSet(op, base, S) = op(x, FoldSet(op, base, S \ {x}))
 
+THEOREM FoldSetACAddElement ==
+    ASSUME NEW Typ, NEW op(_,_), NEW base \in Typ, 
+           \A t,u \in Typ : op(t,u) \in Typ,
+           \A t,u \in Typ : op(t,u) = op(u,t),
+           \A t,u,v \in Typ : op(t, op(u,v)) = op(op(t,u),v),
+           NEW S \in SUBSET Typ, IsFiniteSet(S),
+           NEW x \in Typ \ S
+    PROVE  FoldSet(op, base, S \union {x}) = op(x, FoldSet(op, base, S))
+
 THEOREM FoldSetDisjointUnion ==
     ASSUME NEW Typ, NEW op(_,_), NEW base \in Typ, 
            \A t,u \in Typ : op(t,u) \in Typ,
@@ -55,6 +64,10 @@ THEOREM SumSetEmpty == SumSet({}) = 0
 THEOREM SumSetNonempty ==
     ASSUME NEW S \in SUBSET Int, IsFiniteSet(S), NEW x \in S 
     PROVE  SumSet(S) = x + SumSet(S \ {x})
+
+THEOREM SumSetAddElement ==
+    ASSUME NEW S \in SUBSET Int, IsFiniteSet(S), NEW x \in Int \ S
+    PROVE  SumSet(S \union {x}) = x + SumSet(S)
 
 THEOREM SumSetDisjointUnion ==
     ASSUME NEW S \in SUBSET Int, IsFiniteSet(S),
@@ -83,6 +96,10 @@ THEOREM ProductSetInt ==
 THEOREM ProductSetNonempty ==
     ASSUME NEW S \in SUBSET Int, IsFiniteSet(S), NEW x \in S 
     PROVE  ProductSet(S) = x * ProductSet(S \ {x})
+
+THEOREM ProductSetAddElement ==
+    ASSUME NEW S \in SUBSET Int, IsFiniteSet(S), NEW x \in Int \ S
+    PROVE  ProductSet(S \union {x}) = x * ProductSet(S)
 
 THEOREM ProductSetDisjointUnion ==
     ASSUME NEW S \in SUBSET Int, IsFiniteSet(S),
@@ -123,6 +140,11 @@ THEOREM MapThenSumSetNonempty ==
            NEW op(_), \A s \in S : op(s) \in Int
     PROVE  MapThenSumSet(op, S) = op(x) + MapThenSumSet(op, S \ {x})
 
+THEOREM MapThenSumSetAddElement ==
+    ASSUME NEW S, IsFiniteSet(S), NEW x, x \notin S,
+           NEW op(_), \A s \in S \union {x} : op(s) \in Int
+    PROVE  MapThenSumSet(op, S \union {x}) = op(x) + MapThenSumSet(op, S)
+
 THEOREM MapThenSumSetDisjointUnion ==
     ASSUME NEW S, IsFiniteSet(S),
            NEW T, IsFiniteSet(T), S \cap T = {},
@@ -157,74 +179,3 @@ THEOREM MapThenSumSetStrictlyMonotonic ==
     PROVE  MapThenSumSet(f, S) < MapThenSumSet(g, S)
 
 ===========================================================================
-LEMMA MapThenSumSetEmpty ==
-    ASSUME NEW op(_)
-    PROVE MapThenSumSet(op, {}) = 0
-PROOF OMITTED \* Proof in FiniteSetsExt_theorems_proofs.tla
-
-
-LEMMA MapThenSumSetType ==
-    ASSUME NEW S, IsFiniteSet(S), NEW op(_), \A e \in S : op(e) \in Nat
-    PROVE MapThenSumSet(op, S) \in Nat
-PROOF OMITTED \* Proof in FiniteSetsExt_theorems_proofs.tla
-
-
-THEOREM MapThenSumSetAddElem ==
-    ASSUME
-        NEW S, IsFiniteSet(S),
-        NEW op(_), \A s \in S : op(s) \in Nat,
-        NEW e, e \notin S, op(e) \in Nat
-    PROVE MapThenSumSet(op, S \cup {e}) = MapThenSumSet(op, S) + op(e)
-PROOF OMITTED \* Proof in FiniteSetsExt_theorems_proofs.tla
-
-LEMMA MapThenSumSetRemElem ==
-    ASSUME
-        NEW S, IsFiniteSet(S),
-        NEW op(_), \A s \in S : op(s) \in Nat,
-        NEW e \in S
-    PROVE MapThenSumSet(op, S) = MapThenSumSet(op, S \ {e}) + op(e)
-PROOF OMITTED \* Proof in FiniteSetsExt_theorems_proofs.tla
-
-LEMMA MapThenSumSetMonotonic ==
-    ASSUME
-        NEW S, IsFiniteSet(S),
-        NEW op(_), \A s \in S : op(s) \in Nat,
-        NEW e, e \notin S, op(e) \in Nat
-    PROVE MapThenSumSet(op, S \cup {e}) >= MapThenSumSet(op, S)
-PROOF OMITTED \* Proof in FiniteSetsExt_theorems_proofs.tla
-
-LEMMA MapThenSumSetMonotonicOpGE ==
-    ASSUME
-        NEW S, IsFiniteSet(S),
-        NEW op1(_), \A s \in S : op1(s) \in Nat,
-        NEW op2(_), \A s \in S : op2(s) \in Nat,
-        \A s \in S : op2(s) >= op1(s)
-    PROVE
-        MapThenSumSet(op2, S) >= MapThenSumSet(op1, S)
-PROOF OMITTED \* Proof in FiniteSetsExt_theorems_proofs.tla
-
-LEMMA MapThenSumSetMonotonicOpGT ==
-    ASSUME
-        NEW S, IsFiniteSet(S),
-        NEW op1(_), \A s \in S : op1(s) \in Nat,
-        NEW op2(_), \A s \in S : op2(s) \in Nat,
-        \A s \in S : op2(s) >= op1(s),
-        \E s \in S : op2(s) > op1(s)
-    PROVE
-        MapThenSumSet(op2, S) > MapThenSumSet(op1, S)
-PROOF OMITTED \* Proof in FiniteSetsExt_theorems_proofs.tla
-
-LEMMA MapThenSumSetZero ==
-    ASSUME NEW S, IsFiniteSet(S),
-           NEW op(_), \A e \in S: op(e) \in Nat,
-           MapThenSumSet(op, S) = 0
-    PROVE \A e \in S: op(e) = 0
-PROOF OMITTED \* Proof in FiniteSetsExt_theorems_proofs.tla
-
-LEMMA MapThenSumSetZeros ==
-    ASSUME NEW S, IsFiniteSet(S),
-           NEW op(_), \A e \in S: op(e) = 0
-    PROVE MapThenSumSet(op, S) = 0
-PROOF OMITTED \* Proof in FiniteSetsExt_theorems_proofs.tla
-
-====
