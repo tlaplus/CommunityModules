@@ -1,6 +1,6 @@
 --------------------------- MODULE FiniteSetsExt ---------------------------
 EXTENDS Folds, Functions \* Replace with LOCAL INSTANCE when https://github.com/tlaplus/tlapm/issues/119 is resolved.
-LOCAL INSTANCE Naturals
+LOCAL INSTANCE Integers
 LOCAL INSTANCE FiniteSets
 
 (*************************************************************************)
