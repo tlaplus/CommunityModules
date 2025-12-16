@@ -37,22 +37,22 @@ CausalOrder(log, clock(_), node(_), domain(_)) ==
         
         Imagine a log containing lines such as:
         
-        	[pkt |-> 
-        		[vc |-> 
-        			[1 |-> 20, 
-        			 0 |-> 10,
-        			 3 |-> 16, 
-        			 7 |-> 21, 
-        			 4 |-> 10, 
-        			 6 |-> 21]],
-        	 node |-> 5,
-			 ...
-		    ]
-		 
-		 CausalOrder(log, 
-					 	LAMBDA line: line.pkt.vc,
-					 	LAMBDA line: line.node,
-						LAMBDA vc : DOMAIN vc)
+          [pkt |-> 
+            [vc |-> 
+              [1 |-> 20, 
+               0 |-> 10,
+               3 |-> 16, 
+               7 |-> 21, 
+               4 |-> 10, 
+               6 |-> 21]],
+           node |-> 5,
+       ...
+        ]
+     
+     CausalOrder(log, 
+            LAMBDA line: line.pkt.vc,
+            LAMBDA line: line.node,
+            LAMBDA vc : DOMAIN vc)
     *)
     CHOOSE newlog \in 
         { f \in 
