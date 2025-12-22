@@ -6,7 +6,7 @@
 (*  \vspace{12pt}}^'                                                       *)
 (***************************************************************************)
 
-LOCAL INSTANCE Folds
+EXTENDS Folds
 
 (***************************************************************************)
 (* Restriction of a function to a set (should be a subset of the domain).  *)
@@ -137,29 +137,14 @@ ExistsBijection(S,T)  == Bijection(S,T) # {}
 --------------------------------------------------------------------------------
 
 (***************************************************************************)
-(* Applies the binary function op on all elements of fun in arbitrary      *)
-(* order starting with op(f[k], base). The resulting function is:          *)
+(* Applies the binary operator op on the elements f[i] for i \in indices,  *)
+(* a subset of DOMAIN fun, in an unspecified order, starting from value    *)
+(* base. The result is                                                     *)
 (*    op(f[i],op(f[j], ..., op(f[k],base) ...))                            *)
+(* where i,j,k range over the sets indices.                                *)
 (*                                                                         *)
-(* op must be associative and commutative, because we can not assume a     *)
+(* op should be associative and commutative, because we can not assume a   *)
 (* particular ordering of i, j, and k                                      *)
-(*                                                                         *)
-(* Example:                                                                *)
-(*  FoldFunction(LAMBDA x,y: {x} \cup y, {}, <<1,2,1>>) = {1,2}            *)
-(***************************************************************************)
-FoldFunction(op(_,_), base, fun) ==
-  MapThenFoldSet(op, base, LAMBDA i : fun[i], LAMBDA s: CHOOSE x \in s : TRUE, DOMAIN fun)
-
-
-(***************************************************************************)
-(* Applies the binary function op on the given indices of fun in arbitrary *)
-(* order starting with op(f[k], base). The resulting function is:          *)
-(*    op(f[i],op(f[j], ..., op(f[k],base) ...))                            *)
-(*                                                                         *)
-(* op must be associative and commutative, because we can not assume a     *)
-(* particular ordering of i, j, and k                                      *)
-(*                                                                         *)
-(* indices must be a subset of DOMAIN(fun)                                 *)
 (*                                                                         *)
 (* Example:                                                                *)
 (*  FoldFunctionOnSet(LAMBDA x,y: {x} \cup y, {}, <<1,2>>, {}) = {}        *)
@@ -167,10 +152,16 @@ FoldFunction(op(_,_), base, fun) ==
 FoldFunctionOnSet(op(_,_), base, fun, indices) ==
   MapThenFoldSet(op, base, LAMBDA i : fun[i], LAMBDA s: CHOOSE x \in s : TRUE, indices)
 
+(***************************************************************************)
+(* Special case of the above where indices = DOMAIN fun. In other words,   *)
+(* the values f[i] for all i \in DOMAIN fun, are combined using the binary *)
+(* operator op, in an unspecified order.                                   *)
+(*                                                                         *)
+(* Example:                                                                *)
+(*  FoldFunction(LAMBDA x,y: {x} \cup y, {}, <<1,2,1>>) = {1,2}            *)
+(***************************************************************************)
+FoldFunction(op(_,_), base, fun) ==
+  FoldFunctionOnSet(op, base, fun, DOMAIN fun)
+
 =============================================================================
-\* Modification History
-\* Last modified Tue Nov 01 08:46:11 CET 2022 by merz
-\* Last modified Mon Apr 05 03:25:53 CEST 2021 by marty
-\* Last modified Wed Jun 05 12:14:19 CEST 2013 by bhargav
-\* Last modified Fri May 03 12:55:35 PDT 2013 by tomr
 \* Created Thu Apr 11 10:30:48 PDT 2013 by tomr

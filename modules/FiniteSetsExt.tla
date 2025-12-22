@@ -1,7 +1,7 @@
 --------------------------- MODULE FiniteSetsExt ---------------------------
-EXTENDS Folds, Functions \* Replace with LOCAL INSTANCE when https://github.com/tlaplus/tlapm/issues/119 is resolved.
-LOCAL INSTANCE Integers
-LOCAL INSTANCE FiniteSets
+EXTENDS Integers, FiniteSets, Folds, Functions \* Replace with LOCAL INSTANCE when https://github.com/tlaplus/tlapm/issues/119 is resolved.
+\* LOCAL INSTANCE Integers
+\* LOCAL INSTANCE FiniteSets
 
 (*************************************************************************)
 (* Fold op over the elements of set using base as starting value.        *)
