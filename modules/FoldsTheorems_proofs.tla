@@ -4,6 +4,7 @@
 (*************************************************************************)
 EXTENDS Folds, FiniteSets, TLAPS
 LOCAL INSTANCE FiniteSetTheorems
+LOCAL INSTANCE FunctionTheorems
 LOCAL INSTANCE WellFoundedInduction
 
 \* MapThenFoldSet is well-defined
@@ -94,6 +95,82 @@ THEOREM MapThenFoldSetNonempty ==
             LET x == choose(S)
             IN  op(f(x), MapThenFoldSet(op, base, f, choose, S \ {x}))
 BY MapThenFoldSetDef, Isa
+
+\* equality of MapThenFoldSet for a bijection that behaves homomorphically
+THEOREM MapThenFoldSetBijection ==
+    ASSUME NEW op(_,_), NEW base,
+           NEW S, IsFiniteSet(S), NEW fS(_), NEW chS(_),
+           \A U \in SUBSET S : U # {} => chS(U) \in U,
+           NEW T, IsFiniteSet(T), NEW fT(_), NEW chT(_),
+           \A U \in SUBSET T : U # {} => chT(U) \in U,
+           NEW bij(_),
+           \A s \in S : bij(s) \in T,
+           \A t \in T : \E s \in S : bij(s) = t,
+           \A s1, s2 \in S : bij(s1) = bij(s2) => s1 = s2,
+           \A s \in S : fS(s) = fT(bij(s)),
+           \A U \in SUBSET S : U # {} => bij(chS(U)) = chT({bij(s) : s \in U})
+    PROVE  MapThenFoldSet(op, base, fS, chS, S) = MapThenFoldSet(op, base, fT, chT, T)
+<1>. DEFINE P(U) == MapThenFoldSet(op, base, fS, chS, U) =
+                    MapThenFoldSet(op, base, fT, chT, {bij(s) : s \in U})
+<1>1. ASSUME NEW U \in SUBSET S, \A V \in (SUBSET U) \ {U} : P(V)
+      PROVE  P(U)
+  <2>1. CASE U = {}
+    BY <2>1, MapThenFoldSetEmpty, Isa 
+  <2>2. CASE U # {}
+    <3>. DEFINE BU == {bij(s) : s \in U}
+                xS == chS(U)     xT == chT(BU)   
+                VS == U \ {xS}   VT == BU \ {xT}
+    <3>. SUFFICES MapThenFoldSet(op, base, fS, chS, U) =
+                  MapThenFoldSet(op, base, fT, chT, BU)
+      OBVIOUS
+    <3>1. /\ IsFiniteSet(U)
+          /\ \A V \in SUBSET U : V # {} => chS(V) \in V 
+      BY <2>2, FS_Subset
+    <3>2. MapThenFoldSet(op, base, fS, chS, U) =
+          op(fS(xS), MapThenFoldSet(op, base, fS, chS, VS))
+      BY <2>2, <3>1, MapThenFoldSetNonempty, Isa 
+    <3>3. IsFiniteSet(BU)
+      BY <3>1, FS_Image, Isa
+    <3>4. /\ BU # {}
+          /\ \A V \in SUBSET BU : V # {} => chT(V) \in V 
+      BY <2>2
+    <3>5. MapThenFoldSet(op, base, fT, chT, BU) =
+          op(fT(xT), MapThenFoldSet(op, base, fT, chT, VT))
+      <4>. HIDE DEF BU 
+      <4>. QED  BY <3>3, <3>4, MapThenFoldSetNonempty, Isa
+    <3>6. /\ xS \in U 
+          /\ xT = bij(xS)
+          /\ fS(xS) = fT(xT)
+          /\ VT = {bij(s) : s \in VS}
+      BY <2>2, <3>1
+    <3>7. P(VS)
+      BY <1>1, <3>6
+    <3>. HIDE DEF BU, xS, xT, VS, VT
+    <3>. QED  BY <3>2, <3>5, <3>6, <3>7
+  <2>. QED  BY <2>1, <2>2
+<1>2. P(S)
+  BY <1>1, FS_WFInduction, IsaM("iprover")
+<1>3. {bij(s) : s \in S} = T
+  OBVIOUS
+<1>. QED  BY <1>2, <1>3
+
+\* special case when the bijection is the identity
+THEOREM MapThenFoldSetEqual ==
+    ASSUME NEW op(_,_), NEW base, NEW choose(_), NEW S, IsFiniteSet(S),
+           \A T \in SUBSET S : T # {} => choose(T) \in T,
+           NEW f(_), NEW g(_), 
+           \A s \in S : f(s) = g(s)
+    PROVE  MapThenFoldSet(op, base, f, choose, S) = 
+           MapThenFoldSet(op, base, g, choose, S)
+<1>. DEFINE id(s) == s 
+<1>1. /\ \A s \in S : id(s) \in S
+      /\ \A t \in S : \E s \in S : id(s) = t
+      /\ \A s1, s2 \in S : id(s1) = id(s2) => s1 = s2
+      /\ \A s \in S : f(s) = g(id(s))
+      /\ \A U \in SUBSET S : U # {} => id(choose(U)) = choose({id(s) : s \in U})
+  BY Zenon
+<1>. HIDE DEF id
+<1>. QED  BY <1>1, MapThenFoldSetBijection, IsaM("iprover")
 
 \* type of a fold
 THEOREM MapThenFoldSetType ==

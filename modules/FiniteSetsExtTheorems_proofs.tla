@@ -493,4 +493,124 @@ THEOREM MapThenSumSetStrictlyMonotonic ==
   BY <1>3, MapThenSumSetInt, Isa
 <1>. QED  BY <1>1, <1>2, <1>4, <1>5
 
+(***************************************************************************)
+(* Theorems about Max and Min.                                             *)
+(***************************************************************************)
+
+THEOREM MaxInt ==
+    ASSUME NEW S \in SUBSET Int, NEW x \in S, \A y \in S : x >= y
+    PROVE  Max(S) = x
+BY DEF Max
+
+THEOREM MaxIntFinite ==
+    ASSUME NEW S \in SUBSET Int, S # {}, IsFiniteSet(S)
+    PROVE  /\ Max(S) \in S
+           /\ \A y \in S : Max(S) >= y
+<1>. DEFINE P(T) == T # {} => /\ Max(T) \in T 
+                              /\ \A y \in T : Max(T) >= y
+<1>1. P({})
+  OBVIOUS
+<1>2. ASSUME NEW T \in SUBSET S, P(T), NEW a \in S \ T 
+      PROVE  P(T \union {a})
+  <2>1. CASE \A y \in T : a >= y
+    BY <1>1, <2>1 DEF Max 
+  <2>2. CASE \E y \in T : ~(a >= y)
+    <3>. DEFINE m == Max(T)
+    <3>1. /\ m \in T \union {a}
+          /\ \A y \in T \union {a} : m >= y
+      BY <1>2, <2>2
+    <3>. QED  BY <3>1, Zenon DEF Max
+  <2>. QED  BY <2>1, <2>2
+<1>3. P(S)
+  <2>. HIDE DEF P 
+  <2>. QED  BY <1>1, <1>2, FS_Induction, IsaM("blast")
+<1>. QED  BY <1>3
+
+THEOREM MaxIntBounded ==
+    ASSUME NEW S \in SUBSET Int, S # {}, NEW x \in Int, \A y \in S : x >= y
+    PROVE  /\ Max(S) \in S 
+           /\ \A y \in S : Max(S) >= y
+<1>1. PICK s \in S : TRUE
+  OBVIOUS
+<1>2. IsFiniteSet(s .. x)
+  BY FS_Interval
+<1>. DEFINE T == (s .. x) \cap S
+<1>3. /\ T \in SUBSET Int 
+      /\ T # {}
+      /\ IsFiniteSet(T)
+  BY <1>2, FS_Subset
+<1>4. /\ Max(T) \in T 
+      /\ \A y \in T : Max(T) >= y
+  BY <1>3, MaxIntFinite 
+<1>5. /\ Max(T) \in S
+      /\ \A y \in S : Max(T) >= y
+  BY <1>4
+<1>. QED   BY <1>5, Zenon DEF Max 
+
+THEOREM MaxInterval ==
+    ASSUME NEW a \in Int, NEW b \in Int, a <= b 
+    PROVE  Max(a..b) = b
+BY DEF Max
+
+THEOREM MinInt ==
+    ASSUME NEW S \in SUBSET Int, NEW x \in S, \A y \in S : x <= y
+    PROVE  Min(S) = x
+BY DEF Min
+
+THEOREM MinIntFinite ==
+    ASSUME NEW S \in SUBSET Int, S # {}, IsFiniteSet(S)
+    PROVE  /\ Min(S) \in S
+           /\ \A y \in S : Min(S) <= y
+<1>. DEFINE P(T) == T # {} => /\ Min(T) \in T 
+                              /\ \A y \in T : Min(T) <= y
+<1>1. P({})
+  OBVIOUS
+<1>2. ASSUME NEW T \in SUBSET S, P(T), NEW a \in S \ T 
+      PROVE  P(T \union {a})
+  <2>1. CASE \A y \in T : a <= y
+    BY <1>1, <2>1 DEF Min 
+  <2>2. CASE \E y \in T : ~(a <= y)
+    <3>. DEFINE m == Min(T)
+    <3>1. /\ m \in T \union {a}
+          /\ \A y \in T \union {a} : m <= y
+      BY <1>2, <2>2
+    <3>. QED  BY <3>1, Zenon DEF Min
+  <2>. QED  BY <2>1, <2>2
+<1>3. P(S)
+  <2>. HIDE DEF P 
+  <2>. QED  BY <1>1, <1>2, FS_Induction, IsaM("blast")
+<1>. QED  BY <1>3
+
+THEOREM MinIntBounded ==
+    ASSUME NEW S \in SUBSET Int, S # {}, NEW x \in Int, \A y \in S : x <= y
+    PROVE  /\ Min(S) \in S 
+           /\ \A y \in S : Min(S) <= y
+<1>1. PICK s \in S : TRUE
+  OBVIOUS
+<1>2. IsFiniteSet(x .. s)
+  BY FS_Interval
+<1>. DEFINE T == (x .. s) \cap S
+<1>3. /\ T \in SUBSET Int 
+      /\ T # {}
+      /\ IsFiniteSet(T)
+  BY <1>2, FS_Subset
+<1>4. /\ Min(T) \in T 
+      /\ \A y \in T : Min(T) <= y
+  BY <1>3, MinIntFinite 
+<1>5. /\ Min(T) \in S
+      /\ \A y \in S : Min(T) <= y
+  BY <1>4
+<1>. QED   BY <1>5, Zenon DEF Min
+
+THEOREM MinInterval ==
+    ASSUME NEW a \in Int, NEW b \in Int, a <= b 
+    PROVE  Min(a..b) = a
+BY DEF Min 
+
+THEOREM MinNat ==
+    ASSUME NEW S \in SUBSET Nat, S # {}
+    PROVE  /\ Min(S) \in S 
+           /\ \A y \in S : Min(S) <= y
+BY MinIntBounded, \A y \in S : 0 <= y
+
 ================================================================================
