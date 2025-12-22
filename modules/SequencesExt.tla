@@ -1,10 +1,13 @@
 ---------------------------- MODULE SequencesExt ----------------------------
-LOCAL INSTANCE Sequences
-LOCAL INSTANCE Naturals
-LOCAL INSTANCE FiniteSets
-LOCAL INSTANCE FiniteSetsExt
-LOCAL INSTANCE Functions
-LOCAL INSTANCE Folds
+EXTENDS Sequences, Naturals, FiniteSets, FiniteSetsExt, Folds, Functions
+\* TLAPM does not play well with LOCAL INSTANCE, reinstate the following
+\* when that issue is fixed.
+\* LOCAL INSTANCE Sequences
+\* LOCAL INSTANCE Naturals
+\* LOCAL INSTANCE FiniteSets
+\* LOCAL INSTANCE FiniteSetsExt
+\* LOCAL INSTANCE Folds
+\* LOCAL INSTANCE Functions
 LOCAL INSTANCE TLC
   (*************************************************************************)
   (* Imports the definitions from the modules, but doesn't export them.    *)
@@ -297,11 +300,11 @@ SeqMod(a, b) ==
 
 
 (***************************************************************************)
-(* An alias of FoldFunction that op on all elements of seq an arbitrary    *)
-(* order. The resulting function is:                                       *)
-(*    op(f[i],op(f[j], ..., op(f[k],base) ...))                            *)
+(* An alias of FoldFunction that combines all elements of seq using op,    *)
+(* in an unspecified order. The result is                                  *)
+(*    op(seq[i],op(seq[j], ..., op(seq[k],base) ...))                      *)
 (*                                                                         *)
-(* op must be associative and commutative, because we can not assume a     *)
+(* op should be associative and commutative, because we can not assume a   *)
 (* particular ordering of i, j, and k                                      *)
 (*                                                                         *)
 (* Example:                                                                *)
