@@ -721,6 +721,13 @@ THEOREM SumFunctionOnSetAddIndex ==
   PROVE  SumFunctionOnSet(fun, indices \union {i}) = 
          fun[i] + SumFunctionOnSet(fun, indices)
 
+\* corresponding lemma for removing an index
+THEOREM SumFunctionOnSetRemoveIndex ==
+  ASSUME NEW fun, NEW indices, IsFiniteSet(indices), NEW i \in indices,
+         \A j \in indices : fun[j] \in Int
+  PROVE  SumFunctionOnSet(fun, indices \ {i}) = 
+         SumFunctionOnSet(fun, indices) - fun[i]
+
 (*************************************************************************)
 (* Reduce the sum of an EXCEPT to the sum of the original function.      *)
 (*************************************************************************)
@@ -730,7 +737,7 @@ THEOREM SumFunctionOnSetExcept ==
          \A j \in indices : fun[j] \in Int 
   PROVE  SumFunctionOnSet([fun EXCEPT ![i] = y], indices) =
          IF i \in indices
-         THEN y + SumFunctionOnSet(fun, indices \ {i})
+         THEN SumFunctionOnSet(fun, indices) + y - fun[i]
          ELSE SumFunctionOnSet(fun, indices)
 
 (*************************************************************************)
@@ -782,6 +789,56 @@ THEOREM SumFunctionOnSetStrictlyMonotonic ==
          \A x \in S : f[x] <= g[x],
          NEW s \in S, f[s] < g[s]
   PROVE  SumFunctionOnSet(f, S) < SumFunctionOnSet(g, S)
+
+(*************************************************************************)
+(* Similar theorems for SumFunction.                                     *)
+(*************************************************************************)
+THEOREM SumFunctionNat ==
+  ASSUME NEW fun, IsFiniteSet(DOMAIN fun),
+         \A x \in DOMAIN fun : fun[x] \in Nat 
+  PROVE  SumFunction(fun) \in Nat
+
+THEOREM SumFunctionInt ==
+  ASSUME NEW fun, IsFiniteSet(DOMAIN fun),
+         \A x \in DOMAIN fun : fun[x] \in Int 
+  PROVE  SumFunction(fun) \in Int 
+
+THEOREM SumFunctionEmpty ==
+  ASSUME NEW fun, DOMAIN fun = {}
+  PROVE  SumFunction(fun) = 0
+
+THEOREM SumFunctionNonempty ==
+  ASSUME NEW fun, IsFiniteSet(DOMAIN fun), NEW x \in DOMAIN fun,
+         \A i \in DOMAIN fun : fun[i] \in Int
+  PROVE  SumFunction(fun) = fun[x] + SumFunctionOnSet(fun, (DOMAIN fun) \ {x})
+
+THEOREM SumFunctionExcept ==
+  ASSUME NEW fun, NEW i, NEW y \in Int, IsFiniteSet(DOMAIN fun),
+         \A x \in DOMAIN fun : fun[x] \in Int 
+  PROVE  SumFunction([fun EXCEPT ![i] = y]) =
+         IF i \in DOMAIN fun 
+         THEN SumFunction(fun) + y - fun[i]
+         ELSE SumFunction(fun)
+
+THEOREM SumFunctionZero ==
+  ASSUME NEW fun, IsFiniteSet(DOMAIN fun), 
+         \A x \in DOMAIN fun : fun[x] \in Nat
+  PROVE  SumFunction(fun) = 0 <=> \A x \in DOMAIN fun : fun[x] = 0
+
+THEOREM SumFunctionMonotonic ==
+  ASSUME NEW f, IsFiniteSet(DOMAIN f), NEW g, DOMAIN g = DOMAIN f,
+         \A x \in DOMAIN f : f[x] \in Int,
+         \A x \in DOMAIN f : g[x] \in Int,
+         \A x \in DOMAIN f : f[x] <= g[x]
+  PROVE  SumFunction(f) <= SumFunction(g)
+
+THEOREM SumFunctionStrictlyMonotonic ==
+  ASSUME NEW f, IsFiniteSet(DOMAIN f), NEW g, DOMAIN g = DOMAIN f,
+         \A x \in DOMAIN f : f[x] \in Int,
+         \A x \in DOMAIN f : g[x] \in Int,
+         \A x \in DOMAIN f : f[x] <= g[x],
+         NEW s \in DOMAIN f, f[s] < g[s]
+  PROVE  SumFunction(f) < SumFunction(g)
 
 =============================================================================
 \* Created Thu Apr 11 10:36:10 PDT 2013 by tomr
