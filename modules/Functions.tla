@@ -6,7 +6,7 @@
 (*  \vspace{12pt}}^'                                                       *)
 (***************************************************************************)
 
-EXTENDS Folds
+EXTENDS Integers, Folds
 
 (***************************************************************************)
 (* Restriction of a function to a set (should be a subset of the domain).  *)
@@ -138,7 +138,7 @@ ExistsBijection(S,T)  == Bijection(S,T) # {}
 
 (***************************************************************************)
 (* Applies the binary operator op on the elements f[i] for i \in indices,  *)
-(* a subset of DOMAIN fun, in an unspecified order, starting from value    *)
+(* a subset of DOMAIN f, in an unspecified order, starting from value      *)
 (* base. The result is                                                     *)
 (*    op(f[i],op(f[j], ..., op(f[k],base) ...))                            *)
 (* where i,j,k range over the sets indices.                                *)
@@ -162,6 +162,16 @@ FoldFunctionOnSet(op(_,_), base, fun, indices) ==
 (***************************************************************************)
 FoldFunction(op(_,_), base, fun) ==
   FoldFunctionOnSet(op, base, fun, DOMAIN fun)
+
+(***************************************************************************)
+(* Sum the values f[i] for i \in indices, a subset of DOMAIN f.            *)
+(*                                                                         *)
+(* Example:                                                                *)
+(*  SumFunctionOnSet(<<4,5,6>>, {1,2}) = 9                                 *)
+(*  SumFunction(<<4,5,6>>) = 15                                            *)
+(***************************************************************************)
+SumFunctionOnSet(fun, indices) == FoldFunctionOnSet(+, 0, fun, indices)
+SumFunction(fun) == SumFunctionOnSet(fun, DOMAIN fun)
 
 =============================================================================
 \* Created Thu Apr 11 10:30:48 PDT 2013 by tomr

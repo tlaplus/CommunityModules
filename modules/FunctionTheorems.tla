@@ -560,6 +560,17 @@ THEOREM FoldFunctionOnSetType ==
   PROVE FoldFunctionOnSet(op, base, fun, indices) \in Typ
 
 (***************************************************************************)
+(* Folding two functions that agree on every element of the set of indices *)
+(* yields the same value.                                                  *)
+(***************************************************************************)
+THEOREM FoldFunctionOnSetEqual ==
+  ASSUME NEW op(_,_), NEW base, NEW f, NEW g,
+         NEW indices, IsFiniteSet(indices),
+         \A i \in indices : f[i] = g[i]
+  PROVE  FoldFunctionOnSet(op, base, f, indices) = 
+         FoldFunctionOnSet(op, base, g, indices)
+
+(***************************************************************************)
 (* If the binary operator is associative and commutative, the result of    *)
 (* folding a function over a non-empty set corresponds to applying the     *)
 (* operator to an arbitrary element of the set and the result of folding   *)
@@ -585,6 +596,23 @@ THEOREM FoldFunctionOnSetACAddIndex ==
          NEW fun, \A j \in indices \union {i} : fun[j] \in Typ
   PROVE FoldFunctionOnSet(op, base, fun, indices \union {i}) =
         op(fun[i], FoldFunctionOnSet(op, base, fun, indices))
+
+(*************************************************************************)
+(* For an AC operator, folding an EXCEPT construction can be reduced to  *)
+(* folding the original function.                                        *)
+(*************************************************************************)
+THEOREM FoldFunctionOnSetACExcept ==
+  ASSUME NEW Typ, NEW op(_,_), NEW base \in Typ,
+         \A t,u \in Typ : op(t,u) \in Typ,
+         \A t,u \in Typ : op(t,u) = op(u,t),
+         \A t,u,v \in Typ : op(t, op(u,v)) = op(op(t,u),v),
+         NEW fun, NEW i, NEW y \in Typ,
+         NEW indices \in SUBSET (DOMAIN fun), IsFiniteSet(indices), 
+         \A j \in indices : fun[j] \in Typ 
+  PROVE  FoldFunctionOnSet(op, base, [fun EXCEPT ![i] = y], indices) =
+         IF i \in indices
+         THEN op(y, FoldFunctionOnSet(op, base, fun, indices \ {i}))
+         ELSE FoldFunctionOnSet(op, base, fun, indices)
 
 (*************************************************************************)
 (* For an AC operator `op` for which `base` is the neutral element,      *)
@@ -632,6 +660,128 @@ THEOREM FoldFunctionAC ==
   PROVE FoldFunction(op, base, fun) =
         op(fun[i], FoldFunctionOnSet(op, base, fun, (DOMAIN fun) \ {i}))
 
+THEOREM FoldFunctionACExcept ==
+  ASSUME NEW Typ, NEW op(_,_), NEW base \in Typ,
+         \A t,u \in Typ : op(t,u) \in Typ,
+         \A t,u \in Typ : op(t,u) = op(u,t),
+         \A t,u,v \in Typ : op(t, op(u,v)) = op(op(t,u),v),
+         NEW fun, NEW i, NEW y \in Typ,
+         IsFiniteSet(DOMAIN fun), 
+         \A j \in DOMAIN fun : fun[j] \in Typ 
+  PROVE  FoldFunction(op, base, [fun EXCEPT ![i] = y]) =
+         IF i \in DOMAIN fun
+         THEN op(y, FoldFunctionOnSet(op, base, fun, (DOMAIN fun) \ {i}))
+         ELSE FoldFunction(op, base, fun)
+
+(*************************************************************************)
+(* Summing a function that returns natural numbers, resp. integers,      *)
+(* yields a natural number, resp. an integer.                            *)
+(*************************************************************************)
+THEOREM SumFunctionOnSetNat ==
+  ASSUME NEW fun, NEW indices, IsFiniteSet(indices),
+         \A i \in indices : fun[i] \in Nat 
+  PROVE  SumFunctionOnSet(fun, indices) \in Nat
+
+THEOREM SumFunctionOnSetInt ==
+  ASSUME NEW fun, NEW indices, IsFiniteSet(indices),
+         \A i \in indices : fun[i] \in Int
+  PROVE  SumFunctionOnSet(fun, indices) \in Int
+
+(*************************************************************************)
+(* Summing two functions that agree on all relevant indices yields the   *)
+(* same result.                                                          *)
+(*************************************************************************)
+THEOREM SumFunctionOnSetEqual ==
+  ASSUME NEW f, NEW g, NEW indices, IsFiniteSet(indices),
+         \A i \in indices : f[i] = g[i]
+  PROVE  SumFunctionOnSet(f, indices) = SumFunctionOnSet(g, indices)
+
+(*************************************************************************)
+(* Summing a function over the empty set is 0.                           *)
+(*************************************************************************)
+THEOREM SumFunctionOnSetEmpty ==
+  ASSUME NEW fun 
+  PROVE  SumFunctionOnSet(fun, {}) = 0
+
+(*************************************************************************)
+(* Summing a function over a non-empty set corresponds to the sum of     *)
+(* element of the set and the sum of the function over the remainder.    *)
+(*************************************************************************)
+THEOREM SumFunctionOnSetNonempty ==
+  ASSUME NEW fun, NEW indices, IsFiniteSet(indices), NEW i \in indices,
+         \A j \in indices : fun[j] \in Int
+  PROVE  SumFunctionOnSet(fun, indices) = 
+         fun[i] + SumFunctionOnSet(fun, indices \ {i})
+
+\* reformulation in terms of adding an index
+THEOREM SumFunctionOnSetAddIndex ==
+  ASSUME NEW fun, NEW indices, IsFiniteSet(indices), 
+         NEW i, i \notin indices,
+         \A j \in indices \union {i} : fun[j] \in Int
+  PROVE  SumFunctionOnSet(fun, indices \union {i}) = 
+         fun[i] + SumFunctionOnSet(fun, indices)
+
+(*************************************************************************)
+(* Reduce the sum of an EXCEPT to the sum of the original function.      *)
+(*************************************************************************)
+THEOREM SumFunctionOnSetExcept ==
+  ASSUME NEW fun, NEW i, NEW y \in Int,
+         NEW indices \in SUBSET (DOMAIN fun), IsFiniteSet(indices),
+         \A j \in indices : fun[j] \in Int 
+  PROVE  SumFunctionOnSet([fun EXCEPT ![i] = y], indices) =
+         IF i \in indices
+         THEN y + SumFunctionOnSet(fun, indices \ {i})
+         ELSE SumFunctionOnSet(fun, indices)
+
+(*************************************************************************)
+(* Summing a function distributes over disjoint union.                   *)
+(*************************************************************************)
+THEOREM SumFunctionOnSetDisjointUnion ==
+  ASSUME NEW S, IsFiniteSet(S),
+         NEW T, IsFiniteSet(T), S \cap T = {},
+         NEW fun, \A x \in S \union T : fun[x] \in Int 
+  PROVE  SumFunctionOnSet(fun, S \union T) =
+         SumFunctionOnSet(fun, S) + SumFunctionOnSet(fun, T)
+
+(*************************************************************************)
+(* Summing a Nat-valued function is monotonic in the subset relation.    *)
+(*************************************************************************)
+THEOREM SumFunctionNatOnSubset ==
+  ASSUME NEW S, IsFiniteSet(S), NEW T \in SUBSET S,
+         NEW fun, \A s \in S : fun[s] \in Nat
+  PROVE  SumFunctionOnSet(fun, T) <= SumFunctionOnSet(fun, S)
+
+(*************************************************************************)
+(* The sum of a Nat-valued function is zero iff all relevant function    *)
+(* values are zero.                                                      *)
+(*************************************************************************)
+THEOREM SumFunctionOnSetZero ==
+  ASSUME NEW S, IsFiniteSet(S),
+         NEW fun, \A x \in S : fun[x] \in Nat
+  PROVE  SumFunctionOnSet(fun, S) = 0 <=> \A x \in S : fun[x] = 0
+
+(*************************************************************************)
+(* Summing a function is monotonic in the function argument.             *)
+(*************************************************************************)
+THEOREM SumFunctionOnSetMonotonic ==
+  ASSUME NEW S, IsFiniteSet(S),
+         NEW f, \A s \in S : f[s] \in Int,
+         NEW g, \A s \in S : g[s] \in Int,
+         \A s \in S : f[s] <= g[s]
+  PROVE  SumFunctionOnSet(f, S) <= SumFunctionOnSet(g, S)
+
+(*************************************************************************)
+(* The sum over function f is strictly smaller than the sum over g if    *)
+(* f[x] <= g[x] for all x \in S and f[x] < g[s] holds for at least some  *)
+(* element s \in S.                                                      *)
+(*************************************************************************)
+THEOREM SumFunctionOnSetStrictlyMonotonic ==
+  ASSUME NEW S, IsFiniteSet(S),
+         NEW f, \A s \in S : f[s] \in Int,
+         NEW g, \A s \in S : g[s] \in Int,
+         \A x \in S : f[x] <= g[x],
+         NEW s \in S, f[s] < g[s]
+  PROVE  SumFunctionOnSet(f, S) < SumFunctionOnSet(g, S)
 
 =============================================================================
 \* Created Thu Apr 11 10:36:10 PDT 2013 by tomr
