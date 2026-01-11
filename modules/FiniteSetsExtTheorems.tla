@@ -283,4 +283,79 @@ THEOREM MapThenSumSetStrictlyMonotonic ==
            NEW s \in S, f(s) < g(s)
     PROVE  MapThenSumSet(f, S) < MapThenSumSet(g, S)
 
+---------------------------------------------------------------------------
+
+(*************************************************************************)
+(* Theorems about Min and Max of sets of integers.                       *)
+(*************************************************************************)
+
+(*************************************************************************)
+(* If a set of integers contains an upper bound, it is the maximum.      *)
+(*************************************************************************)
+THEOREM MaxInt ==
+    ASSUME NEW S \in SUBSET Int, NEW x \in S, \A y \in S : x >= y
+    PROVE  Max(S) = x
+
+(*************************************************************************)
+(* Any finite non-empty set of integers has a maximum.                   *)
+(*************************************************************************)
+THEOREM MaxIntFinite ==
+    ASSUME NEW S \in SUBSET Int, S # {}, IsFiniteSet(S)
+    PROVE  /\ Max(S) \in S
+           /\ \A y \in S : Max(S) >= y
+
+(*************************************************************************)
+(* Any non-empty set of integers that has an upper bound has a maximum.  *)
+(*************************************************************************)
+THEOREM MaxIntBounded ==
+    ASSUME NEW S \in SUBSET Int, S # {}, NEW x \in Int, \A y \in S : x >= y
+    PROVE  /\ Max(S) \in S 
+           /\ \A y \in S : Max(S) >= y
+
+(*************************************************************************)
+(* The maximum of a non-empty interval is its upper bound.               *)
+(*************************************************************************)
+THEOREM MaxInterval ==
+    ASSUME NEW a \in Int, NEW b \in Int, a <= b 
+    PROVE  Max(a..b) = b
+
+(*************************************************************************)
+(* If a set of integers contains an lower bound, it is the minimum.      *)
+(*************************************************************************)
+THEOREM MinInt ==
+    ASSUME NEW S \in SUBSET Int, NEW x \in S, \A y \in S : x <= y
+    PROVE  Min(S) = x
+
+(*************************************************************************)
+(* Any finite non-empty set of integers has a minimum.                   *)
+(*************************************************************************)
+THEOREM MinIntFinite ==
+    ASSUME NEW S \in SUBSET Int, S # {}, IsFiniteSet(S)
+    PROVE  /\ Min(S) \in S
+           /\ \A y \in S : Min(S) <= y
+
+(*************************************************************************)
+(* Any non-empty set of integers that has a lower bound has a minimum.   *)
+(*************************************************************************)
+THEOREM MinIntBounded ==
+    ASSUME NEW S \in SUBSET Int, S # {}, NEW x \in Int, \A y \in S : x <= y
+    PROVE  /\ Min(S) \in S 
+           /\ \A y \in S : Min(S) <= y
+
+(*************************************************************************)
+(* The minimum of a non-empty interval is its lower bound.               *)
+(*************************************************************************)
+THEOREM MinInterval ==
+    ASSUME NEW a \in Int, NEW b \in Int, a <= b 
+    PROVE  Min(a..b) = a
+
+(*************************************************************************)
+(* Any non-empty set of natural numbers has a minimum.                   *)
+(*************************************************************************)
+THEOREM MinNat ==
+    ASSUME NEW S \in SUBSET Nat, S # {}
+    PROVE  /\ Min(S) \in S 
+           /\ \A y \in S : Min(S) <= y
+
+
 ===========================================================================

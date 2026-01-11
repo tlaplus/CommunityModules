@@ -37,6 +37,37 @@ THEOREM MapThenFoldSetNonempty ==
             IN  op(f(x), MapThenFoldSet(op, base, f, choose, S \ {x}))
 
 (*************************************************************************)
+(* Folding over two finite sets S and T that are related by a bijection  *)
+(* that is compatible with the choice and mapping functions yields the   *)
+(* same result.                                                          *)
+(*************************************************************************)
+THEOREM MapThenFoldSetBijection ==
+    ASSUME NEW op(_,_), NEW base,
+           NEW S, IsFiniteSet(S), NEW fS(_), NEW chS(_),
+           \A U \in SUBSET S : U # {} => chS(U) \in U,
+           NEW T, IsFiniteSet(T), NEW fT(_), NEW chT(_),
+           \A U \in SUBSET T : U # {} => chT(U) \in U,
+           NEW bij(_),
+           \A s \in S : bij(s) \in T,
+           \A t \in T : \E s \in S : bij(s) = t,
+           \A s1, s2 \in S : bij(s1) = bij(s2) => s1 = s2,
+           \A s \in S : fS(s) = fT(bij(s)),
+           \A U \in SUBSET S : U # {} => bij(chS(U)) = chT({bij(s) : s \in U})
+    PROVE  MapThenFoldSet(op, base, fS, chS, S) = MapThenFoldSet(op, base, fT, chT, T)
+
+(*************************************************************************)
+(* In particular, folding over the same set, using two mapping functions *)
+(* that agree over the elements of the set, yields the same result.      *)
+(*************************************************************************)
+THEOREM MapThenFoldSetEqual ==
+    ASSUME NEW op(_,_), NEW base, NEW choose(_), NEW S, IsFiniteSet(S),
+           \A T \in SUBSET S : T # {} => choose(T) \in T,
+           NEW f(_), NEW g(_), 
+           \A s \in S : f(s) = g(s)
+    PROVE  MapThenFoldSet(op, base, f, choose, S) = 
+           MapThenFoldSet(op, base, g, choose, S)
+
+(*************************************************************************)
 (* The type of a fold corresponds to the type associated with the binary *)
 (* operator that underlies the fold.                                     *)
 (*************************************************************************)
