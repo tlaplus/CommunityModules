@@ -144,7 +144,7 @@ THEOREM ReverseSingleton == \A x : Reverse(<< x >>) = << x >>
 
 THEOREM ReverseSubSeq ==
   ASSUME NEW S, NEW seq \in Seq(S),
-         NEW m \in 1..Len(seq), NEW n \in 1..Len(seq)
+         NEW m \in 1..Len(seq), NEW n \in 0..Len(seq)
   PROVE  Reverse(SubSeq(seq, m , n)) = SubSeq(Reverse(seq), Len(seq)-n+1, Len(seq)-m+1)
 
 THEOREM ReversePalindrome ==
