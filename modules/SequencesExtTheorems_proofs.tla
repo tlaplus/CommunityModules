@@ -39,6 +39,11 @@ THEOREM ConsAppend ==
   PROVE  Cons(x, Append(seq, y)) = Append(Cons(x,seq), y)
 BY DEF Cons
 
+THEOREM ConsConcat ==
+  ASSUME NEW S, NEW e \in S, NEW ls \in Seq(S), NEW rs \in Seq(S)
+  PROVE  Cons(e, ls) \o rs = Cons(e, ls \o rs)
+BY DEF Cons
+
 THEOREM ConsInjective ==
   ASSUME NEW S, NEW e \in S, NEW s \in Seq(S), NEW f \in S, NEW t \in Seq(S)
   PROVE  Cons(e,s) = Cons(f,t) <=> e = f /\ s = t
@@ -992,6 +997,47 @@ THEOREM FoldLeftType ==
 <1>. QED  BY <1>3 DEF P 
 
 (**************************************************************************)
+(* Interaction of FoldLeft and concatenation when op is associative and   *)
+(* base is a right identity.                                              *)
+(**************************************************************************)
+THEOREM FoldLeftConcat ==
+    ASSUME NEW Typ, NEW op(_,_), NEW base \in Typ, 
+           \A t,u \in Typ : op(t,u) \in Typ,
+           \A t,u,v \in Typ : op(t, op(u,v)) = op(op(t,u), v),
+           \A t \in Typ : op(t, base) = t,
+           NEW ls \in Seq(Typ), NEW rs \in Seq(Typ)
+    PROVE  FoldLeft(op, base, ls \o rs) = 
+           op(FoldLeft(op, base, ls), FoldLeft(op, base, rs))
+<1>. DEFINE P(r) == \A s \in Seq(Typ) :
+                       FoldLeft(op, base, s \o r) =
+                       op(FoldLeft(op, base, s), FoldLeft(op, base, r))
+<1>1. \A s \in Seq(Typ) : FoldLeft(op, base, s) \in Typ
+  BY FoldLeftType, Isa
+<1>2. P(<< >>)
+  <2>. TAKE s \in Seq(Typ)
+  <2>. QED 
+    BY <1>1, FoldLeftEmpty, s \o << >>  = s, Isa
+<1>3. ASSUME NEW r \in Seq(Typ), NEW e \in Typ, P(r)
+      PROVE  P(Append(r,e))
+  <2>. TAKE s \in Seq(Typ)
+  <2>1. FoldLeft(op, base, s \o Append(r,e)) = 
+        FoldLeft(op, base, Append(s \o r, e))
+    OBVIOUS
+  <2>2. @ = op(FoldLeft(op, base, s \o r), e)
+    BY FoldLeftAppend, s \o r \in Seq(Typ), Isa
+  <2>3. @ = op(op(FoldLeft(op, base, s), FoldLeft(op, base, r)), e)
+    BY <1>3
+  <2>4. @ = op(FoldLeft(op, base, s), op(FoldLeft(op, base, r), e))
+    BY <1>1
+  <2>5. op(FoldLeft(op, base, r), e) = FoldLeft(op, base, Append(r, e))
+    BY FoldLeftAppend, Isa
+  <2>. QED  BY <2>1, <2>2, <2>3, <2>4, <2>5
+<1>4. \A s \in Seq(Typ) : P(s)
+  <2>. HIDE DEF P 
+  <2>. QED  BY <1>2, <1>3, SequencesInductionAppend, Isa
+<1>. QED  BY <1>4
+
+(**************************************************************************)
 (* Recursive characterization of FoldRight.                               *)
 (**************************************************************************)
 THEOREM FoldRightRecursion ==
@@ -1104,6 +1150,47 @@ THEOREM FoldRightType ==
 <1>3. \A sq \in Seq(Typ) : P(seq)
   BY <1>1, <1>2, SequencesInductionCons, IsaM("blast")
 <1>. QED  BY <1>3 DEF P 
+
+(**************************************************************************)
+(* Interaction of FoldRight and concatenation when op is associative and  *)
+(* base is a left identity.                                               *)
+(**************************************************************************)
+THEOREM FoldRightConcat ==
+    ASSUME NEW Typ, NEW op(_,_), NEW base \in Typ, 
+           \A t,u \in Typ : op(t,u) \in Typ,
+           \A t,u,v \in Typ : op(t, op(u,v)) = op(op(t,u), v),
+           \A t \in Typ : op(base, t) = t,
+           NEW ls \in Seq(Typ), NEW rs \in Seq(Typ)
+    PROVE  FoldRight(op, ls \o rs, base) = 
+           op(FoldRight(op, ls, base), FoldRight(op, rs, base))
+<1>. DEFINE P(s) == \A r \in Seq(Typ) :
+                       FoldRight(op, s \o r, base) =
+                       op(FoldRight(op, s, base), FoldRight(op, r, base))
+<1>1. \A r \in Seq(Typ) : FoldRight(op, r, base) \in Typ
+  BY FoldRightType, Isa
+<1>2. P(<< >>)
+  <2>. TAKE r \in Seq(Typ)
+  <2>. QED 
+    BY <1>1, FoldRightEmpty, << >> \o r = r, Isa
+<1>3. ASSUME NEW s \in Seq(Typ), NEW e \in Typ, P(s)
+      PROVE  P(Cons(e,s))
+  <2>. TAKE r \in Seq(Typ)
+  <2>1. FoldRight(op, Cons(e,s) \o r, base) = 
+        FoldRight(op, Cons(e, s \o r), base)
+    BY ConsConcat
+  <2>2. @ = op(e, FoldRight(op, s \o r, base))
+    BY FoldRightCons, s \o r \in Seq(Typ), Isa
+  <2>3. @ = op(e, op(FoldRight(op, s, base), FoldRight(op, r, base)))
+    BY <1>3
+  <2>4. @ = op(op(e, FoldRight(op, s, base)), FoldRight(op, r, base))
+    BY <1>1
+  <2>5. op(e, FoldRight(op, s, base)) = FoldRight(op, Cons(e,s), base)
+    BY FoldRightCons, Isa
+  <2>. QED  BY <2>1, <2>2, <2>3, <2>4, <2>5
+<1>4. \A s \in Seq(Typ) : P(s)
+  <2>. HIDE DEF P 
+  <2>. QED  BY <1>2, <1>3, SequencesInductionCons, Isa
+<1>. QED  BY <1>4
 
 (**************************************************************************)
 (* FoldLeftDomain and FoldRightDomain cannot be characterized recursively *)
