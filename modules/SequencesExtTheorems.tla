@@ -33,6 +33,10 @@ THEOREM ConsAppend ==
   ASSUME NEW S, NEW seq \in Seq(S), NEW x \in S, NEW y \in S
   PROVE  Cons(x, Append(seq, y)) = Append(Cons(x,seq), y)
 
+THEOREM ConsConcat ==
+  ASSUME NEW S, NEW e \in S, NEW ls \in Seq(S), NEW rs \in Seq(S)
+  PROVE  Cons(e, ls) \o rs = Cons(e, ls \o rs)
+
 THEOREM ConsInjective ==
   ASSUME NEW S, NEW e \in S, NEW s \in Seq(S), NEW f \in S, NEW t \in Seq(S)
   PROVE  Cons(e,s) = Cons(f,t) <=> e = f /\ s = t
@@ -471,6 +475,19 @@ THEOREM FoldLeftType ==
     PROVE  FoldLeft(op, base, seq) \in Typ 
 
 (**************************************************************************)
+(* Interaction of FoldLeft and concatenation when op is associative and   *)
+(* base is a right identity.                                              *)
+(**************************************************************************)
+THEOREM FoldLeftConcat ==
+    ASSUME NEW Typ, NEW op(_,_), NEW base \in Typ, 
+           \A t,u \in Typ : op(t,u) \in Typ,
+           \A t,u,v \in Typ : op(t, op(u,v)) = op(op(t,u), v),
+           \A t \in Typ : op(t, base) = t,
+           NEW ls \in Seq(Typ), NEW rs \in Seq(Typ)
+    PROVE  FoldLeft(op, base, ls \o rs) = 
+           op(FoldLeft(op, base, ls), FoldLeft(op, base, rs))
+
+(**************************************************************************)
 (* Recursive characterization of FoldRight.                               *)
 (**************************************************************************)
 THEOREM FoldRightRecursion ==
@@ -501,6 +518,19 @@ THEOREM FoldRightType ==
     ASSUME NEW Typ, NEW op(_,_), NEW base \in Typ, NEW seq \in Seq(Typ),
            \A t,u \in Typ : op(t,u) \in Typ 
     PROVE  FoldRight(op, seq, base) \in Typ 
+
+(**************************************************************************)
+(* Interaction of FoldRight and concatenation when op is associative and  *)
+(* base is a left identity.                                               *)
+(**************************************************************************)
+THEOREM FoldRightConcat ==
+    ASSUME NEW Typ, NEW op(_,_), NEW base \in Typ, 
+           \A t,u \in Typ : op(t,u) \in Typ,
+           \A t,u,v \in Typ : op(t, op(u,v)) = op(op(t,u), v),
+           \A t \in Typ : op(base, t) = t,
+           NEW ls \in Seq(Typ), NEW rs \in Seq(Typ)
+    PROVE  FoldRight(op, ls \o rs, base) = 
+           op(FoldRight(op, ls, base), FoldRight(op, rs, base))
 
 (**************************************************************************)
 (* FoldLeftDomain and FoldRightDomain cannot be characterized recursively *)
