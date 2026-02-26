@@ -157,7 +157,8 @@ AllPredecessors(G, S) == UNION {Predecessors(G, n): n \in S}
 (***************************************************************************)
 Ancestors(G, n) ==
   LET EdgeRelation ==
-\* restore when TLAPS supports this syntax
+\* revert to the following syntax once TLAPS uses SANY
+\* (https://github.com/tlaplus/tlapm/issues/213)
 \*        [<<x, y>> \in G.node \X G.node |-> <<x, y>> \in G.edge]
         [p \in G.node \X G.node |-> <<p[1], p[2]>> \in G.edge]
   IN  { m \in G.node : TransitiveClosure(EdgeRelation, G.node)[m, n] }
@@ -171,7 +172,8 @@ Ancestors(G, n) ==
 (***************************************************************************)
 Descendants(G, n) ==
   LET EdgeRelation ==
-\* restore when TLAPS supports this syntax
+\* revert to the following syntax once TLAPS uses SANY
+\* (https://github.com/tlaplus/tlapm/issues/213)
 \*        [<<x, y>> \in G.node \X G.node |-> <<x, y>> \in G.edge]
         [p \in G.node \X G.node |-> <<p[1], p[2]>> \in G.edge]
   IN  { m \in G.node : TransitiveClosure(EdgeRelation, G.node)[n, m] }

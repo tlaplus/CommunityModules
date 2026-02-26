@@ -33,7 +33,8 @@ LOCAL INSTANCE FiniteSets
 IsReflexive(R, S) == \A x \in S : R[x,x]
 
 IsReflexiveUnder(op(_,_), S) ==
-\* restore the following when TLAPS accepts this syntax
+\* revert to the following syntax once TLAPS uses SANY
+\* (https://github.com/tlaplus/tlapm/issues/213)
 \*    IsReflexive([<<x,y>> \in S \X S |-> op(x,y)], S)
     IsReflexive([p \in S \X S |-> op(p[1], p[2])], S)
 
@@ -50,7 +51,8 @@ IsReflexiveUnder(op(_,_), S) ==
 IsIrreflexive(R, S) == \A x \in S : ~ R[x,x]
 
 IsIrreflexiveUnder(op(_,_), S) ==
-\* restore the following when TLAPS accepts this syntax
+\* revert to the following syntax once TLAPS uses SANY
+\* (https://github.com/tlaplus/tlapm/issues/213)
 \*    IsIrreflexive([<<x,y>> \in S \X S |-> op(x,y)], S)
     IsIrreflexive([p \in S \X S |-> op(p[1], p[2])], S)
 
@@ -66,7 +68,8 @@ IsIrreflexiveUnder(op(_,_), S) ==
 IsSymmetric(R, S) == \A x,y \in S : R[x,y] <=> R[y,x]
 
 IsSymmetricUnder(op(_,_), S) ==
-\* restore the following when TLAPS accepts this syntax
+\* revert to the following syntax once TLAPS uses SANY
+\* (https://github.com/tlaplus/tlapm/issues/213)
 \*    IsSymmetric([<<x,y>> \in S \X S |-> op(x,y)], S)
     IsSymmetric([p \in S \X S |-> op(p[1], p[2])], S)
 
@@ -83,7 +86,8 @@ IsSymmetricUnder(op(_,_), S) ==
 IsAntiSymmetric(R, S) == \A x,y \in S : R[x,y] /\ R[y,x] => x=y
 
 IsAntiSymmetricUnder(op(_,_), S) ==
-\* restore the following when TLAPS accepts this syntax
+\* revert to the following syntax once TLAPS uses SANY
+\* (https://github.com/tlaplus/tlapm/issues/213)
 \*    IsAntiSymmetric([<<x,y>> \in S \X S |-> op(x,y)], S)
     IsAntiSymmetric([p \in S \X S |-> op(p[1], p[2])], S)
 
@@ -100,7 +104,8 @@ IsAntiSymmetricUnder(op(_,_), S) ==
 IsAsymmetric(R, S) == \A x,y \in S : ~(R[x,y] /\ R[y,x])
 
 IsAsymmetricUnder(op(_,_), S) ==
-\* restore the following when TLAPS accepts this syntax
+\* revert to the following syntax once TLAPS uses SANY
+\* (https://github.com/tlaplus/tlapm/issues/213)
 \*    IsAsymmetric([<<x,y>> \in S \X S |-> op(x,y)], S)
     IsAsymmetric([p \in S \X S |-> op(p[1], p[2])], S)
 
@@ -117,7 +122,8 @@ IsAsymmetricUnder(op(_,_), S) ==
 IsTransitive(R, S) == \A x,y,z \in S : R[x,y] /\ R[y,z] => R[x,z]
 
 IsTransitiveUnder(op(_,_), S) ==
-\* restore the following when TLAPS accepts this syntax
+\* revert to the following syntax once TLAPS uses SANY
+\* (https://github.com/tlaplus/tlapm/issues/213)
 \*    IsTransitive([<<x,y>> \in S \X S |-> op(x,y)], S)
     IsTransitive([p \in S \X S |-> op(p[1], p[2])], S)
 
@@ -137,7 +143,8 @@ IsStrictlyPartiallyOrdered(R, S) ==
     /\ IsTransitive(R, S)
 
 IsStrictlyPartiallyOrderedUnder(op(_,_), S) ==
-\* restore the following when TLAPS accepts this syntax
+\* revert to the following syntax once TLAPS uses SANY
+\* (https://github.com/tlaplus/tlapm/issues/213)
 \*    IsStrictlyPartiallyOrdered([<<x,y>> \in S \X S |-> op(x,y)], S)
     IsStrictlyPartiallyOrdered([p \in S \X S |-> op(p[1], p[2])], S)
 
@@ -157,7 +164,8 @@ IsPartiallyOrdered(R, S) ==
     /\ IsTransitive(R, S)
 
 IsPartiallyOrderedUnder(op(_,_), S) ==
-\* restore the following when TLAPS accepts this syntax
+\* revert to the following syntax once TLAPS uses SANY
+\* (https://github.com/tlaplus/tlapm/issues/213)
 \*    IsPartiallyOrdered([<<x,y>> \in S \X S |-> op(x,y)], S)
     IsPartiallyOrdered([p \in S \X S |-> op(p[1], p[2])], S)
 
@@ -176,7 +184,8 @@ IsStrictlyTotallyOrdered(R, S) ==
     /\ \A x,y \in S : x # y => R[x,y] \/ R[y,x]
 
 IsStrictlyTotallyOrderedUnder(op(_,_), S) ==
-\* restore the following when TLAPS accepts this syntax
+\* revert to the following syntax once TLAPS uses SANY
+\* (https://github.com/tlaplus/tlapm/issues/213)
 \*    IsStrictlyTotallyOrdered([<<x,y>> \in S \X S |-> op(x,y)], S)
     IsStrictlyTotallyOrdered([p \in S \X S |-> op(p[1], p[2])], S)
 
@@ -193,7 +202,8 @@ IsTotallyOrdered(R, S) ==
     /\ \A x,y \in S : R[x,y] \/ R[y,x]
 
 IsTotallyOrderedUnder(op(_,_), S) ==
-\* restore the following when TLAPS accepts this syntax
+\* revert to the following syntax once TLAPS uses SANY
+\* (https://github.com/tlaplus/tlapm/issues/213)
 \*    IsTotallyOrdered([<<x,y>> \in S \X S |-> op(x,y)], S)
     IsTotallyOrdered([p \in S \X S |-> op(p[1], p[2])], S)
 
