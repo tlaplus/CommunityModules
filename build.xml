@@ -103,6 +103,12 @@
 	</target>
 
 	<target name="test" depends="dist" description="Run the modules in tests/ on the TLA+ modules in dist/">
+		<!-- On Unix, run AllTestsUnix which includes IOExec/shell tests; on Windows, run AllTests only. -->
+		<condition property="allTests" value="${basedir}/tests/AllTestsUnix">
+			<not><os family="windows"/></not>
+		</condition>
+		<property name="allTests" value="${basedir}/tests/AllTests"/>
+
 		<!-- If an assert fails, TLC will return a non-zero exit value which is makes the ant target fail. -->
 		<java classname="tlc2.TLC" fork="true" failonerror="true">
 			<!-- Tell Java to use a garbage collector which makes TLC happy. -->
@@ -121,7 +127,9 @@
 			<arg value="-metadir"/>
 			<arg value="${basedir}/build/states"/>
 			<arg value="-cleanup"/>
-			<arg value="${basedir}/tests/AllTests"/>
+			<arg value="-config"/>
+			<arg value="${basedir}/tests/AllTests.cfg"/>
+			<arg value="${allTests}"/>
 
 			<classpath>
 				<pathelement location="${tlc}/tla2tools.jar" />
