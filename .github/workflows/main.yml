@@ -32,7 +32,7 @@ jobs:
         limit-access-to-actor: true
     - name: Get current date
       id: date
-      run: echo "::set-output name=date::$(date +'%Y%m%d%H%M')"
+      run: echo "date=$(date +'%Y%m%d%H%M')" >> "$GITHUB_OUTPUT"
     - name: Build with Ant
       run: ant -noinput -buildfile build.xml -Dtimestamp=${{steps.date.outputs.date}}
     - name: Create Release
