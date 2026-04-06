@@ -1,5 +1,5 @@
 ---------------------------- MODULE SequencesExt ----------------------------
-EXTENDS Sequences, Naturals, FiniteSets, FiniteSetsExt, Folds, Functions
+EXTENDS Sequences, Naturals, FiniteSets, FiniteSetsExt, Folds, Functions, Bags
 \* TLAPM does not play well with LOCAL INSTANCE, reinstate the following
 \* when that issue is fixed.
 \* LOCAL INSTANCE Sequences
@@ -8,6 +8,7 @@ EXTENDS Sequences, Naturals, FiniteSets, FiniteSetsExt, Folds, Functions
 \* LOCAL INSTANCE FiniteSetsExt
 \* LOCAL INSTANCE Folds
 \* LOCAL INSTANCE Functions
+\* LOCAL INSTANCE Bags
 LOCAL INSTANCE TLC
   (*************************************************************************)
   (* Imports the definitions from the modules, but doesn't export them.    *)
@@ -32,6 +33,13 @@ LOCAL INSTANCE TLC
 (*************************************************************************)
 ToSet(s) ==
   { s[i] : i \in DOMAIN s }
+
+(**************************************************************************)
+(* Convert a sequence to the bag (i.e. multi-set) of its elements.        *)
+(* Cf. standard module Bags.tla and community module BagsExt.tla.         *)
+(**************************************************************************)
+ToBag(s) ==
+  [x \in Range(s) |-> Cardinality({i \in DOMAIN s : s[i] = x})]
 
 (**************************************************************************)
 (* Convert a set to some sequence that contains all the elements of the   *)

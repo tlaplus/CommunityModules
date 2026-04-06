@@ -12,6 +12,10 @@ ASSUME(ToSet([i \in 1..10 |-> i]) = 1..10)
 ASSUME(ToSet(Tail([i \in 1..10 |-> i])) = 2..10)
 ASSUME(ToSet([i \in 0..9 |-> 42]) = {42})
 
+ASSUME(ToBag(<<>>) = <<>>)
+ASSUME(ToBag(<<1,2,1>>) = (1 :> 2) @@ (2 :> 1))
+ASSUME(ToBag([i \in 1..10 |-> 42]) = (42 :> 10))
+
 ASSUME(SetToSeq({}) = <<>>)
 ASSUME(SetToSeq({1}) = <<1>>)
 ASSUME(LET s == {"t","l","a","p","l","u","s"}
