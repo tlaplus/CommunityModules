@@ -35,7 +35,8 @@ ToSet(s) ==
   { s[i] : i \in DOMAIN s }
 
 (**************************************************************************)
-(* Convert a sequence to the bag of its elements.                         *)
+(* Convert a sequence to the bag (i.e. multi-set) of its elements.        *)
+(* Cf. standard module Bags.tla and community module BagsExt.tla.         *)
 (**************************************************************************)
 ToBag(s) ==
   [x \in Range(s) |-> Cardinality({i \in DOMAIN s : s[i] = x})]
