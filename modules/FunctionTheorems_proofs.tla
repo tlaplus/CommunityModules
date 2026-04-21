@@ -879,7 +879,16 @@ THEOREM Fun_NatBijSingleton ==
   ASSUME NEW S
   PROVE  ExistsBijection(1..1,S) <=> \E s : S = {s}
 <1>1. ASSUME NEW f \in Bijection(1..1, S)  PROVE \E s : S = {s}
-  BY 1..1 = {1} DEF Bijection, Surjection
+  <2>1. f \in [1..1 -> S] /\ \A t \in S : \E i \in 1..1 : f[i] = t
+    BY DEF Bijection, Injection, Surjection
+  <2>2. f[1] \in S
+    BY <2>1
+  <2>3. \A t \in S : t = f[1]
+    <3>1. TAKE t \in S
+    <3>2. PICK i \in 1..1 : f[i] = t  BY <2>1
+    <3>. QED  BY <3>2
+  <2>. WITNESS f[1]
+  <2>. QED  BY <2>2, <2>3
 <1>2. ASSUME NEW s, S = {s}  PROVE [i \in 1..1 |-> s] \in Bijection(1..1, S)
   BY <1>2 DEF Bijection, Injection, IsInjective, Surjection
 <1>. QED  BY <1>1, <1>2 DEF ExistsBijection
