@@ -550,7 +550,11 @@ THEOREM MaxIntBounded ==
 THEOREM MaxInterval ==
     ASSUME NEW a \in Int, NEW b \in Int, a <= b 
     PROVE  Max(a..b) = b
-BY DEF Max
+<1>1. b \in a..b
+  OBVIOUS
+<1>2. \A y \in a..b : b >= y
+  OBVIOUS
+<1>. QED  BY <1>1, <1>2, MaxInt
 
 THEOREM MinInt ==
     ASSUME NEW S \in SUBSET Int, NEW x \in S, \A y \in S : x <= y
@@ -605,7 +609,11 @@ THEOREM MinIntBounded ==
 THEOREM MinInterval ==
     ASSUME NEW a \in Int, NEW b \in Int, a <= b 
     PROVE  Min(a..b) = a
-BY DEF Min 
+<1>1. a \in a..b
+  OBVIOUS
+<1>2. \A y \in a..b : a <= y
+  OBVIOUS
+<1>. QED  BY <1>1, <1>2, MinInt
 
 THEOREM MinNat ==
     ASSUME NEW S \in SUBSET Nat, S # {}
