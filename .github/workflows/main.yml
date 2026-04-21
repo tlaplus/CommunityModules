@@ -98,3 +98,40 @@ jobs:
         repository: tlaplus/tlaplus
         event-type: tlaplus-dispatch
         client-payload: '{"source": "CommunityModules"}'
+
+  tlaps:
+    name: Verify TLAPS proofs
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            asset: tlapm-1.6.0-pre-x86_64-linux-gnu.tar.gz
+          - os: macos-latest
+            asset: tlapm-1.6.0-pre-arm64-darwin.tar.gz
+    defaults:
+      run:
+        shell: bash
+    steps:
+    - uses: actions/checkout@v2
+    - name: Download TLAPS 1.6.0-pre
+      run: |
+        curl -fsSL -o tlapm.tar.gz \
+          "https://github.com/tlaplus/tlapm/releases/download/1.6.0-pre/${{ matrix.asset }}"
+        tar -xzf tlapm.tar.gz
+        echo "$PWD/tlapm/bin" >> "$GITHUB_PATH"
+    - name: Show tlapm version
+      run: tlapm --version
+    - name: Show tlapm configuration
+      run: tlapm --config
+    - name: Verify _proofs.tla modules
+      working-directory: modules
+      run: |
+        status=0
+        for proof in *_proofs.tla; do
+          echo "::group::Verifying $proof"
+          tlapm --cleanfp "$proof" || status=1
+          echo "::endgroup::"
+        done
+        exit $status
