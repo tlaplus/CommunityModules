@@ -768,6 +768,18 @@ THEOREM SumFunctionOnSetZero ==
   PROVE  SumFunctionOnSet(fun, S) = 0 <=> \A x \in S : fun[x] = 0
 
 (*************************************************************************)
+(* Given any Int-valued function f and finite set S such that f[s] = c   *)
+(* for all s \in S, summing f over S yields c multiplied by the          *)
+(* cardinality of S. For example, for                                    *)
+(*   f == [s \in {"a", "b", "c"} |-> IF s = "c" THEN 42 ELSE 5],         *)
+(*   SumFunctionOnSet(f, {"a","b"}) = 10.                                *)
+(*************************************************************************)
+THEOREM SumFunctionOnSetConst ==
+  ASSUME NEW D, NEW S \in SUBSET D, IsFiniteSet(S),
+         NEW f \in [D -> Int], NEW c \in Int, \A x \in S : f[x] = c 
+  PROVE  SumFunctionOnSet(f, S) = c * Cardinality(S)
+
+(*************************************************************************)
 (* Summing a function is monotonic in the function argument.             *)
 (*************************************************************************)
 THEOREM SumFunctionOnSetMonotonic ==
@@ -824,6 +836,15 @@ THEOREM SumFunctionZero ==
   ASSUME NEW fun, IsFiniteSet(DOMAIN fun), 
          \A x \in DOMAIN fun : fun[x] \in Nat
   PROVE  SumFunction(fun) = 0 <=> \A x \in DOMAIN fun : fun[x] = 0
+
+(*************************************************************************)
+(* Summing a constant function yields the constant multiplied by the     *)
+(* cardinality of its domain. For example,                               *)
+(*   SumFunction([s \in {"a","b","c"} |-> 5]) = 15.                      *)
+(*************************************************************************)
+THEOREM SumFunctionConst ==
+  ASSUME NEW S, IsFiniteSet(S), NEW c \in Int
+  PROVE  SumFunction([s \in S |-> c]) = c * Cardinality(S)
 
 THEOREM SumFunctionMonotonic ==
   ASSUME NEW f, IsFiniteSet(DOMAIN f), NEW g, DOMAIN g = DOMAIN f,

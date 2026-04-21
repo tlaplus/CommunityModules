@@ -1311,6 +1311,33 @@ THEOREM SumFunctionOnSetZero ==
   <2>. QED   BY DEF P
 
 (*************************************************************************)
+(* Given any Int-valued function f and finite set S such that f[s] = c   *)
+(* for all s \in S, summing f over S yields c multiplied by the          *)
+(* cardinality of S.                                                     *)
+(*************************************************************************)
+THEOREM SumFunctionOnSetConst ==
+  ASSUME NEW D, NEW S \in SUBSET D, IsFiniteSet(S),
+         NEW f \in [D -> Int], NEW c \in Int, \A x \in S : f[x] = c 
+  PROVE  SumFunctionOnSet(f, S) = c * Cardinality(S)
+<1>. DEFINE P(T) == SumFunctionOnSet(f, T) = c * Cardinality(T)
+<1>1. P({})
+  <2>1. SumFunctionOnSet(f, {}) = 0
+    BY SumFunctionOnSetEmpty
+  <2>2. Cardinality({}) = 0
+    BY FS_EmptySet
+  <2>. QED  BY <2>1, <2>2
+<1>2. ASSUME NEW T \in SUBSET S, IsFiniteSet(T), P(T), NEW x \in S \ T
+      PROVE  P(T \union {x})
+  <2>1. SumFunctionOnSet(f, T \union {x}) = c + SumFunctionOnSet(f, T)
+    BY <1>2, SumFunctionOnSetAddIndex
+  <2>2. Cardinality(T \union {x}) = Cardinality(T) + 1
+    BY <1>2, FS_AddElement
+  <2>3. Cardinality(T) \in Nat 
+    BY <1>2, FS_CardinalityType
+  <2>. QED  BY <1>2, <2>1, <2>2, <2>3
+<1>. QED  BY <1>1, <1>2, FS_Induction, IsaM("iprover")
+
+(*************************************************************************)
 (* Summing a function is monotonic in the function argument.             *)
 (*************************************************************************)
 THEOREM SumFunctionOnSetMonotonic ==
@@ -1400,6 +1427,11 @@ THEOREM SumFunctionZero ==
          \A x \in DOMAIN fun : fun[x] \in Nat
   PROVE  SumFunction(fun) = 0 <=> \A x \in DOMAIN fun : fun[x] = 0
 BY SumFunctionOnSetZero DEF SumFunction 
+
+THEOREM SumFunctionConst ==
+  ASSUME NEW S, IsFiniteSet(S), NEW c \in Int
+  PROVE  SumFunction([s \in S |-> c]) = c * Cardinality(S)
+BY SumFunctionOnSetConst DEF SumFunction
 
 THEOREM SumFunctionMonotonic ==
   ASSUME NEW f, IsFiniteSet(DOMAIN f), NEW g, DOMAIN g = DOMAIN f,
