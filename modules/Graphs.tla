@@ -1,9 +1,14 @@
 ------------------------------- MODULE Graphs ------------------------------- 
+EXTENDS Naturals, Sequences, FiniteSets, SequencesExt, Relation
+
+(* TLAPM does not play well with LOCAL INSTANCE. 
+   Reinstate the following when that issue is fixed.
 LOCAL INSTANCE Naturals
 LOCAL INSTANCE Sequences
-LOCAL INSTANCE SequencesExt
 LOCAL INSTANCE FiniteSets
+LOCAL INSTANCE SequencesExt
 LOCAL INSTANCE Relation
+*)
 
 IsDirectedGraph(G) ==
    /\ G = [node |-> G.node, edge |-> G.edge]
@@ -31,13 +36,26 @@ Path(G) == {p \in Seq(G.node) :
 
 SimplePath(G) ==
     \* A simple path is a path with no repeated nodes.
+    { p \in Path(G) : \A i,j \in 1..Len(p) : p[i] = p[j] => i = j }
+ 
+MCSimplePath(G) ==
+    \* This alternative definition for finite graphs can be evaluated by TLC: add
+    \*      SimplePath <- MCSimplePath 
+    \* to the CONSTANTS section of the config file
     {p \in SeqOf(G.node, Cardinality(G.node)) :
              /\ p # << >>
              /\ Cardinality({ p[i] : i \in DOMAIN p }) = Len(p)
              /\ \A i \in 1..(Len(p)-1) : <<p[i], p[i+1]>> \in G.edge}
 
 AreConnectedIn(m, n, G) == 
-  \E p \in SimplePath(G) : (p[1] = m) /\ (p[Len(p)] = n)
+  \* Two nodes are connected if there is a path from the first to the second one
+  \E p \in Path(G) : (p[1] = m) /\ (p[Len(p)] = n)
+
+MCAreConnectedIn(m, n, G) == 
+  \* This alternative definition is better suited for evaluation with TLC: add
+  \* AreConnectedIn <- MCAreConnectedIn 
+  \* to the CONSTANTS section of the config file
+  \E p \in MCSimplePath(G) : (p[1] = m) /\ (p[Len(p)] = n)
 
 ConnectionsIn(G) ==
   \* Compute a Boolean matrix that indicates, for each pair of nodes,
@@ -58,13 +76,28 @@ ConnectionsIn(G) ==
   IN  C[G.node]
 
 IsStronglyConnected(G) == 
+  \* A graph is strongly connected if all pairs of nodes are connected.
   \A m, n \in G.node : AreConnectedIn(m, n, G) 
+
+MCIsStronglyConnected(G) ==
+  \* Alternative definition better suited for evaluation with TLC: add
+  \* IsStronglyConnected <- MCIsStronglyConnected
+  \* to the CONSTANTS section of the configuration file
+  LET Cs == ConnectionsIn(G)
+  IN  \A m,n \in G.node : Cs[m,n]
+
 -----------------------------------------------------------------------------
 IsTreeWithRoot(G, r) ==
+  \* A tree is a directed graph (with edges pointing towards the root) such that:
+  \* (i) the graph contains the root,
+  \* (ii) every node has a single parent,
+  \* (iii) every node is connected to the root.
   /\ IsDirectedGraph(G)
+  /\ r \in G.node
   /\ \A e \in G.edge : /\ e[1] # r
                        /\ \A f \in G.edge : (e[1] = f[1]) => (e = f)
   /\ \A n \in G.node : AreConnectedIn(n, r, G)
+
 -----------------------------------------------------------------------------
 (*************************************************************)
 (* Returns the union of two graphs.                          *)

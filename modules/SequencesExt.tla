@@ -1,5 +1,5 @@
 ---------------------------- MODULE SequencesExt ----------------------------
-EXTENDS Sequences, Naturals, FiniteSets, FiniteSetsExt, Folds, Functions, Bags
+EXTENDS Sequences, Naturals, FiniteSets, FiniteSetsExt, Folds, Functions, Bags, TLC
 \* TLAPM does not play well with LOCAL INSTANCE, reinstate the following
 \* when that issue is fixed.
 \* LOCAL INSTANCE Sequences
@@ -9,7 +9,7 @@ EXTENDS Sequences, Naturals, FiniteSets, FiniteSetsExt, Folds, Functions, Bags
 \* LOCAL INSTANCE Folds
 \* LOCAL INSTANCE Functions
 \* LOCAL INSTANCE Bags
-LOCAL INSTANCE TLC
+\* LOCAL INSTANCE TLC
   (*************************************************************************)
   (* Imports the definitions from the modules, but doesn't export them.    *)
   (*************************************************************************)
