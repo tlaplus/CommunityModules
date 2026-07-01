@@ -3,19 +3,19 @@ EXTENDS Graphs, TLCExt
 
 ASSUME LET T == INSTANCE TLC IN T!PrintT("GraphsTests")
 
-ASSUME AssertEq(SimplePath([edge|-> {}, node |-> {}]), {})
-ASSUME AssertEq(SimplePath([edge|-> {}, node |-> {1,2,3}]), {<<1>>, <<2>>, <<3>>})
-ASSUME AssertEq(SimplePath([edge|-> {<<1,2>>, <<2,3>>}, node |-> {1,2,3}]), 
+ASSUME AssertEq(MCSimplePath([edge|-> {}, node |-> {}]), {})
+ASSUME AssertEq(MCSimplePath([edge|-> {}, node |-> {1,2,3}]), {<<1>>, <<2>>, <<3>>})
+ASSUME AssertEq(MCSimplePath([edge|-> {<<1,2>>, <<2,3>>}, node |-> {1,2,3}]), 
             { <<1>>, <<2>>, <<3>>, <<1,2>>, <<2,3>>, <<1,2,3>> } )
 
 ASSUME \A g \in Graphs({"A", "B", "C"}):
     \A u,v \in g.node :
-        AreConnectedIn(u, v, g) \in BOOLEAN 
+        MCAreConnectedIn(u, v, g) \in BOOLEAN 
 
 ASSUME LET G ==  [node |-> {1,2,3,4,5,6}, 
                   edge |-> {<<1,2>>, <<2,3>>, <<2,4>>, <<3,2>>, <<3,4>>, <<3,5>>, 
                             <<4,2>>, <<5,6>>, <<6,5>>}]
-       IN  \A m,n \in G.node : AreConnectedIn(m,n,G) <=> ConnectionsIn(G)[m,n]
+       IN  \A m,n \in G.node : MCAreConnectedIn(m,n,G) <=> ConnectionsIn(G)[m,n]
 
 (******************************************************************************)
 (* GraphUnion Tests                                                           *)
