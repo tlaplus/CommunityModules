@@ -8,6 +8,20 @@ EXTENDS Sequences, SequencesExt, FiniteSetsExt, Functions, Integers,
         FiniteSetTheorems, FiniteSetsExtTheorems, FoldsTheorems, TLAPS
 
 (***************************************************************************)
+(* SeqOf(S,n) is the set of sequences over S whose length is at most n.    *)
+(***************************************************************************)
+THEOREM SeqOfSeq ==
+  ASSUME NEW S, NEW n \in Int 
+  PROVE  SeqOf(S,n) = {s \in Seq(S) : Len(s) <= n}
+<1>1. ASSUME NEW s \in SeqOf(S,n)
+      PROVE  s \in Seq(S) /\ Len(s) <= n 
+  BY DEF SeqOf 
+<1>2. ASSUME NEW s \in Seq(S), Len(s) <= n 
+      PROVE  s \in SeqOf(S,n)
+  BY <1>2 DEF SeqOf 
+<1>. QED  BY <1>1, <1>2
+
+(***************************************************************************)
 (* Theorems about Cons.                                                    *)
 (* Cons(elt, seq) == <<elt>> \o seq                                        *)
 (***************************************************************************)

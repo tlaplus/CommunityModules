@@ -7,6 +7,13 @@
 EXTENDS Sequences, SequencesExt, Functions, Integers, WellFoundedInduction
 
 (***************************************************************************)
+(* SeqOf(S,n) is the set of sequences over S whose length is at most n.    *)
+(***************************************************************************)
+THEOREM SeqOfSeq ==
+  ASSUME NEW S, NEW n \in Int 
+  PROVE  SeqOf(S,n) = {s \in Seq(S) : Len(s) <= n}
+
+(***************************************************************************)
 (* Theorems about Cons.                                                    *)
 (* Cons(elt, seq) == <<elt>> \o seq                                        *)
 (***************************************************************************)

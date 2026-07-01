@@ -1,6 +1,10 @@
 ----------------------------- MODULE Relation ------------------------------
+EXTENDS Naturals, FiniteSets 
+(* TLAPM does not play well with LOCAL INSTANCE.
+   Reinstate the following when that issue is fixed.
 LOCAL INSTANCE Naturals
 LOCAL INSTANCE FiniteSets
+*)
 
 (***************************************************************************)
 (* This module provides some basic operations on relations, represented    *)
