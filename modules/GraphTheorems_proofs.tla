@@ -1,4 +1,4 @@
----------------------- MODULE GraphTheorems_proof ---------------------------
+---------------------- MODULE GraphTheorems_proofs --------------------------
 EXTENDS Graphs, Integers, FunctionTheorems, FiniteSetTheorems, 
         SequencesExtTheorems,
         FiniteSetsExt, FiniteSetsExtTheorems, TLAPS
@@ -245,7 +245,7 @@ THEOREM ExistsPathIffExistsSimplePath ==
       <4>7. i \notin Repeats(qq)
         BY <3>2
       <4>8. inj \notin Surjection(Repeats(qq), Repeats(pp))
-        BY <3>2, <4>6, <4>7 DEF Surjection
+        BY <3>2, <4>6, <4>7, SMTT(10) DEF Surjection
       <4>9. /\ CR(qq) <= CR(pp)
             /\ CR(qq) # CR(pp)
         <5>. HIDE DEF Repeats, inj, qq
@@ -559,7 +559,7 @@ THEOREM RemoveLeafFromTree ==
             T == G.node \ S 
             E == G.edge \cap (T \X T)
 <1>2. IsTreeWithRoot([node |-> T, edge |-> E], r)
-  BY <1>1, RemoveSubtree, Zenon
+  BY <1>1, RemoveSubtree, IsaM("blast")
 <1>3. S = {leaf}
   <2>1. leaf \in S 
     BY ConnectedReflexive
