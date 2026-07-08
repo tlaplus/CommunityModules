@@ -48,6 +48,64 @@ THEOREM SequencesInductionCons ==
   PROVE \A seq \in Seq(S) : P(seq)
 
 (***************************************************************************)
+(* Theorems about Contains.                                                *)
+(* Contains(s, e) == \E i \in 1 .. Len(s) : s[i] = e                        *)
+(***************************************************************************)
+
+(* Membership in a sequence coincides with membership in its image set.    *)
+THEOREM ContainsToSet ==
+  ASSUME NEW S, NEW s \in Seq(S), NEW e
+  PROVE  Contains(s, e) <=> e \in ToSet(s)
+
+THEOREM ContainsEmpty ==
+  ASSUME NEW e
+  PROVE  ~ Contains(<< >>, e)
+
+THEOREM ContainsAppend ==
+  ASSUME NEW S, NEW s \in Seq(S), NEW x \in S, NEW e
+  PROVE  Contains(Append(s, x), e) <=> (Contains(s, e) \/ e = x)
+
+THEOREM ContainsCons ==
+  ASSUME NEW S, NEW s \in Seq(S), NEW x \in S, NEW e
+  PROVE  Contains(Cons(x, s), e) <=> (e = x \/ Contains(s, e))
+
+THEOREM ContainsConcat ==
+  ASSUME NEW S, NEW s \in Seq(S), NEW t \in Seq(S), NEW e
+  PROVE  Contains(s \o t, e) <=> (Contains(s, e) \/ Contains(t, e))
+
+THEOREM ContainsTail ==
+  ASSUME NEW S, NEW s \in Seq(S), s # << >>, NEW e
+  PROVE  Contains(Tail(s), e) => Contains(s, e)
+
+(* An element other than the head of a non-empty sequence that occurs in    *)
+(* the sequence also occurs in its tail.                                     *)
+THEOREM ContainsTailExceptHead ==
+  ASSUME NEW S, NEW s \in Seq(S), s # << >>, NEW e,
+         Contains(s, e), e # Head(s)
+  PROVE  Contains(Tail(s), e)
+
+THEOREM ContainsSingleton ==
+  ASSUME NEW S, NEW x \in S
+  PROVE  /\ << x >> \in Seq(S)
+         /\ \A e : Contains(<< x >>, e) <=> e = x
+
+(***************************************************************************)
+(* Generalized membership under Append and concatenation.  Here the        *)
+(* appended element (resp. the second operand) need not have the same       *)
+(* element type as the prefix, so these variants apply when the two sides   *)
+(* of a concatenation carry heterogeneous messages.                         *)
+(***************************************************************************)
+THEOREM ContainsAppendGen ==
+  ASSUME NEW S, NEW s \in Seq(S), NEW x, NEW e,
+         Contains(Append(s, x), e), e # x
+  PROVE  Contains(s, e)
+
+THEOREM ContainsConcatGen ==
+  ASSUME NEW S, NEW s \in Seq(S), NEW U, NEW t \in Seq(U), NEW e,
+         Contains(s \o t, e), ~ Contains(t, e)
+  PROVE  Contains(s, e)
+
+(***************************************************************************)
 (* Theorems about InsertAt and RemoveAt.                                   *)
 (* InsertAt(seq,i,elt) ==                                                  *)
 (*   SubSeq(seq, 1, i-1) \o <<elt>> \o SubSeq(seq, i, Len(seq))            *)

@@ -357,5 +357,23 @@ THEOREM MinNat ==
     PROVE  /\ Min(S) \in S 
            /\ \A y \in S : Min(S) <= y
 
+---------------------------------------------------------------------------
+
+(*************************************************************************)
+(* Theorems about majorities.  A "majority" of a finite set U is any     *)
+(* subset whose cardinality is more than half that of U.  This           *)
+(* generalizes the notion of a quorum used in distributed-consensus      *)
+(* specifications, where U is the set of servers.                        *)
+(*************************************************************************)
+
+(*************************************************************************)
+(* Any superset (within U) of a majority of U is itself a majority.      *)
+(*************************************************************************)
+THEOREM SupersetOfMajorityIsMajority ==
+    ASSUME NEW U, IsFiniteSet(U),
+           NEW Q1 \in SUBSET U, NEW Q2 \in SUBSET U, Q1 \subseteq Q2,
+           2 * Cardinality(Q1) > Cardinality(U)
+    PROVE  2 * Cardinality(Q2) > Cardinality(U)
+
 
 ===========================================================================

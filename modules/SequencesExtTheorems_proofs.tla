@@ -80,6 +80,132 @@ THEOREM SequencesInductionCons ==
 <1>. QED  BY <1>2, <1>3, NatInduction, Isa
 
 (***************************************************************************)
+(* Theorems about Contains.                                                *)
+(* Contains(s, e) == \E i \in 1 .. Len(s) : s[i] = e                        *)
+(***************************************************************************)
+
+THEOREM ContainsToSet ==
+  ASSUME NEW S, NEW s \in Seq(S), NEW e
+  PROVE  Contains(s, e) <=> e \in ToSet(s)
+<1>1. DOMAIN s = 1 .. Len(s)  BY LenProperties
+<1>. QED  BY <1>1 DEF Contains, ToSet
+
+THEOREM ContainsEmpty ==
+  ASSUME NEW e
+  PROVE  ~ Contains(<< >>, e)
+BY EmptySeq DEF Contains
+
+THEOREM ContainsAppend ==
+  ASSUME NEW S, NEW s \in Seq(S), NEW x \in S, NEW e
+  PROVE  Contains(Append(s, x), e) <=> (Contains(s, e) \/ e = x)
+<1>1. Len(Append(s,x)) = Len(s) + 1  BY AppendProperties
+<1>2. \A k \in 1..Len(s) : Append(s,x)[k] = s[k]  BY AppendProperties
+<1>3. Append(s,x)[Len(s)+1] = x  BY AppendProperties
+<1>4. Len(s) \in Nat  BY LenProperties
+<1>5. 1..Len(Append(s,x)) = (1..Len(s)) \union {Len(s)+1}  BY <1>1, <1>4
+<1>. QED  BY <1>2, <1>3, <1>5 DEF Contains
+
+THEOREM ContainsConcat ==
+  ASSUME NEW S, NEW s \in Seq(S), NEW t \in Seq(S), NEW e
+  PROVE  Contains(s \o t, e) <=> (Contains(s, e) \/ Contains(t, e))
+<1>1. Len(s \o t) = Len(s) + Len(t)  BY ConcatProperties
+<1>2. \A k \in 1..Len(s)+Len(t) : (s \o t)[k] = IF k <= Len(s) THEN s[k] ELSE t[k - Len(s)]
+      BY ConcatProperties
+<1>3. Len(s) \in Nat /\ Len(t) \in Nat  BY LenProperties
+<1>4. ASSUME Contains(s \o t, e) PROVE Contains(s, e) \/ Contains(t, e)
+      <2>1. PICK k \in 1..Len(s \o t) : (s \o t)[k] = e  BY <1>4 DEF Contains
+      <2>2. CASE k <= Len(s)
+            <3>1. k \in 1..Len(s)  BY <2>2, <2>1, <1>1, <1>3
+            <3>. QED  BY <3>1, <2>1, <1>2, <1>1 DEF Contains
+      <2>3. CASE k > Len(s)
+            <3>1. k - Len(s) \in 1..Len(t)  BY <2>3, <2>1, <1>1, <1>3
+            <3>2. (s \o t)[k] = t[k - Len(s)]  BY <2>3, <1>2, <2>1, <1>1, <1>3
+            <3>. QED  BY <3>1, <3>2, <2>1 DEF Contains
+      <2>. QED  BY <2>2, <2>3, <1>3
+<1>5. ASSUME Contains(s, e) PROVE Contains(s \o t, e)
+      <2>1. PICK k \in 1..Len(s) : s[k] = e  BY <1>5 DEF Contains
+      <2>2. k \in 1..Len(s)+Len(t) /\ k <= Len(s)  BY <2>1, <1>3
+      <2>. QED  BY <2>1, <2>2, <1>2, <1>1 DEF Contains
+<1>6. ASSUME Contains(t, e) PROVE Contains(s \o t, e)
+      <2>1. PICK k \in 1..Len(t) : t[k] = e  BY <1>6 DEF Contains
+      <2>2. k + Len(s) \in 1..Len(s)+Len(t) /\ ~(k + Len(s) <= Len(s)) /\ (k+Len(s))-Len(s) = k
+            BY <2>1, <1>3
+      <2>. QED  BY <2>1, <2>2, <1>2, <1>1 DEF Contains
+<1>. QED  BY <1>4, <1>5, <1>6
+
+THEOREM ContainsSingleton ==
+  ASSUME NEW S, NEW x \in S
+  PROVE  /\ << x >> \in Seq(S)
+         /\ \A e : Contains(<< x >>, e) <=> e = x
+<1>1. << x >> = Append(<< >>, x)  BY AppendIsConcat, EmptySeq, ConcatEmptySeq
+<1>2. << x >> \in Seq(S)  BY <1>1, AppendProperties, EmptySeq
+<1>3. \A e : Contains(<< x >>, e) <=> (Contains(<< >>, e) \/ e = x)
+      BY <1>1, EmptySeq, ContainsAppend
+<1>. QED  BY <1>2, <1>3, ContainsEmpty
+
+THEOREM ContainsCons ==
+  ASSUME NEW S, NEW s \in Seq(S), NEW x \in S, NEW e
+  PROVE  Contains(Cons(x, s), e) <=> (e = x \/ Contains(s, e))
+<1>1. << x >> \in Seq(S) /\ (\A m : Contains(<< x >>, m) <=> m = x)  BY ContainsSingleton
+<1>2. Cons(x, s) = << x >> \o s  BY DEF Cons
+<1>3. Contains(<< x >> \o s, e) <=> (Contains(<< x >>, e) \/ Contains(s, e))
+      BY <1>1, ContainsConcat, Zenon
+<1>. QED  BY <1>1, <1>2, <1>3
+
+THEOREM ContainsTail ==
+  ASSUME NEW S, NEW s \in Seq(S), s # << >>, NEW e
+  PROVE  Contains(Tail(s), e) => Contains(s, e)
+<1>1. Len(Tail(s)) = Len(s) - 1  BY HeadTailProperties
+<1>2. \A k \in 1..Len(Tail(s)) : Tail(s)[k] = s[k+1]  BY HeadTailProperties
+<1>3. Len(s) \in Nat /\ Len(s) # 0  BY EmptySeq, LenProperties
+<1>4. \A k \in 1..Len(Tail(s)) : k+1 \in 1..Len(s)  BY <1>1, <1>3
+<1>. QED  BY <1>2, <1>4 DEF Contains
+
+THEOREM ContainsTailExceptHead ==
+  ASSUME NEW S, NEW s \in Seq(S), s # << >>, NEW e,
+         Contains(s, e), e # Head(s)
+  PROVE  Contains(Tail(s), e)
+<1>0. Head(s) = s[1]  BY DEF Head
+<1>1. Len(Tail(s)) = Len(s) - 1  BY HeadTailProperties
+<1>2. \A k \in 1..Len(Tail(s)) : Tail(s)[k] = s[k+1]  BY HeadTailProperties
+<1>3. Len(s) \in Nat /\ Len(s) # 0  BY EmptySeq, LenProperties
+<1>4. PICK k \in 1..Len(s) : s[k] = e  BY DEF Contains
+<1>5. k # 1  BY <1>0, <1>4
+<1>6. k - 1 \in 1..Len(Tail(s)) /\ (k-1)+1 = k  BY <1>1, <1>3, <1>4, <1>5
+<1>. QED  BY <1>2, <1>4, <1>6 DEF Contains
+
+(* Generalized Append membership: the appended element need not be typed;   *)
+(* a member of the result that differs from it was already in the prefix.    *)
+THEOREM ContainsAppendGen ==
+  ASSUME NEW S, NEW s \in Seq(S), NEW x, NEW e,
+         Contains(Append(s, x), e), e # x
+  PROVE  Contains(s, e)
+<1> DEFINE T == S \cup {x}
+<1>a. s \in Seq(T)  BY SeqMonotonic
+<1>b. x \in T  OBVIOUS
+<1>1. Len(Append(s,x)) = Len(s) + 1  BY <1>a, <1>b, AppendProperties
+<1>2. \A k \in 1..Len(s) : Append(s,x)[k] = s[k]  BY <1>a, <1>b, AppendProperties
+<1>3. Append(s,x)[Len(s)+1] = x  BY <1>a, <1>b, AppendProperties
+<1>4. Len(s) \in Nat  BY LenProperties
+<1>5. PICK k \in 1..Len(Append(s,x)) : Append(s,x)[k] = e  BY DEF Contains
+<1>6. 1..Len(Append(s,x)) = (1..Len(s)) \cup {Len(s)+1}  BY <1>1, <1>4
+<1>7. CASE k \in 1..Len(s)   BY <1>7, <1>2, <1>5 DEF Contains
+<1>8. CASE k = Len(s)+1      BY <1>8, <1>3, <1>5
+<1>. QED  BY <1>5, <1>6, <1>7, <1>8
+
+(* Generalized concatenation membership: a member of s \o t that is absent   *)
+(* from t must lie in s (the two sides may have different element types).     *)
+THEOREM ContainsConcatGen ==
+  ASSUME NEW S, NEW s \in Seq(S), NEW U, NEW t \in Seq(U), NEW e,
+         Contains(s \o t, e), ~ Contains(t, e)
+  PROVE  Contains(s, e)
+<1> DEFINE W == S \cup U
+<1>a. s \in Seq(W)  BY SeqMonotonic
+<1>b. t \in Seq(W)  BY SeqMonotonic
+<1>1. Contains(s, e) \/ Contains(t, e)  BY <1>a, <1>b, ContainsConcat
+<1>. QED  BY <1>1
+
+(***************************************************************************)
 (* Theorems about InsertAt and RemoveAt.                                   *)
 (* InsertAt(seq,i,elt) ==                                                  *)
 (*   SubSeq(seq, 1, i-1) \o <<elt>> \o SubSeq(seq, i, Len(seq))            *)
