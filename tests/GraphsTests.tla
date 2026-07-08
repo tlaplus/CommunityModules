@@ -46,6 +46,37 @@ ASSUME AssertEq(SimplePath(DupEdgeGraph),
             {<<1>>, <<2>>, <<3>>, <<1, 2>>, <<2, 3>>, <<1, 2, 3>>})
 
 (******************************************************************************)
+(* The TLA+ definitions test membership of an exact 2-tuple <<p[i], p[i+1]>>  *)
+(* in G.edge, so an edge element that is not a 2-tuple (e.g. <<u>> or          *)
+(* <<u, v, x>>) matches nothing and contributes no edge. The overrides must   *)
+(* neither crash on 1-tuples nor read <<u, v, x>> as the edge u -> v.         *)
+(******************************************************************************)
+LOCAL OneTupleEdgeGraph   == [node |-> {1, 2}, edge |-> {<<1>>, <<2>>}]
+LOCAL ThreeTupleEdgeGraph == [node |-> {1, 2, 3}, edge |-> {<<1, 2, 3>>}]
+LOCAL MixedArityEdgeGraph ==
+    [node |-> {1, 2, 3}, edge |-> {<<1>>, <<1, 2>>, <<2, 3, 4>>}]
+
+\* 1-tuple edges are ignored: only the trivial single-node paths remain.
+ASSUME AssertEq(SimplePath(OneTupleEdgeGraph), {<<1>>, <<2>>})
+ASSUME AssertEq(AreConnectedIn(1, 2, OneTupleEdgeGraph), FALSE)
+ASSUME AssertEq(IsStronglyConnected(OneTupleEdgeGraph), FALSE)
+
+\* A 3-tuple <<1, 2, 3>> is not the edge 1 -> 2 and is ignored.
+ASSUME AssertEq(SimplePath(ThreeTupleEdgeGraph), {<<1>>, <<2>>, <<3>>})
+ASSUME AssertEq(AreConnectedIn(1, 2, ThreeTupleEdgeGraph), FALSE)
+
+\* Only the genuine 2-tuple <<1, 2>> is treated as an edge.
+ASSUME AssertEq(SimplePath(MixedArityEdgeGraph), {<<1>>, <<2>>, <<3>>, <<1, 2>>})
+ASSUME AssertEq(AreConnectedIn(1, 2, MixedArityEdgeGraph), TRUE)
+ASSUME AssertEq(AreConnectedIn(2, 3, MixedArityEdgeGraph), FALSE)
+
+\* The overrides agree with the pure TLA+ definitions on these graphs.
+ASSUME \A G \in {OneTupleEdgeGraph, ThreeTupleEdgeGraph, MixedArityEdgeGraph} :
+    /\ SimplePath(G) = SimplePathPure(G)
+    /\ \A m, n \in G.node : AreConnectedIn(m, n, G) = AreConnectedInPure(m, n, G)
+    /\ IsStronglyConnected(G) = IsStronglyConnectedPure(G)
+
+(******************************************************************************)
 (* SimplePath Tests                                                           *)
 (******************************************************************************)
 ASSUME AssertEq(SimplePath([edge|-> {}, node |-> {}]), {})
@@ -87,6 +118,13 @@ ASSUME AssertEq(AreConnectedIn(1, 1, EmptyGraph), FALSE)
 ASSUME AssertEq(AreConnectedIn(1, 2, [node |-> {1, 2}, edge |-> {<<1, 2>>}]), TRUE)
 ASSUME AssertEq(AreConnectedIn(2, 1, [node |-> {1, 2}, edge |-> {<<1, 2>>}]), FALSE)
 ASSUME AssertEq(AreConnectedIn(1, 9, [node |-> {1, 2}, edge |-> {<<1, 2>>}]), FALSE)
+
+\* Type-incompatible arguments must not be compared when no node matches: on the
+\* empty graph the existential domain SimplePath(G) is empty, so the result is
+\* FALSE (matching AreConnectedInPure) rather than a type error from m = n.
+ASSUME AssertEq(AreConnectedIn(1, "x", EmptyGraph), FALSE)
+ASSUME AssertEq(AreConnectedIn(1, "x", EmptyGraph), AreConnectedInPure(1, "x", EmptyGraph))
+ASSUME AssertEq(AreConnectedIn("x", "x", EmptyGraph), FALSE)
 
 ASSUME LET G ==  [node |-> {1,2,3,4,5,6}, 
                   edge |-> {<<1,2>>, <<2,3>>, <<2,4>>, <<3,2>>, <<3,4>>, <<3,5>>, 
