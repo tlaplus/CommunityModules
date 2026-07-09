@@ -106,6 +106,56 @@ THEOREM ContainsConcatGen ==
   PROVE  Contains(s, e)
 
 (***************************************************************************)
+(* Theorems about IsSorted (see SequencesExt).                             *)
+(*                                                                         *)
+(* The relevant order properties of op (transitivity, irreflexivity)       *)
+(* are stated locally as hypotheses of each theorem, so that the           *)
+(* theorems apply to an arbitrary binary relation op rather than only      *)
+(* to relations globally known to be orders.                               *)
+(***************************************************************************)
+
+THEOREM SortedEmpty ==
+  ASSUME NEW op(_,_)
+  PROVE  IsSorted(<< >>, op)
+
+THEOREM SortedSingleton ==
+  ASSUME NEW S, NEW x \in S, NEW op(_,_)
+  PROVE  IsSorted(<< x >>, op)
+
+(* Appending an element that dominates the last one keeps the sequence      *)
+(* sorted, provided the ordering relation is transitive.                    *)
+THEOREM SortedAppend ==
+  ASSUME NEW S, NEW op(_,_),
+         \A x,y,z \in S : op(x,y) /\ op(y,z) => op(x,z),
+         NEW s \in Seq(S), IsSorted(s, op),
+         NEW e \in S, s # << >> => op(s[Len(s)], e)
+  PROVE  IsSorted(Append(s, e), op)
+
+(* Concatenating two sorted sequences whose boundary elements are ordered   *)
+(* yields a sorted sequence (for a transitive ordering relation).           *)
+THEOREM SortedConcat ==
+  ASSUME NEW S, NEW op(_,_),
+         \A x,y,z \in S : op(x,y) /\ op(y,z) => op(x,z),
+         NEW s \in Seq(S), NEW t \in Seq(S),
+         IsSorted(s, op), IsSorted(t, op),
+         (Len(s) > 0 /\ Len(t) > 0) => op(s[Len(s)], t[1])
+  PROVE  IsSorted(s \o t, op)
+
+(* A sequence sorted by an irreflexive relation has no repeated elements.   *)
+THEOREM SortedInjective ==
+  ASSUME NEW S, NEW op(_,_),
+         \A x \in S : ~ op(x, x),
+         NEW s \in Seq(S), IsSorted(s, op)
+  PROVE  IsInjective(s)
+
+(* Any contiguous subsequence of a sorted sequence is sorted.               *)
+THEOREM SortedSubSeq ==
+  ASSUME NEW S, NEW op(_,_),
+         NEW s \in Seq(S), IsSorted(s, op),
+         NEW m \in 1..Len(s)+1, NEW n \in 0..Len(s)
+  PROVE  IsSorted(SubSeq(s, m, n), op)
+
+(***************************************************************************)
 (* Theorems about InsertAt and RemoveAt.                                   *)
 (* InsertAt(seq,i,elt) ==                                                  *)
 (*   SubSeq(seq, 1, i-1) \o <<elt>> \o SubSeq(seq, i, Len(seq))            *)

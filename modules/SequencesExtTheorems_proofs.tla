@@ -206,6 +206,181 @@ THEOREM ContainsConcatGen ==
 <1>. QED  BY <1>1
 
 (***************************************************************************)
+(* Theorems about IsSorted.                                                *)
+(* IsSorted(s, op) == \A i,j \in 1..Len(s) : i<j => op(s[i],s[j]) *)
+(***************************************************************************)
+
+THEOREM SortedEmpty ==
+  ASSUME NEW op(_,_)
+  PROVE  IsSorted(<< >>, op)
+BY EmptySeq DEF IsSorted
+
+THEOREM SortedSingleton ==
+  ASSUME NEW S, NEW x \in S, NEW op(_,_)
+  PROVE  IsSorted(<< x >>, op)
+<1>1. << x >> = Append(<< >>, x)  BY AppendIsConcat, EmptySeq, ConcatEmptySeq
+<1>2. << x >> \in Seq(S) /\ Len(<< x >>) = 1  BY <1>1, AppendProperties, EmptySeq
+<1>3. 1..Len(<< x >>) = {1}  BY <1>2
+<1>. QED  BY <1>3 DEF IsSorted
+
+THEOREM SortedAppend ==
+  ASSUME NEW S, NEW op(_,_),
+         \A x,y,z \in S : op(x,y) /\ op(y,z) => op(x,z),
+         NEW s \in Seq(S), IsSorted(s, op),
+         NEW e \in S, s # << >> => op(s[Len(s)], e)
+  PROVE  IsSorted(Append(s, e), op)
+<1>trans. \A x,y,z \in S : op(x,y) /\ op(y,z) => op(x,z)  OBVIOUS
+<1> DEFINE h2 == Append(s, e)
+<1>nat. Len(s) \in Nat  BY LenProperties
+<1>ln.  Len(h2) = Len(s) + 1  BY AppendProperties
+<1>idx. \A k \in 1..Len(s) : h2[k] = s[k]  BY AppendProperties
+<1>lst. h2[Len(s)+1] = e  BY AppendProperties
+<1>elt. \A k \in 1..Len(s) : s[k] \in S  BY ElementOfSeq
+<1>1. SUFFICES ASSUME NEW a \in 1..Len(h2), NEW b \in 1..Len(h2), a < b
+               PROVE  op(h2[a], h2[b])
+  BY DEF IsSorted
+<1>2. b \in 1..(Len(s)+1) /\ a \in 1..(Len(s)+1)  BY <1>ln
+<1>3. CASE b <= Len(s)
+  <2>a. a \in 1..Len(s)  BY <1>1, <1>2, <1>3, <1>nat
+  <2>b. b \in 1..Len(s)  BY <1>1, <1>2, <1>3, <1>nat
+  <2>2. h2[a] = s[a] /\ h2[b] = s[b]  BY <1>idx, <2>a, <2>b
+  <2>3. op(s[a], s[b])  BY <1>1, <2>a, <2>b DEF IsSorted
+  <2>. QED  BY <2>2, <2>3
+<1>4. CASE b = Len(s)+1
+  <2>1. h2[b] = e  BY <1>4, <1>lst
+  <2>2. a \in 1..Len(s)  BY <1>4, <1>1, <1>2
+  <2>3. h2[a] = s[a]  BY <1>idx, <2>2
+  <2>4. s # << >>  BY <2>2
+  <2>5. op(s[Len(s)], e)  BY <2>4
+  <2>6. CASE a = Len(s)
+    <3>1. s[a] = s[Len(s)]  BY <2>6
+    <3>. QED  BY <2>1, <2>3, <2>5, <3>1
+  <2>7. CASE a < Len(s)
+    <3>1. a \in 1..Len(s) /\ Len(s) \in 1..Len(s)  BY <2>2, <2>4, EmptySeq
+    <3>2. op(s[a], s[Len(s)])  BY <2>7, <3>1 DEF IsSorted
+    <3>3. s[a] \in S /\ s[Len(s)] \in S /\ e \in S  BY <1>elt, <3>1
+    <3>4. op(s[a], e)  BY <3>2, <2>5, <3>3, <1>trans
+    <3>. QED  BY <2>1, <2>3, <3>4
+  <2>. QED  BY <2>6, <2>7, <2>2, <1>nat
+<1>. QED  BY <1>3, <1>4, <1>2
+
+THEOREM SortedConcat ==
+  ASSUME NEW S, NEW op(_,_),
+         \A x,y,z \in S : op(x,y) /\ op(y,z) => op(x,z),
+         NEW s \in Seq(S), NEW t \in Seq(S),
+         IsSorted(s, op), IsSorted(t, op),
+         (Len(s) > 0 /\ Len(t) > 0) => op(s[Len(s)], t[1])
+  PROVE  IsSorted(s \o t, op)
+<1>trans. \A x,y,z \in S : op(x,y) /\ op(y,z) => op(x,z)  OBVIOUS
+<1>la. Len(s) \in Nat  BY LenProperties
+<1>lb. Len(t) \in Nat  BY LenProperties
+<1>za. \A k \in 1..Len(s) : s[k] \in S  BY ElementOfSeq
+<1>zb. \A k \in 1..Len(t) : t[k] \in S  BY ElementOfSeq
+<1>cp. /\ Len(s \o t) = Len(s) + Len(t)
+       /\ \A i \in 1..Len(s)+Len(t) :
+              (s \o t)[i] = IF i <= Len(s) THEN s[i] ELSE t[i - Len(s)]
+  BY ConcatProperties
+<1>fA. \A i \in 1..Len(s) : (Len(s) > 0 /\ Len(t) > 0) => op(s[i], t[1])
+  <2> SUFFICES ASSUME NEW i \in 1..Len(s), Len(s) > 0, Len(t) > 0
+               PROVE  op(s[i], t[1])
+    OBVIOUS
+  <2>b1. 1 \in 1..Len(t)  BY <1>lb
+  <2>La. Len(s) \in 1..Len(s)  BY <1>la
+  <2>zt1. t[1] \in S  BY <2>b1, <1>zb
+  <2>coh. op(s[Len(s)], t[1])  OBVIOUS
+  <2>1. CASE i = Len(s)  BY <2>1, <2>coh
+  <2>2. CASE i # Len(s)
+    <3>1. i < Len(s)  BY <2>2, <1>la
+    <3>2. op(s[i], s[Len(s)])  BY <3>1, <2>La, <2>1 DEF IsSorted
+    <3>4. s[Len(s)] \in S  BY <2>La, <1>za
+    <3>5. s[i] \in S  BY <1>za
+    <3>. QED  BY <2>coh, <3>2, <2>zt1, <3>4, <3>5, <1>trans
+  <2>. QED  BY <2>1, <2>2
+<1> SUFFICES ASSUME NEW p \in 1..Len(s \o t), NEW q \in 1..Len(s \o t), p < q
+             PROVE  op((s \o t)[p], (s \o t)[q])
+  BY DEF IsSorted
+<1>pq. p \in 1..Len(s)+Len(t) /\ q \in 1..Len(s)+Len(t)  BY <1>cp
+<1>c1. CASE q <= Len(s)
+  <2>1. p \in 1..Len(s) /\ q \in 1..Len(s)  BY <1>c1, <1>pq
+  <2>2. (s \o t)[p] = s[p] /\ (s \o t)[q] = s[q]  BY <1>cp, <1>c1, <1>pq, <2>1
+  <2>. QED  BY <2>2, <2>1 DEF IsSorted
+<1>c2. CASE p > Len(s)
+  <2>1. (s \o t)[p] = t[p - Len(s)] /\ (s \o t)[q] = t[q - Len(s)]
+    BY <1>cp, <1>c2, <1>pq, <1>la
+  <2>2. p - Len(s) \in 1..Len(t) /\ q - Len(s) \in 1..Len(t)
+    BY <1>c2, <1>pq, <1>la, <1>lb
+  <2>3. p - Len(s) < q - Len(s)  BY <1>la
+  <2>. QED  BY <2>1, <2>2, <2>3 DEF IsSorted
+<1>c3. CASE q > Len(s) /\ p <= Len(s)
+  <2>1. (s \o t)[p] = s[p]  BY <1>cp, <1>c3, <1>pq
+  <2>2. (s \o t)[q] = t[q - Len(s)]  BY <1>cp, <1>c3, <1>pq, <1>la
+  <2>3. p \in 1..Len(s)  BY <1>c3, <1>pq
+  <2>4. q - Len(s) \in 1..Len(t)  BY <1>c3, <1>pq, <1>la, <1>lb
+  <2>pos. Len(s) > 0 /\ Len(t) > 0  BY <2>3, <2>4, <1>la, <1>lb
+  <2>fa. op(s[p], t[1])  BY <1>fA, <2>3, <2>pos
+  <2>5. CASE q - Len(s) = 1
+    BY <2>1, <2>2, <2>fa, <2>5
+  <2>6. CASE q - Len(s) # 1
+    <3>1. 1 < q - Len(s)  BY <2>4, <2>6, <1>lb
+    <3>2. op(t[1], t[q - Len(s)])
+      BY <3>1, <2>4, <2>pos, <1>lb DEF IsSorted
+    <3>3. t[1] \in S  BY <1>zb, <2>pos
+    <3>4. t[q - Len(s)] \in S  BY <1>zb, <2>4
+    <3>5. s[p] \in S  BY <1>za, <2>3
+    <3>6. op(s[p], t[q - Len(s)])
+      BY <3>2, <2>fa, <3>3, <3>4, <3>5, <1>trans
+    <3>. QED  BY <2>1, <2>2, <3>6
+  <2>. QED  BY <2>5, <2>6
+<1>. QED  BY <1>c1, <1>c2, <1>c3
+
+THEOREM SortedInjective ==
+  ASSUME NEW S, NEW op(_,_),
+         \A x \in S : ~ op(x, x),
+         NEW s \in Seq(S), IsSorted(s, op)
+  PROVE  IsInjective(s)
+<1>irr. \A x \in S : ~ op(x, x)  OBVIOUS
+<1>d. DOMAIN s = 1..Len(s)  BY LenProperties
+<1>na. \A k \in 1..Len(s) : k \in Nat  BY LenProperties
+<1>1. SUFFICES ASSUME NEW a \in 1..Len(s), NEW c \in 1..Len(s), s[a] = s[c], a # c
+               PROVE  FALSE
+  BY <1>d DEF IsInjective
+<1>2. a \in Nat /\ c \in Nat  BY <1>na, <1>1
+<1>3. CASE a < c
+  <2>1. op(s[a], s[c])  BY <1>3, <1>1 DEF IsSorted
+  <2>2. s[a] \in S  BY <1>1, ElementOfSeq
+  <2>. QED  BY <2>1, <1>1, <2>2, <1>irr
+<1>4. CASE c < a
+  <2>1. op(s[c], s[a])  BY <1>4, <1>1 DEF IsSorted
+  <2>2. s[c] \in S  BY <1>1, ElementOfSeq
+  <2>. QED  BY <2>1, <1>1, <2>2, <1>irr
+<1>5. a < c \/ c < a  BY <1>1, <1>2
+<1>. QED  BY <1>3, <1>4, <1>5
+
+THEOREM SortedSubSeq ==
+  ASSUME NEW S, NEW op(_,_),
+         NEW s \in Seq(S), IsSorted(s, op),
+         NEW m \in 1..Len(s)+1, NEW n \in 0..Len(s)
+  PROVE  IsSorted(SubSeq(s, m, n), op)
+<1>len. Len(s) \in Nat  BY LenProperties
+<1>rng. \A i \in m..n : i \in 1..Len(s)  BY <1>len
+<1>elt. \A i \in m..n : s[i] \in S  BY <1>rng, ElementOfSeq
+<1>sp. /\ SubSeq(s,m,n) \in Seq(S)
+       /\ Len(SubSeq(s,m,n)) = IF m<=n THEN n-m+1 ELSE 0
+       /\ \A i \in 1..n-m+1 : SubSeq(s,m,n)[i] = s[m+i-1]
+  BY <1>elt, <1>len, SubSeqProperties
+<1>1. SUFFICES ASSUME NEW a \in 1..Len(SubSeq(s,m,n)), NEW b \in 1..Len(SubSeq(s,m,n)), a < b
+               PROVE  op(SubSeq(s,m,n)[a], SubSeq(s,m,n)[b])
+  BY DEF IsSorted
+<1>2. m <= n  BY <1>1, <1>sp
+<1>3. Len(SubSeq(s,m,n)) = n-m+1  BY <1>2, <1>sp
+<1>4. a \in 1..n-m+1 /\ b \in 1..n-m+1  BY <1>1, <1>3
+<1>5. SubSeq(s,m,n)[a] = s[m+a-1] /\ SubSeq(s,m,n)[b] = s[m+b-1]  BY <1>4, <1>sp
+<1>6. m+a-1 \in 1..Len(s) /\ m+b-1 \in 1..Len(s)  BY <1>4, <1>2, <1>len
+<1>7. m+a-1 < m+b-1  BY <1>1, <1>4
+<1>8. op(s[m+a-1], s[m+b-1])  BY <1>6, <1>7 DEF IsSorted
+<1>. QED  BY <1>5, <1>8
+
+(***************************************************************************)
 (* Theorems about InsertAt and RemoveAt.                                   *)
 (* InsertAt(seq,i,elt) ==                                                  *)
 (*   SubSeq(seq, 1, i-1) \o <<elt>> \o SubSeq(seq, i, Len(seq))            *)
