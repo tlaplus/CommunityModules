@@ -49,13 +49,13 @@ THEOREM SequencesInductionCons ==
 
 (***************************************************************************)
 (* Theorems about Contains.                                                *)
-(* Contains(s, e) == \E i \in 1 .. Len(s) : s[i] = e                        *)
+(* Contains(s, e) == \E i \in 1 .. Len(s) : s[i] = e                       *)
 (***************************************************************************)
 
 (* Membership in a sequence coincides with membership in its image set.    *)
-THEOREM ContainsToSet ==
+THEOREM ContainsRange ==
   ASSUME NEW S, NEW s \in Seq(S), NEW e
-  PROVE  Contains(s, e) <=> e \in ToSet(s)
+  PROVE  Contains(s, e) <=> e \in Range(s)
 
 THEOREM ContainsEmpty ==
   ASSUME NEW e
@@ -65,13 +65,17 @@ THEOREM ContainsAppend ==
   ASSUME NEW S, NEW s \in Seq(S), NEW x \in S, NEW e
   PROVE  Contains(Append(s, x), e) <=> (Contains(s, e) \/ e = x)
 
-THEOREM ContainsCons ==
-  ASSUME NEW S, NEW s \in Seq(S), NEW x \in S, NEW e
-  PROVE  Contains(Cons(x, s), e) <=> (e = x \/ Contains(s, e))
+THEOREM ContainsSingleton ==
+  ASSUME NEW S, NEW x \in S
+  PROVE  \A e : Contains(<< x >>, e) <=> e = x
 
 THEOREM ContainsConcat ==
   ASSUME NEW S, NEW s \in Seq(S), NEW t \in Seq(S), NEW e
   PROVE  Contains(s \o t, e) <=> (Contains(s, e) \/ Contains(t, e))
+
+THEOREM ContainsCons ==
+  ASSUME NEW S, NEW s \in Seq(S), NEW x \in S, NEW e
+  PROVE  Contains(Cons(x, s), e) <=> (e = x \/ Contains(s, e))
 
 THEOREM ContainsTail ==
   ASSUME NEW S, NEW s \in Seq(S), s # << >>, NEW e
@@ -83,11 +87,6 @@ THEOREM ContainsTailExceptHead ==
   ASSUME NEW S, NEW s \in Seq(S), s # << >>, NEW e,
          Contains(s, e), e # Head(s)
   PROVE  Contains(Tail(s), e)
-
-THEOREM ContainsSingleton ==
-  ASSUME NEW S, NEW x \in S
-  PROVE  /\ << x >> \in Seq(S)
-         /\ \A e : Contains(<< x >>, e) <=> e = x
 
 (***************************************************************************)
 (* Generalized membership under Append and concatenation.  Here the        *)
