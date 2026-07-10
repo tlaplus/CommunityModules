@@ -110,7 +110,9 @@ THEOREM ContainsConcat ==
 <1>1. ASSUME Contains(s \o t, e), ~ Contains(t, e)  PROVE  Contains(s, e)
   BY <1>1 DEF Contains 
 <1>2. ASSUME Contains(s, e)  PROVE Contains(s \o t, e)
-  BY <1>2 DEF Contains 
+  <2>. PICK i \in 1 .. Len(s) : s[i] = e 
+    BY <1>2 DEF Contains 
+  <2>. QED  BY i \in 1 .. Len(s \o t) DEF Contains 
 <1>3. ASSUME Contains(t, e)  PROVE Contains(s \o t, e)
   <2>. PICK i \in 1 .. Len(t) : t[i] = e 
     BY <1>3 DEF Contains 
@@ -163,7 +165,7 @@ THEOREM SortedConcat ==
          IsSorted(s, op), IsSorted(t, op),
          (Len(s) > 0 /\ Len(t) > 0) => op(s[Len(s)], t[1])
   PROVE  IsSorted(s \o t, op)
-BY DEF IsSorted 
+BY SMTT(20) DEF IsSorted 
 
 THEOREM SortedInjective ==
   ASSUME NEW S, NEW op(_,_),
