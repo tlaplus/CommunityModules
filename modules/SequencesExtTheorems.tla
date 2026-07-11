@@ -62,19 +62,19 @@ THEOREM ContainsEmpty ==
   PROVE  ~ Contains(<< >>, e)
 
 THEOREM ContainsAppend ==
-  ASSUME NEW S, NEW s \in Seq(S), NEW x \in S, NEW e
+  ASSUME NEW S, NEW s \in Seq(S), NEW x, NEW e
   PROVE  Contains(Append(s, x), e) <=> (Contains(s, e) \/ e = x)
 
 THEOREM ContainsSingleton ==
-  ASSUME NEW S, NEW x \in S
+  ASSUME NEW S, NEW x
   PROVE  \A e : Contains(<< x >>, e) <=> e = x
 
 THEOREM ContainsConcat ==
-  ASSUME NEW S, NEW s \in Seq(S), NEW t \in Seq(S), NEW e
+  ASSUME NEW S, NEW s \in Seq(S), NEW T, NEW t \in Seq(T), NEW e
   PROVE  Contains(s \o t, e) <=> (Contains(s, e) \/ Contains(t, e))
 
 THEOREM ContainsCons ==
-  ASSUME NEW S, NEW s \in Seq(S), NEW x \in S, NEW e
+  ASSUME NEW S, NEW s \in Seq(S), NEW x, NEW e
   PROVE  Contains(Cons(x, s), e) <=> (e = x \/ Contains(s, e))
 
 THEOREM ContainsTail ==
@@ -87,22 +87,6 @@ THEOREM ContainsTailExceptHead ==
   ASSUME NEW S, NEW s \in Seq(S), s # << >>, NEW e,
          Contains(s, e), e # Head(s)
   PROVE  Contains(Tail(s), e)
-
-(***************************************************************************)
-(* Generalized membership under Append and concatenation.  Here the        *)
-(* appended element (resp. the second operand) need not have the same       *)
-(* element type as the prefix, so these variants apply when the two sides   *)
-(* of a concatenation carry heterogeneous messages.                         *)
-(***************************************************************************)
-THEOREM ContainsAppendGen ==
-  ASSUME NEW S, NEW s \in Seq(S), NEW x, NEW e,
-         Contains(Append(s, x), e), e # x
-  PROVE  Contains(s, e)
-
-THEOREM ContainsConcatGen ==
-  ASSUME NEW S, NEW s \in Seq(S), NEW U, NEW t \in Seq(U), NEW e,
-         Contains(s \o t, e), ~ Contains(t, e)
-  PROVE  Contains(s, e)
 
 (***************************************************************************)
 (* Theorems about IsSorted (see SequencesExt).                             *)
