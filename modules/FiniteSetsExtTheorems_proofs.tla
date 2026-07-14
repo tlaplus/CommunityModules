@@ -621,4 +621,20 @@ THEOREM MinNat ==
            /\ \A y \in S : Min(S) <= y
 BY MinIntBounded, \A y \in S : 0 <= y
 
+---------------------------------------------------------------------------
+
+(*************************************************************************)
+(* Any superset (within U) of a majority of U is itself a majority.      *)
+(*************************************************************************)
+THEOREM SupersetOfMajorityIsMajority ==
+    ASSUME NEW U, IsFiniteSet(U),
+           NEW Q1 \in SUBSET U, NEW Q2 \in SUBSET U, Q1 \subseteq Q2,
+           2 * Cardinality(Q1) > Cardinality(U)
+    PROVE  2 * Cardinality(Q2) > Cardinality(U)
+<1>1. IsFiniteSet(Q2) /\ Cardinality(Q2) <= Cardinality(U)  BY FS_Subset
+<1>2. IsFiniteSet(Q1) /\ Cardinality(Q1) <= Cardinality(Q2)  BY <1>1, FS_Subset
+<1>3. Cardinality(Q1) \in Nat /\ Cardinality(Q2) \in Nat /\ Cardinality(U) \in Nat
+      BY FS_CardinalityType, <1>1, <1>2
+<1>. QED  BY <1>2, <1>3
+
 ================================================================================

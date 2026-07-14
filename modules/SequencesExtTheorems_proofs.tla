@@ -80,6 +80,108 @@ THEOREM SequencesInductionCons ==
 <1>. QED  BY <1>2, <1>3, NatInduction, Isa
 
 (***************************************************************************)
+(* Theorems about Contains.                                                *)
+(* Contains(s, e) == \E i \in 1 .. Len(s) : s[i] = e                        *)
+(***************************************************************************)
+
+THEOREM ContainsRange ==
+  ASSUME NEW S, NEW s \in Seq(S), NEW e
+  PROVE  Contains(s, e) <=> e \in Range(s)
+BY DEF Contains, Range 
+
+THEOREM ContainsEmpty ==
+  ASSUME NEW e
+  PROVE  ~ Contains(<< >>, e)
+BY DEF Contains
+
+THEOREM ContainsAppend ==
+  ASSUME NEW S, NEW s \in Seq(S), NEW x, NEW e
+  PROVE  Contains(Append(s, x), e) <=> (Contains(s, e) \/ e = x)
+BY DEF Contains 
+
+THEOREM ContainsSingleton ==
+  ASSUME NEW x
+  PROVE  \A e : Contains(<< x >>, e) <=> e = x
+BY Isa DEF Contains 
+
+THEOREM ContainsConcat ==
+  ASSUME NEW S, NEW s \in Seq(S), NEW T, NEW t \in Seq(T), NEW e
+  PROVE  Contains(s \o t, e) <=> (Contains(s, e) \/ Contains(t, e))
+<1>1. ASSUME Contains(s \o t, e), ~ Contains(t, e)  PROVE  Contains(s, e)
+  BY <1>1 DEF Contains 
+<1>2. ASSUME Contains(s, e)  PROVE Contains(s \o t, e)
+  <2>. PICK i \in 1 .. Len(s) : s[i] = e 
+    BY <1>2 DEF Contains 
+  <2>. QED  BY i \in 1 .. Len(s \o t) DEF Contains 
+<1>3. ASSUME Contains(t, e)  PROVE Contains(s \o t, e)
+  <2>. PICK i \in 1 .. Len(t) : t[i] = e 
+    BY <1>3 DEF Contains 
+  <2>. QED  BY Len(s)+i \in 1 .. Len(s \o t) DEF Contains 
+<1>. QED  BY <1>1, <1>2, <1>3
+
+THEOREM ContainsCons ==
+  ASSUME NEW S, NEW s \in Seq(S), NEW x, NEW e
+  PROVE  Contains(Cons(x, s), e) <=> (e = x \/ Contains(s, e))
+BY ContainsConcat, ContainsSingleton, <<x>> \in Seq({x}) DEF Cons 
+
+THEOREM ContainsTail ==
+  ASSUME NEW S, NEW s \in Seq(S), s # << >>, NEW e
+  PROVE  Contains(Tail(s), e) => Contains(s, e)
+BY DEF Contains 
+
+THEOREM ContainsTailExceptHead ==
+  ASSUME NEW S, NEW s \in Seq(S), s # << >>, NEW e,
+         Contains(s, e), e # Head(s)
+  PROVE  Contains(Tail(s), e)
+BY DEF Contains 
+
+(***************************************************************************)
+(* Theorems about IsSorted.                                                *)
+(* IsSorted(s, op) == \A i,j \in 1..Len(s) : i<j => op(s[i],s[j]) *)
+(***************************************************************************)
+
+THEOREM SortedEmpty ==
+  ASSUME NEW op(_,_)
+  PROVE  IsSorted(<< >>, op)
+BY DEF IsSorted
+
+THEOREM SortedSingleton ==
+  ASSUME NEW S, NEW x \in S, NEW op(_,_)
+  PROVE  IsSorted(<< x >>, op)
+BY DEF IsSorted 
+
+THEOREM SortedAppend ==
+  ASSUME NEW S, NEW op(_,_),
+         \A x,y,z \in S : op(x,y) /\ op(y,z) => op(x,z),
+         NEW s \in Seq(S), IsSorted(s, op),
+         NEW e \in S, s # << >> => op(s[Len(s)], e)
+  PROVE  IsSorted(Append(s, e), op)
+BY DEF IsSorted 
+
+THEOREM SortedConcat ==
+  ASSUME NEW S, NEW op(_,_),
+         \A x,y,z \in S : op(x,y) /\ op(y,z) => op(x,z),
+         NEW s \in Seq(S), NEW t \in Seq(S),
+         IsSorted(s, op), IsSorted(t, op),
+         (Len(s) > 0 /\ Len(t) > 0) => op(s[Len(s)], t[1])
+  PROVE  IsSorted(s \o t, op)
+BY SMTT(20) DEF IsSorted 
+
+THEOREM SortedInjective ==
+  ASSUME NEW S, NEW op(_,_),
+         \A x \in S : ~ op(x, x),
+         NEW s \in Seq(S), IsSorted(s, op)
+  PROVE  IsInjective(s)
+BY DEF IsSorted, IsInjective 
+
+THEOREM SortedSubSeq ==
+  ASSUME NEW S, NEW op(_,_),
+         NEW s \in Seq(S), IsSorted(s, op),
+         NEW m \in 1..Len(s)+1, NEW n \in 0..Len(s)
+  PROVE  IsSorted(SubSeq(s, m, n), op)
+BY DEF IsSorted 
+
+(***************************************************************************)
 (* Theorems about InsertAt and RemoveAt.                                   *)
 (* InsertAt(seq,i,elt) ==                                                  *)
 (*   SubSeq(seq, 1, i-1) \o <<elt>> \o SubSeq(seq, i, Len(seq))            *)
