@@ -19,6 +19,7 @@ EXTENDS RelationTests,
         BagsExtTests,
         DyadicRationalsTests,
         StatisticsTests,
+        UndirectedGraphsTests,
         VectorClocksTests,
 		GraphVizTests
 

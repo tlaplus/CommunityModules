@@ -9,6 +9,7 @@ LOCAL INSTANCE Sequences
 LOCAL INSTANCE SequencesExt
 LOCAL INSTANCE FiniteSets
 LOCAL INSTANCE Folds
+LOCAL INSTANCE Functions
 
 IsUndirectedGraph(G) ==
    /\ G = [node |-> G.node, edge |-> G.edge]
@@ -22,38 +23,60 @@ UndirectedSubgraph(G) ==
    {H \in [node : SUBSET G.node, edge : SUBSET G.edge] : IsUndirectedGraph(H)}
 
 -----------------------------------------------------------------------------
+(****************************************************************************)
+(* A path in a graph is a non-empty sequence of nodes connected by edges.   *)
+(* A simple path is a path that does not contain duplicate nodes.           *)
+(* Two nodes m and n are connected if there exists a path from m to n.      *)
+(* A graph is strongly connected if all of its nodes are connected.         *)
+(****************************************************************************)
 Path(G) == {p \in Seq(G.node) :
              /\ p # << >>
              /\ \A i \in 1..(Len(p)-1) : {p[i], p[i+1]} \in G.edge}
 
 SimplePath(G) ==
-    \* A simple path is a path with no repeated nodes.
-    {p \in SeqOf(G.node, Cardinality(G.node)) :
-             /\ p # << >>
-             /\ Cardinality({ p[i] : i \in DOMAIN p }) = Len(p)
-             /\ \A i \in 1..(Len(p)-1) : {p[i], p[i+1]} \in G.edge}
-
-(****************************************************************************)
-(* Compute the connected components of an undirected graph: initially each  *)
-(* node is in a component by itself, then iterate over the edges to merge   *)
-(* the components related by the edge.                                      *)
-(****************************************************************************)
-ConnectedComponents(G) ==
-   LET base == {{n} : n \in G.node}
-       choice(E) == CHOOSE e \in E : TRUE
-       firstNode(e) == CHOOSE a \in G.node : \E b \in G.node : e = {a,b}
-       secondNode(e) == CHOOSE b \in G.node : e = {firstNode(e), b}
-       nodesOfEdge(e) == <<firstNode(e), secondNode(e)>>
-       merge(e, comps) ==
-          LET compA == CHOOSE c \in comps : e[1] \in c
-              compB == CHOOSE c \in comps : e[2] \in c
-          IN  IF compA = compB THEN comps
-              ELSE (comps \ {compA, compB}) \union {compA \union compB}
-   IN MapThenFoldSet(merge, base, nodesOfEdge, choice, G.edge)
+  \* NB: TLC uses a Java override for this operator because
+  \* it cannot enumerate the set Path(G).
+  { p \in Path(G) : \A i,j \in 1..Len(p) : p[i] = p[j] => i = j }
 
 AreConnectedIn(m, n, G) ==
-   \E comp \in ConnectedComponents(G) : m \in comp /\ n \in comp
+  \* NB: TLC uses a Java override for this operator.
+  \E p \in Path(G) : (p[1] = m) /\ (p[Len(p)] = n)
+
+-----------------------------------------------------------------------------
+(****************************************************************************)
+(* A non-empty set S of nodes is a connected component if any two nodes in  *)
+(* S are connected by a path that only visits nodes in S.                   *)
+(* NB: This definition does not enforce that the component is maximal.      *)
+(* The (maximal) connected components are the maximal subsets of nodes that *)
+(* are connected.                                                           *)
+(****************************************************************************)
+IsConnectedComponent(S, G) ==
+  /\ S # {}
+  /\ \A m,n \in S : \E p \in Path(G) :
+        /\ p[1] = m /\ p[Len(p)] = n 
+        /\ Range(p) \subseteq S 
+
+ConnectedComponents(G) == 
+    \* NB: TLC uses a Java override for this operator.
+    { S \in SUBSET G.node : 
+        /\ IsConnectedComponent(S, G) 
+        /\ \A T \in (SUBSET S) \ {S} : ~ IsConnectedComponent(T, G)
+    }
 
 IsStronglyConnected(G) == 
   Cardinality(ConnectedComponents(G)) = 1
+
+-----------------------------------------------------------------------------
+(****************************************************************************)
+(* The set of all possible undirecteddirected graphs whose node set is S.   *)
+(*                                                                          *)
+(* Example:                                                                 *)
+(*   UndirectedGraphs({1, 2}) = {                                           *)
+(*     [node |-> {1, 2}, edge |-> {}],                                      *)
+(*     [node |-> {1, 2}, edge |-> {{1}}],                                   *)
+(*     [node |-> {1, 2}, edge |-> {{2}}],                                   *)
+(*     [node |-> {1, 2}, edge |-> {{1, 2}}]                                 *)
+(*   }                                                                      *)
+(****************************************************************************)
+UndirectedGraphs(S) == [node: {S}, edge: SUBSET { {s, t} : <<s,t>> \in S \X S }]
 =============================================================================

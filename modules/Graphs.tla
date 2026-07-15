@@ -10,6 +10,11 @@ LOCAL INSTANCE SequencesExt
 LOCAL INSTANCE Relation
 *)
 
+(***************************************************************************)
+(* A graph is represented as a record with two fields:                     *)
+(* - node holds the set of nodes of the graph,                             *)
+(* - edge holds the set of edges, represented as pairs of nodes.           *)
+(***************************************************************************)
 IsDirectedGraph(G) ==
    /\ G = [node |-> G.node, edge |-> G.edge]
    /\ G.edge \subseteq (G.node \X G.node)
@@ -24,38 +29,40 @@ Transpose(G) ==
       node |-> G.node] 
 
 -----------------------------------------------------------------------------
+(***************************************************************************)
+(* An undirected graph can be represented as a directed graph with a       *)
+(* symmetric edge relation. However, see alternative definitions of        *)
+(* undirected graphs in module UndirectedGraphs.                           *)
+(***************************************************************************)
 IsUndirectedGraph(G) ==
    /\ IsDirectedGraph(G)
    /\ \A e \in G.edge : <<e[2], e[1]>> \in G.edge
 
 UndirectedSubgraph(G) == {H \in DirectedSubgraph(G) : IsUndirectedGraph(H)}
 -----------------------------------------------------------------------------
+(***************************************************************************)
+(* A path in a graph is a non-empty sequence of nodes connected by edges.  *)
+(* A simple path is a path that does not contain duplicate nodes.          *)
+(* Two nodes m and n are connected if there exists a path from m to n.     *)
+(* A graph is strongly connected if all of its nodes are connected.        *)
+(***************************************************************************)
 Path(G) == {p \in Seq(G.node) :
              /\ p # << >>
              /\ \A i \in 1..(Len(p)-1) : <<p[i], p[i+1]>> \in G.edge}
 
 SimplePath(G) ==
-    \* A simple path is a path with no repeated nodes.
+    \* NB: TLC uses a Java override instead of this definition,
+    \* which it cannot evaluate.
     { p \in Path(G) : \A i,j \in 1..Len(p) : p[i] = p[j] => i = j }
- 
-MCSimplePath(G) ==
-    \* This alternative definition for finite graphs can be evaluated by TLC: add
-    \*      SimplePath <- MCSimplePath 
-    \* to the CONSTANTS section of the config file
-    {p \in SeqOf(G.node, Cardinality(G.node)) :
-             /\ p # << >>
-             /\ Cardinality({ p[i] : i \in DOMAIN p }) = Len(p)
-             /\ \A i \in 1..(Len(p)-1) : <<p[i], p[i+1]>> \in G.edge}
 
 AreConnectedIn(m, n, G) == 
-  \* Two nodes are connected if there is a path from the first to the second one
+  \* NB: TLC uses a Java override instead of this definition.
   \E p \in Path(G) : (p[1] = m) /\ (p[Len(p)] = n)
 
-MCAreConnectedIn(m, n, G) == 
-  \* This alternative definition is better suited for evaluation with TLC: add
-  \* AreConnectedIn <- MCAreConnectedIn 
-  \* to the CONSTANTS section of the config file
-  \E p \in MCSimplePath(G) : (p[1] = m) /\ (p[Len(p)] = n)
+IsStronglyConnected(G) == 
+  \* A graph is strongly connected if all pairs of nodes are connected.
+  \* NB: TLC uses a Java override instead of this definition.
+  \A m, n \in G.node : AreConnectedIn(m, n, G) 
 
 ConnectionsIn(G) ==
   \* Compute a Boolean matrix that indicates, for each pair of nodes,
@@ -63,6 +70,7 @@ ConnectionsIn(G) ==
   \* based on Warshall's algorithm, is much more efficient than the
   \* definition used in AreConnectedIn, and the result can be cached
   \* by TLC, avoiding recomputation.
+  \* Note that this is well-defined only for finite graphs.
   LET C[N \in SUBSET G.node] ==
       \* Matrix representing the existence of paths whose inner nodes
       \* (i.e., except for the source and the target) are all in the
@@ -75,23 +83,18 @@ ConnectionsIn(G) ==
                                    \/ Cu[m,u] /\ Cu[u,n]]
   IN  C[G.node]
 
-IsStronglyConnected(G) == 
-  \* A graph is strongly connected if all pairs of nodes are connected.
-  \A m, n \in G.node : AreConnectedIn(m, n, G) 
-
-MCIsStronglyConnected(G) ==
-  \* Alternative definition better suited for evaluation with TLC: add
-  \* IsStronglyConnected <- MCIsStronglyConnected
-  \* to the CONSTANTS section of the configuration file
-  LET Cs == ConnectionsIn(G)
-  IN  \A m,n \in G.node : Cs[m,n]
-
 -----------------------------------------------------------------------------
+(***************************************************************************)
+(* A tree is a directed graph (with edges pointing towards the root)       *)
+(* such that:                                                              *)
+(* - the root is a node of the graph (in particular, a tree is non-empty), *)
+(* - every node has a single parent, and                                   *)
+(* - every node is connected to the root.                                  *)
+(*                                                                         *)
+(* Note that a tree with edges pointing towards the leaves satisfies       *)
+(* IsTreeWithRoot(Transpose(G), r).                                        *)
+(***************************************************************************)
 IsTreeWithRoot(G, r) ==
-  \* A tree is a directed graph (with edges pointing towards the root) such that:
-  \* (i) the graph contains the root,
-  \* (ii) every node has a single parent,
-  \* (iii) every node is connected to the root.
   /\ IsDirectedGraph(G)
   /\ r \in G.node
   /\ \A e \in G.edge : /\ e[1] # r

@@ -108,7 +108,7 @@ ASSUME \A g \in SmallGraphs : AssertEq(SimplePath(g), SimplePathPure(g))
 (******************************************************************************)
 ASSUME \A g \in Graphs({"A", "B", "C"}):
     \A u,v \in g.node :
-        MCAreConnectedIn(u, v, g) \in BOOLEAN 
+        AreConnectedIn(u, v, g) \in BOOLEAN 
 
 \* A node is connected to itself iff it is a node of the graph (via <<n>>).
 ASSUME AssertEq(AreConnectedIn(1, 1, [node |-> {1}, edge |-> {}]), TRUE)
@@ -129,7 +129,7 @@ ASSUME AssertEq(AreConnectedIn("x", "x", EmptyGraph), FALSE)
 ASSUME LET G ==  [node |-> {1,2,3,4,5,6}, 
                   edge |-> {<<1,2>>, <<2,3>>, <<2,4>>, <<3,2>>, <<3,4>>, <<3,5>>, 
                             <<4,2>>, <<5,6>>, <<6,5>>}]
-       IN  \A m,n \in G.node : MCAreConnectedIn(m,n,G) <=> ConnectionsIn(G)[m,n]
+       IN  \A m,n \in G.node : AreConnectedIn(m,n,G) <=> ConnectionsIn(G)[m,n]
 
 \* Exhaustively: the override agrees with the original TLA+ definition and with
 \* the independent ConnectionsIn oracle for every graph in SmallGraphs.
