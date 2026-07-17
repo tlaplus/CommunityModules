@@ -57,7 +57,7 @@ ConnectedComponents(G) ==
                          /\ \A i \in 1 .. Len(p)-1 : {p[i], p[i+1]} \in G.edge
     IN  { S \in SUBSET G.node : 
             /\ IsCC(S)
-            /\ \A T \in (SUBSET S) \ {S} : ~ IsCC(T)
+            /\ \A T \in SUBSET G.node : S \subseteq T /\ S # T => ~ IsCC(T)
         }
 
 IsStronglyConnected(G) == 
