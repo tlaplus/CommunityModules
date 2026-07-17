@@ -44,24 +44,21 @@ AreConnectedIn(m, n, G) ==
 
 -----------------------------------------------------------------------------
 (****************************************************************************)
-(* A non-empty set S of nodes is a connected component if any two nodes in  *)
-(* S are connected by a path that only visits nodes in S.                   *)
-(* NB: This definition does not enforce that the component is maximal.      *)
-(* The (maximal) connected components are the maximal subsets of nodes that *)
-(* are connected.                                                           *)
+(* The (maximal) connected components are the maximal non-empty subsets S   *)
+(* of nodes such that any two nodes in the set are connected by a path that *)
+(* only visits nodes in S.                                                  *)
 (****************************************************************************)
-IsConnectedComponent(S, G) ==
-  /\ S # {}
-  /\ \A m,n \in S : \E p \in Path(G) :
-        /\ p[1] = m /\ p[Len(p)] = n 
-        /\ Range(p) \subseteq S 
-
 ConnectedComponents(G) == 
     \* NB: TLC uses a Java override for this operator.
-    { S \in SUBSET G.node : 
-        /\ IsConnectedComponent(S, G) 
-        /\ \A T \in (SUBSET S) \ {S} : ~ IsConnectedComponent(T, G)
-    }
+    LET IsCC(S) == /\ S # {}
+                   /\ \A m,n \in S : \E p \in Seq(S) : 
+                         /\ p # << >> 
+                         /\ p[1] = m /\ p[Len(p)] = n 
+                         /\ \A i \in 1 .. Len(p)-1 : {p[i], p[i+1]} \in G.edge
+    IN  { S \in SUBSET G.node : 
+            /\ IsCC(S)
+            /\ \A T \in (SUBSET S) \ {S} : ~ IsCC(T)
+        }
 
 IsStronglyConnected(G) == 
   Cardinality(ConnectedComponents(G)) = 1
@@ -75,7 +72,10 @@ IsStronglyConnected(G) ==
 (*     [node |-> {1, 2}, edge |-> {}],                                      *)
 (*     [node |-> {1, 2}, edge |-> {{1}}],                                   *)
 (*     [node |-> {1, 2}, edge |-> {{2}}],                                   *)
-(*     [node |-> {1, 2}, edge |-> {{1, 2}}]                                 *)
+(*     [node |-> {1, 2}, edge |-> {{1,2}}],                                 *)
+(*     [node |-> {1, 2}, edge |-> {{1}, {1,2}}],                            *)
+(*     [node |-> {1, 2}, edge |-> {{2}, {1,2}}],                            *)
+(*     [node |-> {1, 2}, edge |-> {{1}, {2}, {1,2}}],                       *)
 (*   }                                                                      *)
 (****************************************************************************)
 UndirectedGraphs(S) == [node: {S}, edge: SUBSET { {s, t} : <<s,t>> \in S \X S }]

@@ -6,7 +6,8 @@ ASSUME LET T == INSTANCE TLC IN T!PrintT("UndirectedGraphsTests")
 (******************************************************************************)
 (* Pure TLA+ reference definitions that can be evaluated by TLC and that      *)
 (* as oracles against which the module overrides (SimplePath, AreConnectedIn, *)
-(* ConnectedComponents) are checked below.                                    *)
+(* ConnectedComponents) are checked below. Note that these definitions are    *)
+(* correct only for graphs with a finite set of nodes.                        *)
 (******************************************************************************)
 
 LOCAL SimplePathPure(G) ==
