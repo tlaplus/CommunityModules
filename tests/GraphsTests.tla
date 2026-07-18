@@ -320,7 +320,3 @@ ASSUME AssertEq(Leaves([node |-> {1, 2, 3}, edge |-> {<<1, 2>>, <<1, 3>>}]), {2,
 
 ASSUME AssertEq(Leaves([node |-> {1, 2}, edge |-> {<<1, 2>>, <<2, 1>>}]), {})
 =====================================================================
-\* Modification History
-\* Last modified Sun Mar 06 18:15:49 CET 2022 by Stephan Merz
-\* Last modified Tue Dec 21 15:55:45 PST 2021 by Markus Kuppe
-\* Created Mon Dec 20 20:55:45 PST 2021 by Markus Kuppe
