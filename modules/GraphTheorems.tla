@@ -9,7 +9,7 @@ THEOREM TransposeIsDirectedGraph ==
     PROVE  IsDirectedGraph(Transpose(G))
 
 \* Note that the reverse implication does not hold in general.
-\* Consider G = [node |-> {1}, edge |-> {<<1,1,1}>>, root |-> {1}]
+\* Consider G = [node |-> {1}, edge |-> {<<1,1,1>>}, root |-> {1}]
 \* Then Transpose(G) = [node |-> {1}, edge |-> {<<1,1>>}],
 \* which is a directed graph whereas G is not.
 

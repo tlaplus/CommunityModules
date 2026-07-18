@@ -3,6 +3,9 @@
 (* Representation of undirected graphs in TLA+. In contrast to module       *)
 (* Graphs, edges are represented as unordered pairs {a,b} of nodes, thus    *)
 (* enforcing symmetry.                                                      *)
+(* The definitions of the operators SimplePath, AreConnectedIn, and         *)
+(* ConnectedComponents are overridden by TLC with methods defined in        *)
+(* tlc2/overrides/UndirectedGraphs.java.                                    *)
 (****************************************************************************)
 LOCAL INSTANCE Naturals
 LOCAL INSTANCE Sequences
@@ -34,22 +37,19 @@ Path(G) == {p \in Seq(G.node) :
              /\ \A i \in 1..(Len(p)-1) : {p[i], p[i+1]} \in G.edge}
 
 SimplePath(G) ==
-  \* NB: TLC uses a Java override for this operator because
-  \* it cannot enumerate the set Path(G).
   { p \in Path(G) : \A i,j \in 1..Len(p) : p[i] = p[j] => i = j }
 
 AreConnectedIn(m, n, G) ==
-  \* NB: TLC uses a Java override for this operator.
   \E p \in Path(G) : (p[1] = m) /\ (p[Len(p)] = n)
 
 -----------------------------------------------------------------------------
 (****************************************************************************)
 (* The (maximal) connected components are the maximal non-empty subsets S   *)
 (* of nodes such that any two nodes in the set are connected by a path that *)
-(* only visits nodes in S.                                                  *)
+(* only visits nodes in S. A graph is strongly connected if and only if it  *)
+(* has precisely one connected component containing all nodes.              *)
 (****************************************************************************)
 ConnectedComponents(G) == 
-    \* NB: TLC uses a Java override for this operator.
     LET IsCC(S) == /\ S # {}
                    /\ \A m,n \in S : \E p \in Seq(S) : 
                          /\ p # << >> 
@@ -60,12 +60,15 @@ ConnectedComponents(G) ==
             /\ \A T \in SUBSET G.node : S \subseteq T /\ S # T => ~ IsCC(T)
         }
 
-IsStronglyConnected(G) == 
-  Cardinality(ConnectedComponents(G)) = 1
+\* Observe that the possible alternative definition
+\* "Cardinality(ConnectedComponents(G)) = 1" makes sense only if the
+\* set of connected components is finite, and this need not be the case
+\* in general.
+IsStronglyConnected(G) == ConnectedComponents(G) = {G.node}
 
 -----------------------------------------------------------------------------
 (****************************************************************************)
-(* The set of all possible undirecteddirected graphs whose node set is S.   *)
+(* The set of all possible undirected graphs whose node set is S.           *)
 (*                                                                          *)
 (* Example:                                                                 *)
 (*   UndirectedGraphs({1, 2}) = {                                           *)

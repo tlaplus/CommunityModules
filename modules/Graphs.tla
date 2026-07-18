@@ -1,4 +1,14 @@
-------------------------------- MODULE Graphs ------------------------------- 
+------------------------------- MODULE Graphs --------------------------------
+(****************************************************************************)
+(* Representation of (directed) graphs in TLA+.                             *)
+(* A graph is represented as a record with two fields:                      *)
+(* - node holds the set of nodes of the graph,                              *)
+(* - edge holds the set of edges, represented as pairs of nodes.            *)
+(* The definitions of the operators SimplePath, AreConnectedIn, and         *)
+(* IsStronglyConnected are overridden by TLC with methods defined in        *)
+(* tlc2/overrides/Graphs.java.                                              *)
+(****************************************************************************)
+
 EXTENDS Naturals, Sequences, FiniteSets, SequencesExt, Relation
 
 (* TLAPM does not play well with LOCAL INSTANCE. 
@@ -10,10 +20,6 @@ LOCAL INSTANCE SequencesExt
 LOCAL INSTANCE Relation
 *)
 
-(***************************************************************************)
-(* A graph is represented as a record with two fields:                     *)
-(* - node holds the set of nodes of the graph,                             *)
-(* - edge holds the set of edges, represented as pairs of nodes.           *)
 (***************************************************************************)
 IsDirectedGraph(G) ==
    /\ G = [node |-> G.node, edge |-> G.edge]
@@ -51,17 +57,13 @@ Path(G) == {p \in Seq(G.node) :
              /\ \A i \in 1..(Len(p)-1) : <<p[i], p[i+1]>> \in G.edge}
 
 SimplePath(G) ==
-    \* NB: TLC uses a Java override instead of this definition,
-    \* which it cannot evaluate.
     { p \in Path(G) : \A i,j \in 1..Len(p) : p[i] = p[j] => i = j }
 
 AreConnectedIn(m, n, G) == 
-  \* NB: TLC uses a Java override instead of this definition.
   \E p \in Path(G) : (p[1] = m) /\ (p[Len(p)] = n)
 
 IsStronglyConnected(G) == 
   \* A graph is strongly connected if all pairs of nodes are connected.
-  \* NB: TLC uses a Java override instead of this definition.
   \A m, n \in G.node : AreConnectedIn(m, n, G) 
 
 ConnectionsIn(G) ==
