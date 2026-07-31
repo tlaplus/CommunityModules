@@ -55,7 +55,7 @@ jobs:
         status=0
         for proof in *_proofs.tla; do
           echo "::group::Verifying $proof"
-          tlapm --cleanfp "$proof" || status=1
+          tlapm --strict --cleanfp "$proof" || status=1
           echo "::endgroup::"
         done
         exit $status
