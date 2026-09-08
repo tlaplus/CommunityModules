@@ -38,7 +38,7 @@ import tlc2.value.impl.IntValue;
 import tlc2.value.impl.KSubsetValue;
 import tlc2.value.impl.OpValue;
 import tlc2.value.impl.SetEnumValue;
-import tlc2.value.impl.SubsetValue;
+import tlc2.value.impl.UserValue;
 import tlc2.value.impl.Value;
 import tlc2.value.impl.ValueEnumeration;
 
@@ -77,23 +77,17 @@ public class FiniteSetsExt {
 	}
 	
 	@TLAPlusOperator(identifier = "kSubset", module = "FiniteSetsExt", warn = false)
-	public static Value kSubset(final Value kv, final Value s) {
-		final SetEnumValue set = (SetEnumValue) s.toSetEnum();
-		if (set == null) {
-			throw new EvalException(EC.TLC_MODULE_ARGUMENT_ERROR,
-					new String[] { "second", "kSubset", "set", Values.ppr(s.toString()) });
-		}
+	public static Value kSubset(final Value kv, final Value set) {
 		if (!(kv instanceof IntValue)) {
 			throw new EvalException(EC.TLC_MODULE_ARGUMENT_ERROR,
 					new String[] { "first", "kSubset", "natural number", Values.ppr(kv.toString()) });
 		}
 		final int k = ((IntValue) kv).val;
-		
-		if (k < 0 || set.size() < k) {
-			return SetEnumValue.EmptySet;
-		}
-		if (k == 0) {
-			return new SubsetValue(SetEnumValue.EmptySet);
+
+		// Reject non-sets such as 42, TRUE, "foo", <<1>>, [a |-> 1], [x \in {1} |-> x], and model values.
+		if (!(set instanceof Enumerable || set instanceof UserValue)) {
+			throw new EvalException(EC.TLC_MODULE_ARGUMENT_ERROR,
+					new String[] { "second", "kSubset", "set", Values.ppr(set.toString()) });
 		}
 		return new KSubsetValue(k, set, set.cm);
 	}
