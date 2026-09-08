@@ -80,7 +80,7 @@ public class FiniteSetsExt {
 	public static Value kSubset(final Value kv, final Value s) {
 		final SetEnumValue set = (SetEnumValue) s.toSetEnum();
 		if (set == null) {
-			throw new EvalException(EC.TLC_MODULE_ONE_ARGUMENT_ERROR,
+			throw new EvalException(EC.TLC_MODULE_ARGUMENT_ERROR,
 					new String[] { "second", "kSubset", "set", Values.ppr(s.toString()) });
 		}
 		if (!(kv instanceof IntValue)) {
