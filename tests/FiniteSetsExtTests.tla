@@ -29,29 +29,6 @@ ASSUME LET S == 1..2000000
 
 -----------------------------------------------------------------------------
 
-ASSUME LET S == {"a","b","c","c"} \* Make sure value normalization works.
-       IN \A k \in -1..Cardinality(S) + 1: 
-             kSubset(k, S) = {s \in SUBSET S : Cardinality(s) = k}
-
-ASSUME LET S == {"a","b","c","c"} \* Make sure value normalization works.
-       IN kSubset(-1, S) = {} /\ kSubset(4, S) = {}
-  
-\* The commented variant takes my computer ~30 seconds, whereas the kSubset
-\* variant finishes in under 1s.  
-\*ASSUME LET S == 1..27
-\*       IN {s \in SUBSET S : Cardinality(s) = Cardinality(S)} = {S}
-ASSUME LET S == 1..27
-       IN kSubset(Cardinality(S), S) = {S}
-
-ASSUME {} \notin kSubset(1, {1,2,3})
-
-ASSUME LET T == 1..3
-       IN \A k \in (1..Cardinality(T)):
-            /\ \A e \in { ss \in (SUBSET T) : Cardinality(ss) = k} :
-                     e \in kSubset(k, T)
-            /\ \A e \in { ss \in (SUBSET T) : Cardinality(ss) # k} :
-                     e \notin kSubset(k, T)
-                     
 ASSUME LET T == {"a","b","c"}
            kSubsetPure(k, S) == { s \in SUBSET S : Cardinality(s) = k }
        IN \A k \in 1..Cardinality(T):
