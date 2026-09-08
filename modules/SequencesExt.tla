@@ -446,7 +446,11 @@ Interleave(s, t) ==
                 ELSE u[i-1] \o << <<s[i]>> >> \o << <<t[i]>> >>
         IN Last(u)
     \* error "Interleave: sequences must have same length"
-    [] Len(s) = Len(t) /\ Len(s) = 0 -> << <<>>, <<>> >>
+    \* <<>> is the identity of \o, which is what the arm above builds the
+    \* result with, so Len(Interleave(s, t)) = 2 * Len(s) holds for the empty
+    \* sequence as well.  It also matches the other operators of this module
+    \* on an empty argument, such as Zip, FlattenSeq, and Reverse.
+    [] Len(s) = Len(t) /\ Len(s) = 0 -> << >>
 
 (**************************************************************************)
 (* The set of all subsequences of the sequence  s  .  Note that the empty *)

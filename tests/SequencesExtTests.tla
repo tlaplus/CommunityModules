@@ -172,7 +172,7 @@ ASSUME FlattenSeq(<<"a", "b">>) = "ab"
 
 -----------------------------------------------------------------------------
 
-ASSUME Interleave(<<>>, <<>>) = << <<>>, <<>> >>
+ASSUME Interleave(<<>>, <<>>) = << >>
 ASSUME Interleave(<< <<>>  >>, <<1>>) = << << <<>> >>, <<1>> >>
 ASSUME Interleave(<<1>>, << <<>>  >>) = << <<1>>, << <<>> >> >>
 ASSUME Interleave(<<2>>,<<2>>) = << <<2>>, <<2>> >>
@@ -183,6 +183,14 @@ ASSUME Interleave(<<1,3>>,<<2,4>>) = <<<<1>>, <<2>>, <<3>>, <<4>>>>
 ASSUME AssertEq(FlattenSeq(Interleave(<<1,3>>,<<2,4>>)), <<1, 2, 3, 4>>)
 ASSUME Interleave(<<"a", "c">>, <<"b", "d">>) = <<<<"a">>, <<"b">>, <<"c">>, <<"d">>>>
 ASSUME AssertEq(FlattenSeq(Interleave(<<"a", "c">>, <<"b", "d">>)), <<"a", "b", "c", "d">>)
+
+\* Two entries per position of s, the odd ones from s and the even ones from
+\* t.  The empty case is the one this used to fail, with a length of 2.
+ASSUME \A s \in BoundedSeq(1..3, 3) :
+          \A t \in {u \in BoundedSeq(1..3, 3) : Len(u) = Len(s)} :
+             /\ Len(Interleave(s, t)) = 2 * Len(s)
+             /\ \A i \in 1..Len(s) : /\ Interleave(s, t)[2*i - 1] = <<s[i]>>
+                                     /\ Interleave(s, t)[2*i]     = <<t[i]>>
 
 -----------------------------------------------------------------------------
 
