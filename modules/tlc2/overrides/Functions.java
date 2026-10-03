@@ -110,15 +110,28 @@ public final class Functions {
 			throw new EvalException(EC.TLC_MODULE_ONE_ARGUMENT_ERROR,
 					new String[] { "AntiFunction", "functions", Values.ppr(f.toString()) });
 		}
-		final Value[] range;
-		if (frc.intv != null) {
-			range = frc.getDomainAsValues();
-		} else {
-			final Value[] values = frc.getDomainAsValues();
-			range = Arrays.copyOf(values, values.length);
+		frc.normalize();
+		final Value[] fdomain = frc.getDomainAsValues();
+		final Value[] fvalues = frc.values;
+
+		// For a non-injective f, TLC's CHOOSE picks the first s in the normalized
+		// DOMAIN f with f[s] = t. A stable sort by value keeps that s first among
+		// the domain elements that f maps to t.
+		final Integer[] order = new Integer[fvalues.length];
+		Arrays.setAll(order, i -> i);
+		Arrays.sort(order, (a, b) -> fvalues[a].compareTo(fvalues[b]));
+
+		final Value[] domain = new Value[order.length];
+		final Value[] range = new Value[order.length];
+		int n = 0;
+		for (final int i : order) {
+			if (n == 0 || !fvalues[i].equals(domain[n - 1])) {
+				domain[n] = fvalues[i];
+				range[n] = fdomain[i];
+				n++;
+			}
 		}
-		final Value[] domain = Arrays.copyOf(frc.values, frc.values.length);
-		return new FcnRcdValue(domain, range, false).normalize();
+		return new FcnRcdValue(Arrays.copyOf(domain, n), Arrays.copyOf(range, n), false).normalize();
 	}
 
 	@TLAPlusOperator(identifier = "FoldFunction", module = "Functions", warn = false)

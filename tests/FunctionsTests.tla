@@ -94,9 +94,13 @@ ASSUME AntiFunction(<<"a", "b", "c">>) = [a |-> 1, b |-> 2, c |-> 3]
 
 ASSUME 
     LET InversePure(f, S, T) == [t \in T |-> CHOOSE s \in S : t \in Range(f) => f[s] = t] \* "Pure" as in no Java module override.
-    IN /\ \A f \in [{0,1,2} -> {0,1,2,3}] : IsInjective(f) => InversePure(f, DOMAIN f, Range(f)) = AntiFunction(f)
-       /\ \A f \in [{"a","b","c"} -> {0,1,2,3}] : IsInjective(f) => InversePure(f, DOMAIN f, Range(f)) = AntiFunction(f)
-       /\ \A f \in [{0,1,2,3} -> {"a","b","c"}] : IsInjective(f) => InversePure(f, DOMAIN f, Range(f)) = AntiFunction(f)
+    IN /\ \A f \in [{0,1,2} -> {0,1,2,3}] : InversePure(f, DOMAIN f, Range(f)) = AntiFunction(f)
+       /\ \A f \in [{"a","b","c"} -> {0,1,2,3}] : InversePure(f, DOMAIN f, Range(f)) = AntiFunction(f)
+       /\ \A f \in [{0,1,2,3} -> {"a","b","c"}] : InversePure(f, DOMAIN f, Range(f)) = AntiFunction(f)
+
+ASSUME AntiFunction(<<1, 1>>) = <<1>>
+ASSUME AntiFunction(<<2, 1, 2>>) = (1 :> 2 @@ 2 :> 1)
+ASSUME AntiFunction([a |-> 0, b |-> 0, c |-> 1]) = (0 :> "a" @@ 1 :> "c")
       
 SomeVal ==
 	[n1 |-> "n3", n2 |-> "n1", n3 |-> "n2"]
