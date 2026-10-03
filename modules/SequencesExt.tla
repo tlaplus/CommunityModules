@@ -167,7 +167,8 @@ SelectInSeq(seq, Test(_)) ==
 (* FALSE for all elements.                                               *)
 (*************************************************************************)
 SelectInSubSeq(seq, from, to, Test(_)) ==
-  SelectInSeq(SubSeq(seq, from, to), Test)
+  LET I == { i \in from..to : Test(seq[i]) }
+  IN IF I # {} THEN Min(I) ELSE 0
 
 (*************************************************************************)
 (* Selects the index of the last element such that Test(seq[i]) is true  *)
@@ -183,7 +184,8 @@ SelectLastInSeq(seq, Test(_)) ==
 (* FALSE for all elements.                                               *)
 (*************************************************************************)
 SelectLastInSubSeq(seq, from, to, Test(_)) ==
-  SelectLastInSeq(SubSeq(seq, from, to), Test)
+  LET I == { i \in from..to : Test(seq[i]) }
+  IN IF I # {} THEN Max(I) ELSE 0
 
 -----------------------------------------------------------------------------
 

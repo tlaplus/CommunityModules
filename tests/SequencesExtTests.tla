@@ -448,13 +448,11 @@ ASSUME AssertEq(SelectLastInSubSeq(<<1,1,2>>  , 1, 3, LAMBDA e : e = 1), 2)
 ASSUME AssertEq(SelectLastInSubSeq(<<1,1,2,2>>, 2, 4, LAMBDA e : e = 2), 4)
 
 SelectInSubSeqPure(seq, from, to, Test(_)) ==
-  LET sub == SubSeq(seq, from, to)
-      I == { i \in 1..Len(sub) : Test(sub[i]) }
+  LET I == { i \in from..to : Test(seq[i]) }
   IN IF I # {} THEN CHOOSE i \in I : \A j \in I : i <= j ELSE 0
 
 SelectLastInSubSeqPure(seq, from, to, Test(_)) ==
-  LET sub == SubSeq(seq, from, to)
-      I == { i \in 1..Len(sub) : Test(sub[i]) }
+  LET I == { i \in from..to : Test(seq[i]) }
   IN IF I # {} THEN CHOOSE i \in I : \A j \in I : i >= j ELSE 0
 
 ASSUME AssertEq(SelectInSubSeq(<<1,1,2>>, 2, 3, LAMBDA e : e = 1), SelectInSubSeqPure(<<1,1,2>>, 2, 3, LAMBDA e : e = 1))
