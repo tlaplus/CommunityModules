@@ -25,6 +25,12 @@ ASSUME(atoi("0") = 0)
 ASSUME(atoi("-0") = 0)
 ASSUME(atoi("-1") = -1)
 
+\* atoi chooses from the unbounded set Int, which TLC cannot enumerate.
+atoiPure(str) ==
+  CHOOSE i \in -1000..1000 : ToString(i) = str
+
+ASSUME \A i \in -1000..1000 : AssertEq(atoi(ToString(i)), atoiPure(ToString(i)))
+
 ASSUME AssertError(
            "The argument of atoi should be a string, but instead it is:\n\"\"", 
            atoi(""))

@@ -67,6 +67,16 @@ ASSUME FoldSet(LAMBDA x,y : x + y, 0, 0 .. 10) = 55
 
 \* Without the corresponding Java module override, this overflows TLC's stack.
 ASSUME FoldSet(LAMBDA x,y : x + y, 0, 0 .. 10000) = 50005000
+
+FoldSetPure(op(_,_), base, set) ==
+   MapThenFoldSet(op, base, LAMBDA x : x, LAMBDA s : CHOOSE x \in s : TRUE, set)
+
+\* FoldSet does not fix the order in which it combines elements, so it is
+\* only compared on operators for which the order does not matter.
+ASSUME \A S \in SUBSET (-2..3) :
+    /\ FoldSet(LAMBDA x,y : x + y, 0, S) = FoldSetPure(LAMBDA x,y : x + y, 0, S)
+    /\ FoldSet(LAMBDA x,y : x * y, 1, S) = FoldSetPure(LAMBDA x,y : x * y, 1, S)
+    /\ FoldSet(LAMBDA x,y : {x} \cup y, {}, S) = FoldSetPure(LAMBDA x,y : {x} \cup y, {}, S)
 -----------------------------------------------------------------------------
 
 ASSUME ChooseUnique({2, 3, 4, 5}, LAMBDA x : x % 3 = 1) = 4

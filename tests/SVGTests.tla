@@ -133,6 +133,17 @@ ASSUME(
               3 :> [x |-> 16, y |-> 9 ] )
 )
 
+PointOnLinePure(from, to, segment) ==
+    [x |-> from.x + ((to.x - from.x) \div segment), 
+     y |-> from.y + ((to.y - from.y) \div segment)]
+
+\* The override truncates towards zero whereas \div rounds down, thus the two
+\* only agree if the resulting coordinates are non-negative.
+ASSUME \A fx, fy, tx, ty \in 0..6, segment \in 1..4 :
+    LET from == [x |-> fx, y |-> fy]
+        to   == [x |-> tx, y |-> ty]
+    IN AssertEq(PointOnLine(from, to, segment), PointOnLinePure(from, to, segment))
+
 ASSUME(LET 
 		elem == Text(0, 0, ToString(<<1,2,3>>), <<>>)
       IN

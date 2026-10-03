@@ -54,6 +54,22 @@ ASSUME FoldFunctionOnSet(LAMBDA x,y: {x} \cup y, {}, [n \in 1..9999 |-> n], {}) 
 
 ASSUME FoldFunctionOnSet(LAMBDA x,y: {x} \cup y, {}, [n \in 1..9999 |-> n], 2..9998) = 2..9998
 
+\* FoldFunction and FoldFunctionOnSet do not fix the order in which they combine
+\* elements, so they are only compared on operators for which the order does not matter.
+ASSUME
+    LET FoldFunctionOnSetPure(op(_,_), base, fun, indices) ==
+            MapThenFoldSet(op, base, LAMBDA i : fun[i], LAMBDA s: CHOOSE x \in s : TRUE, indices)
+        FoldFunctionPure(op(_,_), base, fun) ==
+            FoldFunctionOnSetPure(op, base, fun, DOMAIN fun)
+        Check(f) ==
+          /\ FoldFunction(+, 0, f) = FoldFunctionPure(+, 0, f)
+          /\ FoldFunction(LAMBDA x,y: {x} \cup y, {}, f) = FoldFunctionPure(LAMBDA x,y: {x} \cup y, {}, f)
+          /\ \A I \in SUBSET DOMAIN f :
+                /\ FoldFunctionOnSet(+, 0, f, I) = FoldFunctionOnSetPure(+, 0, f, I)
+                /\ FoldFunctionOnSet(LAMBDA x,y: {x} \cup y, {}, f, I) = FoldFunctionOnSetPure(LAMBDA x,y: {x} \cup y, {}, f, I)
+    IN /\ \A f \in [{1,2,3} -> {-1,0,2}] : Check(f)
+       /\ \A f \in [{"a","b","c"} -> {-1,0,2}] : Check(f)
+
 ASSUME AssertError(
            "The third argument of FoldFunction should be a function, but instead it is:\nTRUE",
            FoldFunction(+, 23, TRUE))

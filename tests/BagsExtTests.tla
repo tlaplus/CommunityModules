@@ -52,6 +52,13 @@ ASSUME LET B == ({1}:>2) @@ ({-2}:>1) @@ ({3}:>3)
        IN  FoldBag(LAMBDA x,y : x \union y, {}, B)
          = TLAFoldBag(LAMBDA x,y : x \union y, {}, B)
 
+\* FoldBag does not fix the order in which it combines elements, so it is
+\* only compared on operators for which the order does not matter.
+ASSUME \A D \in SUBSET {-2, 1, 3} : \A B \in [D -> 1..3] :
+    /\ FoldBag(LAMBDA x,y : x+y, 0, B) = TLAFoldBag(LAMBDA x,y : x+y, 0, B)
+    /\ FoldBag(LAMBDA x,y : x*y, 1, B) = TLAFoldBag(LAMBDA x,y : x*y, 1, B)
+    /\ FoldBag(LAMBDA x,y : IF x > y THEN x ELSE y, -9, B) = TLAFoldBag(LAMBDA x,y : IF x > y THEN x ELSE y, -9, B)
+
 ASSUME FoldBag(LAMBDA x,y : x+y, 0, (1:>2) @@ (2:>1) @@ (3:>3)) = 13
 ASSUME FoldBag(LAMBDA x,y : x+y, 0, (1:>2) @@ (-2:>1)) = 0
 
