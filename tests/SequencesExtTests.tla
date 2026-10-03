@@ -447,6 +447,26 @@ ASSUME AssertEq(SelectLastInSubSeq(<<>>, 1, Len(<<>>), Op), 0)
 ASSUME AssertEq(SelectLastInSubSeq(<<1,1,2>>  , 1, 3, LAMBDA e : e = 1), 2)
 ASSUME AssertEq(SelectLastInSubSeq(<<1,1,2,2>>, 2, 4, LAMBDA e : e = 2), 4)
 
+SelectInSubSeqPure(seq, from, to, Test(_)) ==
+  LET I == { i \in from..to : Test(seq[i]) }
+  IN IF I # {} THEN CHOOSE i \in I : \A j \in I : i <= j ELSE 0
+
+SelectLastInSubSeqPure(seq, from, to, Test(_)) ==
+  LET I == { i \in from..to : Test(seq[i]) }
+  IN IF I # {} THEN CHOOSE i \in I : \A j \in I : i >= j ELSE 0
+
+ASSUME AssertEq(SelectInSubSeq(<<1,1,2>>, 2, 3, LAMBDA e : e = 1), SelectInSubSeqPure(<<1,1,2>>, 2, 3, LAMBDA e : e = 1))
+ASSUME AssertEq(SelectInSubSeq(<<1,1,2,2>>, 2, 4, LAMBDA e : e = 2), SelectInSubSeqPure(<<1,1,2,2>>, 2, 4, LAMBDA e : e = 2))
+ASSUME AssertEq(SelectLastInSubSeq(<<1,1,2,2>>, 2, 4, LAMBDA e : e = 2), SelectLastInSubSeqPure(<<1,1,2,2>>, 2, 4, LAMBDA e : e = 2))
+
+ASSUME \A seq \in BoundedSeq(1..3, 4):
+         \A from \in 1..Len(seq) + 1, to \in 0..Len(seq):
+           \A v \in 1..3:
+             /\ AssertEq(SelectInSubSeq(seq, from, to, LAMBDA e : e = v),
+                         SelectInSubSeqPure(seq, from, to, LAMBDA e : e = v))
+             /\ AssertEq(SelectLastInSubSeq(seq, from, to, LAMBDA e : e = v),
+                         SelectLastInSubSeqPure(seq, from, to, LAMBDA e : e = v))
+
 -----------------------------------------------------------------------------
 
 ASSUME AssertEq(Suffixes(<<>>), {<<>>})
