@@ -33,6 +33,12 @@ ASSUME(IsInjective([i \in 0..2 |-> i]))
 ASSUME(IsInjective( "a":> [{1,2} -> {3,4}] @@ "b":> [{1,2} -> {3,5}] ))
 ASSUME(AssertError("The argument of IsInjective should be a function, but instead it is:\n{}", IsInjective({})))
 
+ASSUME(IsInjective([a |-> 1, b |-> 2]))
+ASSUME(~IsInjective([a |-> 1, b |-> 1]))
+\* The function constructor is not evaluated to an explicit function in this context.
+ASSUME((IF IsInjective([b \in BOOLEAN |-> FALSE]) THEN <<1>> ELSE <<2>>)[1] = 2)
+ASSUME((IF IsInjective([b \in BOOLEAN |-> b]) THEN <<1>> ELSE <<2>>)[1] = 1)
+
 \* Assert that Functions#isInjectiveDestructive is side-effect free.
 SomeSeq == UNION {[1..m -> {1,2}] : m \in 0..Cardinality({1,2})}
 SomeExp == CHOOSE x \in SomeSeq: IsInjective(x) /\ Len(x) > 3
@@ -43,6 +49,7 @@ ASSUME
     IN /\ \A f \in [{0,1,2} -> {0,1,2,3}] : IsInjectivePure(f) = IsInjective(f)
        /\ \A f \in [{"a","b","c"} -> {0,1,2,3}] : IsInjectivePure(f) = IsInjective(f)
        /\ \A f \in [{0,1,2,3} -> {"a","b","c"}] : IsInjectivePure(f) = IsInjective(f)
+       /\ \A f \in [a : {0,1,2}, b : {0,1,2}, c : {0,1,2}] : IsInjectivePure(f) = IsInjective(f)
 
 ASSUME FoldFunction(LAMBDA x,y: {x} \cup y, {}, <<1,2,1>>) = {1,2}
 
