@@ -65,9 +65,11 @@ public final class Functions {
 			if (val instanceof SetOfRcdsValue) {
 				// Input e.g. [a: 1, b: 2]
 				return isInjectiveNonDestructive(((SetOfRcdsValue) val).values);
-			} else if (val instanceof FcnRcdValue) {
-				// Input e.g. [a |-> 1, b |-> 2]
-				return isInjectiveNonDestructive(((FcnRcdValue) val).values);
+			}
+			final Value fcn = val.toFcnRcd();
+			if (fcn instanceof FcnRcdValue) {
+				// Input e.g. [a |-> 1, b |-> 2] or [x \in BOOLEAN |-> x]
+				return isInjectiveNonDestructive(((FcnRcdValue) fcn).values);
 			}
 			throw new EvalException(EC.TLC_MODULE_ONE_ARGUMENT_ERROR,
 					new String[] { "IsInjective", "function", Values.ppr(val.toString()) });
