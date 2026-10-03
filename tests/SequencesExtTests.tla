@@ -22,6 +22,13 @@ ASSUME(LET s == {"t","l","a","p","l","u","s"}
            seq == SetToSeq(s)
        IN Len(seq) = Cardinality(s) /\ ToSet(seq) = s)
 
+\* SetToSeq is defined via CHOOSE, so its pure counterpart is the set of all
+\* sequences that it may choose from.
+SetToSeqPure(S) ==
+  { f \in [1..Cardinality(S) -> S] : \A i, j \in 1..Cardinality(S) : i # j => f[i] # f[j] }
+
+ASSUME \A S \in SUBSET {"a", "b", "c", "d"} : SetToSeq(S) \in SetToSeqPure(S)
+
 ASSUME(Reverse(<<>>) = <<>>)
 ASSUME(Reverse(<<1,2,3>>) = <<3,2,1>>)
 ASSUME(Reverse(<<1,1,2>>) = <<2,1,1>>)
@@ -57,6 +64,12 @@ ASSUME(~IsPrefix(<<2>>, <<1>>))
 ASSUME(~IsPrefix(<<2,1>>, <<1,2>>))
 ASSUME(~IsPrefix(<<1,2>>, <<2,1>>))
 
+IsPrefixPure(s, t) ==
+  Len(s) <= Len(t) /\ SubSeq(s, 1, Len(s)) = SubSeq(t, 1, Len(s))
+
+ASSUME \A s, t \in BoundedSeq(1..2, 3) : AssertEq(IsPrefix(s, t), IsPrefixPure(s, t))
+ASSUME \A s, t \in {"", "a", "b", "ab", "ba", "abc"} : AssertEq(IsPrefix(s, t), IsPrefixPure(s, t))
+
 ASSUME(~IsStrictPrefix(<<>>, <<>>))
 ASSUME(IsStrictPrefix(<<>>, <<1>>))
 ASSUME(IsStrictPrefix(<<1>>, <<1,2>>))
@@ -82,6 +95,11 @@ ASSUME(Contains(<<3,4>>, 4))
 ASSUME(Contains(<<{3},{4}>>, {4}))
 ASSUME(Contains(<<{3},{4}>>, {3}))
 ASSUME(~Contains(<<{3},{4}>>, {2}))
+
+ContainsPure(s, e) ==
+  \E i \in 1..Len(s) : s[i] = e
+
+ASSUME \A s \in BoundedSeq(1..3, 4), e \in 0..4 : AssertEq(Contains(s, e), ContainsPure(s, e))
 
 -----------------------------------------------------------------------------
 
@@ -119,6 +137,26 @@ ASSUME AssertError(
 ASSUME AssertError(
            "The third argument of FoldFunction should be a function, but instead it is:\nTRUE",
            FoldSeq(+, 23, TRUE))
+
+FoldSeqPure(op(_, _), base, seq) ==
+  MapThenFoldSet(op, base, LAMBDA i : seq[i], LAMBDA S : CHOOSE x \in S : TRUE, DOMAIN seq)
+
+FoldLeftPure(op(_, _), base, seq) ==
+  MapThenFoldSet(LAMBDA x,y : op(y,x), base, LAMBDA i : seq[i], LAMBDA S : Max(S), DOMAIN seq)
+
+FoldRightPure(op(_, _), seq, base) ==
+  MapThenFoldSet(op, base, LAMBDA i : seq[i], LAMBDA S : Min(S), DOMAIN seq)
+
+\* FoldSeq does not fix the order in which it combines elements, so it is
+\* only compared on operators for which the order does not matter.
+ASSUME LET cons(x,y) == <<x, y>>
+       IN \A seq \in BoundedSeq(1..3, 4):
+            /\ AssertEq(FoldSeq(+, 0, seq), FoldSeqPure(+, 0, seq))
+            /\ AssertEq(FoldSeq(LAMBDA x,y: {x} \cup y, {}, seq), FoldSeqPure(LAMBDA x,y: {x} \cup y, {}, seq))
+            /\ AssertEq(FoldLeft(cons, 0, seq), FoldLeftPure(cons, 0, seq))
+            /\ AssertEq(FoldLeft(-, 0, seq), FoldLeftPure(-, 0, seq))
+            /\ AssertEq(FoldRight(cons, seq, 0), FoldRightPure(cons, seq, 0))
+            /\ AssertEq(FoldRight(-, seq, 0), FoldRightPure(-, seq, 0))
 
 -----------------------------------------------------------------------------
 
@@ -439,6 +477,18 @@ ASSUME AssertEq(SelectLastInSeq(<<>>, Op), 0)
 ASSUME AssertEq(SelectLastInSeq(<<1,1,2>>  , LAMBDA e : e = 1), 2)
 ASSUME AssertEq(SelectLastInSeq(<<1,1,2,2>>, LAMBDA e : e = 2), 4)
 
+SelectInSeqPure(seq, Test(_)) ==
+  LET I == { i \in 1..Len(seq) : Test(seq[i]) }
+  IN IF I # {} THEN CHOOSE i \in I : \A j \in I : i <= j ELSE 0
+
+SelectLastInSeqPure(seq, Test(_)) ==
+  LET I == { i \in 1..Len(seq) : Test(seq[i]) }
+  IN IF I # {} THEN CHOOSE i \in I : \A j \in I : i >= j ELSE 0
+
+ASSUME \A seq \in BoundedSeq(1..3, 4), v \in 0..3 :
+    /\ AssertEq(SelectInSeq(seq, LAMBDA e : e = v), SelectInSeqPure(seq, LAMBDA e : e = v))
+    /\ AssertEq(SelectLastInSeq(seq, LAMBDA e : e = v), SelectLastInSeqPure(seq, LAMBDA e : e = v))
+
 ASSUME AssertEq(SelectInSubSeq(<<>>, 1, Len(<<>>), Op), 0)
 ASSUME AssertEq(SelectInSubSeq(<<1,1,2>>  , 2, 3, LAMBDA e : e = 1), 2)
 ASSUME AssertEq(SelectInSubSeq(<<1,1,2,2>>, 2, 4, LAMBDA e : e = 2), 3)
@@ -473,6 +523,11 @@ ASSUME AssertEq(Suffixes(<<>>), {<<>>})
 ASSUME AssertEq(Suffixes(<<1>>), {<<>>, <<1>>})
 ASSUME AssertEq(Suffixes(<<1,2>>), {<<>>, <<1,2>>, <<2>>})
 ASSUME AssertEq(Suffixes(<<1,2,3>>), {<<>>, <<3>>, <<2,3>>, <<1,2,3>>})
+
+SuffixesPure(s) ==
+  { SubSeq(s, l, Len(s)) : l \in 1..Len(s) } \cup {<<>>}
+
+ASSUME \A s \in BoundedSeq(1..3, 4) : AssertEq(Suffixes(s), SuffixesPure(s))
 -----------------------------------------------------------------------------
 
 ASSUME AssertEq(RemoveFirst(<<>>, 1), <<>>)
@@ -487,8 +542,34 @@ ASSUME AssertEq(RemoveFirstMatch(<<1,2>>, LAMBDA e: e = 1), <<2>>)
 ASSUME AssertEq(RemoveFirstMatch(<<1,2,1>>, LAMBDA e: e = 1), <<2,1>>)
 ASSUME AssertEq(RemoveFirstMatch(<<1,2,1,2>>, LAMBDA e: e = 2), <<1,1,2>>)
 
+RemoveFirstPure(s, e) ==
+    IF \E i \in 1..Len(s): s[i] = e
+    THEN RemoveAt(s, SelectInSeqPure(s, LAMBDA v: v = e))
+    ELSE s
+
+RemoveFirstMatchPure(s, Test(_)) ==
+    IF \E i \in 1..Len(s): Test(s[i])
+    THEN RemoveAt(s, SelectInSeqPure(s, Test))
+    ELSE s
+
+ASSUME \A s \in BoundedSeq(1..3, 4), e \in 0..3 :
+    /\ AssertEq(RemoveFirst(s, e), RemoveFirstPure(s, e))
+    /\ AssertEq(RemoveFirstMatch(s, LAMBDA v : v = e), RemoveFirstMatchPure(s, LAMBDA v : v = e))
+    /\ AssertEq(RemoveFirstMatch(s, LAMBDA v : v >= e), RemoveFirstMatchPure(s, LAMBDA v : v >= e))
+
 -----------------------------------------------------------------------------
 
 ASSUME LET seq == <<"a","b","c","d","e">> IN AssertEq(FoldLeftDomain (LAMBDA acc, idx : acc \o seq[idx], "", seq), "abcde")
 ASSUME LET seq == <<"a","b","c","d","e">> IN AssertEq(FoldRightDomain(LAMBDA idx, acc : acc \o seq[idx], seq, ""), "edcba")
+
+FoldLeftDomainPure(op(_, _), base, seq) ==
+  FoldLeftPure(op, base, [i \in DOMAIN seq |-> i])
+
+FoldRightDomainPure(op(_, _), seq, base) ==
+  FoldRightPure(op, [i \in DOMAIN seq |-> i], base)
+
+ASSUME LET cons(x,y) == <<x, y>>
+       IN \A seq \in BoundedSeq(1..3, 4):
+            /\ AssertEq(FoldLeftDomain(cons, 0, seq), FoldLeftDomainPure(cons, 0, seq))
+            /\ AssertEq(FoldRightDomain(cons, seq, 0), FoldRightDomainPure(cons, seq, 0))
 =============================================================================

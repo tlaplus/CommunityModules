@@ -165,4 +165,16 @@ ASSUME \A n \in 0..64 : AssertEq(Not(n), NotPure(n))
 
 ASSUME(\A n \in ZeroToM : AssertEq(shiftR(n, 1), (n \div 2)))
 
+shiftRPure(n, pos) ==
+    LET RECURSIVE shiftRPureR(_,_)
+        shiftRPureR(x, p) ==
+            IF p = 0
+            THEN x
+            ELSE LET odd(z) == z % 2 = 1
+                     m == IF odd(x) THEN (x-1) \div 2 ELSE x \div 2
+                 IN shiftRPureR(m, p - 1)
+    IN shiftRPureR(n, pos)
+
+ASSUME \A n \in 0..64, pos \in 0..8 : AssertEq(shiftR(n, pos), shiftRPure(n, pos))
+
 =============================================================================

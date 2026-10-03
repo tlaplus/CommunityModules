@@ -37,4 +37,23 @@ ASSUME IsCausalOrder(
 						 LAMBDA vc: DOMAIN vc), 
 			VectorClock)
 
+\* CausalOrder is defined via CHOOSE, so its pure counterpart is the set of all
+\* logs that it may choose from.
+CausalOrderPure(log, clock(_)) ==
+    { f \in [ 1..Len(log) -> Range(log)] : 
+        Range(f) = Range(log) /\ IsCausalOrder(f, clock) }
+
+\* Node 1 sends a message to node 2 after its first event, and both nodes
+\* have one more event that is concurrent with the other node's events.
+SmallLog ==
+    << [node |-> 1, vc |-> <<1, 0>>],
+       [node |-> 2, vc |-> <<0, 1>>],
+       [node |-> 2, vc |-> <<1, 2>>],
+       [node |-> 1, vc |-> <<2, 0>>] >>
+
+ASSUME \A p \in Permutations(DOMAIN SmallLog) :
+    LET log == << SmallLog[p[1]], SmallLog[p[2]], SmallLog[p[3]], SmallLog[p[4]] >>
+    IN CausalOrder(log, LAMBDA l: l.vc, LAMBDA l: l.node, LAMBDA vc: DOMAIN vc)
+         \in CausalOrderPure(log, LAMBDA l: l.vc)
+
 =============================================================================
