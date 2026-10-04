@@ -105,20 +105,58 @@ public final class Functions {
 	@TLAPlusOperator(identifier = "AntiFunction", module = "Functions", warn = false)
 	public static Value antiFunction(final Value f) {
 		// AntiFunction(f) == [t \in Range(f) |-> CHOOSE s \in DOMAIN f : t \in Range(f) => f[s] = t]
+		//
+		// Running example (non-injective, since "a" and "c" both map to 1):
+		//   f == [a |-> 1, b |-> 0, c |-> 1]
+		//   AntiFunction(f) = (0 :> "b" @@ 1 :> "a")
+
+		// Turn any function value (tuple <<...>>, record [a |-> ...], lambda
+		// [x \in S |-> ...], ...) into an explicit table of DOMAIN f and f[x]. The
+		// second normalize is needed because toFcnRcd may build a new,
+		// unnormalized FcnRcdValue. Once normalized, fdomain lists DOMAIN f in
+		// TLC's canonical order, the order in which CHOOSE s \in DOMAIN f tries
+		// candidates s.
+		//   fdomain = << "a", "b", "c" >>
+		//   fvalues = <<  1 ,  0 ,  1  >>    i.e. fvalues[i] = f[fdomain[i]]
 		final FcnRcdValue frc = (FcnRcdValue) f.normalize().toFcnRcd();
 		if (frc == null) {
 			throw new EvalException(EC.TLC_MODULE_ONE_ARGUMENT_ERROR,
 					new String[] { "AntiFunction", "functions", Values.ppr(f.toString()) });
 		}
-		final Value[] range;
-		if (frc.intv != null) {
-			range = frc.getDomainAsValues();
-		} else {
-			final Value[] values = frc.getDomainAsValues();
-			range = Arrays.copyOf(values, values.length);
+		frc.normalize();
+		final Value[] fdomain = frc.getDomainAsValues();
+		final Value[] fvalues = frc.values;
+
+		// Sort the positions of DOMAIN f by f[s], so that all s with the same
+		// f[s] = t end up next to each other. For a non-injective f, TLC's CHOOSE
+		// picks the first s in DOMAIN f with f[s] = t. Arrays.sort on objects is
+		// stable, so that s stays first within its group.
+		//   order = << 1 (f["b"] = 0), 0 (f["a"] = 1), 2 (f["c"] = 1) >>
+		// This costs O(n log n). Evaluating the TLA+ definition directly costs up
+		// to O(n^3 log n), because TLC rebuilds Range(f) for every CHOOSE candidate.
+		final Integer[] order = new Integer[fvalues.length];
+		Arrays.setAll(order, i -> i);
+		Arrays.sort(order, (a, b) -> fvalues[a].compareTo(fvalues[b]));
+
+		// Build the inverse in a single pass over the groups. Here, domain holds
+		// the inverse's domain (Range(f)), and range holds the inverse's values
+		// (the chosen elements of DOMAIN f). Keep only the first s of each group
+		// and skip the rest, e.g., "c", whose f["c"] = 1 already maps to "a".
+		//   domain = << 0  , 1   >>    (Range(f) without duplicates)
+		//   range  = << "b", "a" >>    (CHOOSE s \in DOMAIN f : f[s] = t)
+		final Value[] domain = new Value[order.length];
+		final Value[] range = new Value[order.length];
+		int n = 0;
+		for (final int i : order) {
+			if (n == 0 || !fvalues[i].equals(domain[n - 1])) {
+				domain[n] = fvalues[i];
+				range[n] = fdomain[i];
+				n++;
+			}
 		}
-		final Value[] domain = Arrays.copyOf(frc.values, frc.values.length);
-		return new FcnRcdValue(domain, range, false).normalize();
+		// Trim to the |Range(f)| entries actually filled, here 2 of 3:
+		//   [t \in {0, 1} |-> ...] = (0 :> "b" @@ 1 :> "a")
+		return new FcnRcdValue(Arrays.copyOf(domain, n), Arrays.copyOf(range, n), false).normalize();
 	}
 
 	@TLAPlusOperator(identifier = "FoldFunction", module = "Functions", warn = false)
