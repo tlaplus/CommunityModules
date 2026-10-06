@@ -32,6 +32,9 @@ LOCAL INSTANCE Json
 \* constant that JsonTests declares.
 LOCAL MV == TLCModelValue("ModelValue")
 
+\* U+00E9, which enters as bytes so that this file stays ASCII.
+LOCAL EAcute == FromCBOR(<<\h62, \hc3, \ha9>>)
+
 LOCAL Golden(name, value, bytes) ==
     /\ AssertEq(ToCBOR(value), bytes)
     /\ AssertEq(FromCBOR(bytes), value)
@@ -61,6 +64,14 @@ ASSUME Golden("set-strings", {"cbor-zz", "cbor-a", "cbor-aa"},
 ASSUME Golden("set-nested", {{}, {1}, {1, 2}, {2}},
               <<\hd9, \h01, \h02, \h84, \hd9, \h01, \h02, \h80, \hd9, \h01, \h02, \h81, \h01, \hd9, \h01, \h02,
                 \h81, \h02, \hd9, \h01, \h02, \h82, \h01, \h02>>)
+\* In the next three sets, and in "fcn-mixed", the encodings first differ at a byte that is 0x80
+\* or more, which a comparison of signed bytes would order the other way.
+ASSUME Golden("set-wide", {200, 24}, <<\hd9, \h01, \h02, \h82, \h18, \h18, \h18, \hc8>>)
+ASSUME Golden("set-modelvalue", {MV, 1},
+              <<\hd9, \h01, \h02, \h82, \h01, \hd8, \h27, \h6a, \h4d, \h6f, \h64, \h65, \h6c, \h56, \h61, \h6c,
+                \h75, \h65>>)
+ASSUME Golden("set-utf8", {EAcute, "zz"},
+              <<\hd9, \h01, \h02, \h82, \h62, \h7a, \h7a, \h62, \hc3, \ha9>>)
 ASSUME Golden("emptyset", {}, <<\hd9, \h01, \h02, \h80>>)
 ASSUME Golden("interval", {1, 2, 3}, <<\hd9, \h01, \h02, \h83, \h01, \h02, \h03>>)
 ASSUME Golden("seq", <<"a", "b">>, <<\h82, \h61, \h61, \h61, \h62>>)
@@ -80,6 +91,9 @@ ASSUME Golden("fcn-record", [r \in [a : {1, 2}] |-> r.a],
 ASSUME Golden("fcn-modelvalue", [m \in {MV} |-> 0],
               <<\hd9, \h80, \he8, \h81, \h82, \hd8, \h27, \h6a, \h4d, \h6f, \h64, \h65, \h6c, \h56, \h61, \h6c,
                 \h75, \h65, \h00>>)
+ASSUME Golden("fcn-mixed", [x \in {MV, 1} |-> 0],
+              <<\hd9, \h80, \he8, \h82, \h82, \h01, \h00, \h82, \hd8, \h27, \h6a, \h4d, \h6f, \h64, \h65, \h6c,
+                \h56, \h61, \h6c, \h75, \h65, \h00>>)
 
 LOCAL DumpedTrace ==
     LET s1 == [x |-> 0, y |-> {}]
@@ -116,6 +130,20 @@ ASSUME LET bytes == <<\h85, \h60, \h61, \h61, \h62, \hc3, \hbc, \h66, \he6, \h97
 \* The deepest nesting FromCBOR reads: 512 sequences, one inside the other.
 ASSUME LET bytes == [i \in 1..512 |-> IF i < 512 THEN \h81 ELSE \h80]
        IN AssertEq(ToCBOR(FromCBOR(bytes)), bytes)
+
+\* The bytes of the integer 0 inside n values, one inside the other, that each start with wrap.
+\* A recursive operator cannot build values this deep: TLC's own evaluation overflows the stack.
+LOCAL CBORNested(wrap, n) ==
+    [i \in 1..(n * Len(wrap) + 1) |-> IF i > n * Len(wrap) THEN 0 ELSE wrap[((i - 1) % Len(wrap)) + 1]]
+LOCAL CBORInSeq == <<\h81>>
+LOCAL CBORInRecord == <<\ha1, \h61, \h61>>
+LOCAL CBORInSet == <<\hd9, \h01, \h02, \h81>>
+LOCAL CBORInFcn == <<\hd9, \h80, \he8, \h81, \h82, \h00>>
+
+\* The deepest values ToCBOR writes. A tag is a data item, so a set takes two of the 512 levels
+\* and a function that uses tag 33000 three.
+ASSUME \A d \in {<<CBORInSeq, 511>>, <<CBORInRecord, 511>>, <<CBORInSet, 255>>, <<CBORInFcn, 170>>} :
+          LET bytes == CBORNested(d[1], d[2]) IN AssertEq(ToCBOR(FromCBOR(bytes)), bytes)
 
 -----------------------------------------------------------------------------
 
@@ -263,6 +291,9 @@ ASSUME AssertError("FromCBOR: the input ends inside a CBOR data item at byte 0."
                    FromCBOR(<<\h9a, \h7f, \hff, \hff, \hff>>))
 ASSUME AssertError("FromCBOR: there are bytes after the first CBOR data item at byte 1.",
                    FromCBOR(<<\h01, \h01>>))
+\* The inner array claims the three bytes that the outer array still needs for its other items.
+ASSUME AssertError("FromCBOR: the input ends inside a CBOR data item at byte 1.",
+                   FromCBOR(<<\h84, \h83, \h00, \h00, \h00>>))
 \* The offset names the innermost offending item.
 ASSUME AssertError("FromCBOR: null has no TLA+ counterpart at byte 2.",
                    FromCBOR(<<\h82, \h01, \hf6>>))
@@ -345,6 +376,19 @@ ASSUME AssertError("ToCBOR cannot encode an infinite set:\nSUBSET Nat",
                    ToCBOR(SUBSET Nat))
 ASSUME AssertError("ToCBOR cannot encode a function with the infinite domain:\nNat",
                    ToCBOR([x \in Nat |-> x]))
+\* One level more than the deepest values: ToCBOR refuses what FromCBOR could not read back.
+ASSUME AssertError("ToCBOR cannot encode a value nested more than 512 CBOR data items deep.",
+                   ToCBOR(<<FromCBOR(CBORNested(CBORInSeq, 511))>>))
+ASSUME AssertError("ToCBOR cannot encode a value nested more than 512 CBOR data items deep.",
+                   ToCBOR([a |-> FromCBOR(CBORNested(CBORInRecord, 511))]))
+ASSUME AssertError("ToCBOR cannot encode a value nested more than 512 CBOR data items deep.",
+                   ToCBOR({FromCBOR(CBORNested(CBORInSet, 255))}))
+ASSUME AssertError("ToCBOR cannot encode a value nested more than 512 CBOR data items deep.",
+                   ToCBOR(0 :> FromCBOR(CBORNested(CBORInFcn, 170))))
+ASSUME AssertError("FromCBOR: data items are nested more than 512 deep at byte 1024.",
+                   FromCBOR(CBORNested(CBORInSet, 256)))
+ASSUME AssertError("FromCBOR: data items are nested more than 512 deep at byte 1024.",
+                   FromCBOR(CBORNested(CBORInFcn, 171)))
 \* SubSeq cuts U+1F600 in half, leaving an unpaired surrogate that UTF-8 cannot carry.
 ASSUME AssertError("ToCBOR cannot encode a string that contains an unpaired UTF-16 surrogate.",
                    ToCBOR(SubSeq(FromCBOR(<<\h64, \hf0, \h9f, \h98, \h80>>), 1, 1)))

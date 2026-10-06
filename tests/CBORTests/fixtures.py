@@ -2,8 +2,7 @@
 
     python3 tests/CBORTests/fixtures.py
 
-Run it by hand after changing the encoding or a golden row; CI does not run it. It needs only the
-standard library. If the third-party decoder cbor2 (pip install cbor2) is importable, it also prints
+CI runs it after the build, and it needs only the standard library. If the third-party decoder cbor2 (pip install cbor2) is importable, it also prints
 how cbor2 reads every golden, so a reviewer can check their meaning independently of TLC.
 
 The encoder below is a second implementation of the encoding table in modules/CBOR.tla that shares
@@ -99,6 +98,9 @@ GOLDEN = {
     "set": Set(100, -1, 10),
     "set-strings": Set("cbor-zz", "cbor-a", "cbor-aa"),
     "set-nested": Set(Set(), Set(1), Set(1, 2), Set(2)),
+    "set-wide": Set(200, 24),
+    "set-modelvalue": Set(MODEL_VALUE, 1),
+    "set-utf8": Set("\u00e9", "zz"),
     "emptyset": Set(),
     "interval": Set(1, 2, 3),
     "seq": ("a", "b"),
@@ -109,6 +111,7 @@ GOLDEN = {
     "fcn-set": Fn((Set(), 0), (Set(1), 1)),
     "fcn-record": Fn(({"a": 1}, 1), ({"a": 2}, 2)),
     "fcn-modelvalue": Fn((MODEL_VALUE, 0)),
+    "fcn-mixed": Fn((MODEL_VALUE, 0), (1, 0)),
     "trace": {"counterexample": {"state": Set((1, S1), (2, S2)),
                                  "action": Set(((1, S1), {"name": "Next", "location": LOCATION}, (2, S2)))},
               "vars": Set("x", "y")},
