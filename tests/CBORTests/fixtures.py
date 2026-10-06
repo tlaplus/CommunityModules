@@ -94,6 +94,7 @@ LOCATION = {"beginLine": 5, "beginColumn": 9, "endLine": 5, "endColumn": 33, "mo
 GOLDEN = {
     "int": (0, 23, 24, 255, 256, 65535, 65536, 2147483647, -1, -24, -25, -256, -257, -2147483648),
     "bool": (True, False),
+    "string": ("", "a", "\u00fc", "\u65e5\u672c", "\U0001F600"),
     "modelvalue": MODEL_VALUE,
     "set": Set(100, -1, 10),
     "set-strings": Set("cbor-zz", "cbor-a", "cbor-aa"),
