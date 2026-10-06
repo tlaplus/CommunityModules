@@ -247,4 +247,123 @@ ASSUME /\ CBORSerialize("build/cbor/overwrite.cbor", 1..100)
        /\ CBORSerialize("build/cbor/overwrite.cbor", 0)
        /\ AssertEq(CBORDeserialize("build/cbor/overwrite.cbor"), 0)
 
+-----------------------------------------------------------------------------
+
+\* AssertError needs its message as a literal.
+
+ASSUME AssertError("FromCBOR: the input ends inside a CBOR data item at byte 0.",
+                   FromCBOR(<<>>))
+\* An array of two items that holds one.
+ASSUME AssertError("FromCBOR: the input ends inside a CBOR data item at byte 0.",
+                   FromCBOR(<<\h82, \h01>>))
+ASSUME AssertError("FromCBOR: the input ends inside a CBOR data item at byte 0.",
+                   FromCBOR(<<\h1a, \h00, \h00>>))
+\* An array that claims 2^31 - 1 items is refused before anything is allocated.
+ASSUME AssertError("FromCBOR: the input ends inside a CBOR data item at byte 0.",
+                   FromCBOR(<<\h9a, \h7f, \hff, \hff, \hff>>))
+ASSUME AssertError("FromCBOR: there are bytes after the first CBOR data item at byte 1.",
+                   FromCBOR(<<\h01, \h01>>))
+\* The offset names the innermost offending item.
+ASSUME AssertError("FromCBOR: null has no TLA+ counterpart at byte 2.",
+                   FromCBOR(<<\h82, \h01, \hf6>>))
+ASSUME AssertError("FromCBOR: a floating-point number has no TLA+ counterpart at byte 0.",
+                   FromCBOR(<<\hf9, \h3c, \h00>>))
+ASSUME AssertError("FromCBOR: null has no TLA+ counterpart at byte 0.",
+                   FromCBOR(<<\hf6>>))
+ASSUME AssertError("FromCBOR: undefined has no TLA+ counterpart at byte 0.",
+                   FromCBOR(<<\hf7>>))
+ASSUME AssertError("FromCBOR: a simple value has no TLA+ counterpart at byte 0.",
+                   FromCBOR(<<\hf0>>))
+ASSUME AssertError("FromCBOR: a byte string has no TLA+ counterpart at byte 0.",
+                   FromCBOR(<<\h41, \h00>>))
+ASSUME AssertError("FromCBOR: indefinite-length items are not supported at byte 0.",
+                   FromCBOR(<<\h9f, \h01, \hff>>))
+ASSUME AssertError("FromCBOR: indefinite-length items are not supported at byte 0.",
+                   FromCBOR(<<\h7f, \h61, \h61, \hff>>))
+ASSUME AssertError("FromCBOR: the initial byte 0x1c is not well-formed at byte 0.",
+                   FromCBOR(<<\h1c>>))
+ASSUME AssertError("FromCBOR: the initial byte 0xff is not well-formed at byte 0.",
+                   FromCBOR(<<\hff>>))
+ASSUME AssertError("FromCBOR: tag 1 has no TLA+ counterpart at byte 0.",
+                   FromCBOR(<<\hc1, \h00>>))
+\* A bignum.
+ASSUME AssertError("FromCBOR: tag 2 has no TLA+ counterpart at byte 0.",
+                   FromCBOR(<<\hc2, \h41, \h01>>))
+ASSUME AssertError("FromCBOR: tag 39 must enclose a text string at byte 0.",
+                   FromCBOR(<<\hd8, \h27, \h01>>))
+ASSUME AssertError("FromCBOR: tag 258 must enclose an array at byte 0.",
+                   FromCBOR(<<\hd9, \h01, \h02, \ha0>>))
+ASSUME AssertError("FromCBOR: tag 33000 must enclose an array of [key, value] arrays at byte 0.",
+                   FromCBOR(<<\hd9, \h80, \he8, \ha0>>))
+ASSUME AssertError("FromCBOR: tag 33000 must enclose an array of [key, value] arrays at byte 0.",
+                   FromCBOR(<<\hd9, \h80, \he8, \h81, \h01>>))
+ASSUME AssertError("FromCBOR: the integer 2147483648 is outside TLC's range -2147483648..2147483647 at byte 0.",
+                   FromCBOR(<<\h1a, \h80, \h00, \h00, \h00>>))
+ASSUME AssertError("FromCBOR: the integer -2147483649 is outside TLC's range -2147483648..2147483647 at byte 0.",
+                   FromCBOR(<<\h3a, \h80, \h00, \h00, \h00>>))
+ASSUME AssertError("FromCBOR: the integer 18446744073709551615 is outside TLC's range -2147483648..2147483647 at byte 0.",
+                   FromCBOR(<<\h1b, \hff, \hff, \hff, \hff, \hff, \hff, \hff, \hff>>))
+ASSUME AssertError("FromCBOR: the integer -18446744073709551616 is outside TLC's range -2147483648..2147483647 at byte 0.",
+                   FromCBOR(<<\h3b, \hff, \hff, \hff, \hff, \hff, \hff, \hff, \hff>>))
+ASSUME AssertError("FromCBOR: a text string is not valid UTF-8 at byte 0.",
+                   FromCBOR(<<\h61, \hff>>))
+\* U+D800 encoded as if it were a character.
+ASSUME AssertError("FromCBOR: a text string is not valid UTF-8 at byte 0.",
+                   FromCBOR(<<\h63, \hed, \ha0, \h80>>))
+ASSUME AssertError("FromCBOR: the key \"a\" occurs twice at byte 0.",
+                   FromCBOR(<<\ha2, \h61, \h61, \h01, \h61, \h61, \h02>>))
+\* The second 1 is not in shortest form: duplicates are found by TLC equality, not by bytes.
+ASSUME AssertError("FromCBOR: the element 1 occurs twice at byte 0.",
+                   FromCBOR(<<\hd9, \h01, \h02, \h82, \h01, \h18, \h01>>))
+\* An empty array and an empty map both denote the empty function.
+ASSUME AssertError("FromCBOR: the element <<>> occurs twice at byte 0.",
+                   FromCBOR(<<\hd9, \h01, \h02, \h82, \h80, \ha0>>))
+ASSUME AssertError("FromCBOR: the key 0 occurs twice at byte 0.",
+                   FromCBOR(<<\hd9, \h80, \he8, \h82, \h82, \h00, \h01, \h82, \h00, \h02>>))
+ASSUME AssertError("FromCBOR: TLC cannot compare the elements 1 and \"a\" at byte 0.",
+                   FromCBOR(<<\hd9, \h01, \h02, \h82, \h01, \h61, \h61>>))
+ASSUME AssertError("FromCBOR: TLC cannot compare the keys 1 and \"a\" at byte 0.",
+                   FromCBOR(<<\ha2, \h01, \h00, \h61, \h61, \h00>>))
+ASSUME AssertError("FromCBOR: the model value p99 is not defined in the model at byte 0. Declare it in the .cfg or create it with TLCExt!TLCModelValue(\"p99\").",
+                   FromCBOR(<<\hd8, \h27, \h63, \h70, \h39, \h39>>))
+ASSUME AssertError("FromCBOR: data items are nested more than 512 deep at byte 512.",
+                   FromCBOR([i \in 1..513 |-> IF i < 513 THEN \h81 ELSE \h80]))
+
+ASSUME AssertError("The argument of FromCBOR should be a sequence of integers in 0..255, but instead it is:\n42",
+                   FromCBOR(42))
+ASSUME AssertError("The argument of FromCBOR should be a sequence of integers in 0..255, but instead it is:\n<<1, 256>>",
+                   FromCBOR(<<1, 256>>))
+ASSUME AssertError("The argument of FromCBOR should be a sequence of integers in 0..255, but instead it is:\n<<-1>>",
+                   FromCBOR(<<-1>>))
+ASSUME AssertError("The argument of FromCBOR should be a sequence of integers in 0..255, but instead it is:\n<<\"a\">>",
+                   FromCBOR(<<"a">>))
+
+\* The offending value is named even when it is nested.
+ASSUME AssertError("ToCBOR cannot encode a special set constant:\nNat",
+                   ToCBOR([a |-> {Nat}]))
+ASSUME AssertError("ToCBOR cannot encode an infinite set:\nSUBSET Nat",
+                   ToCBOR(SUBSET Nat))
+ASSUME AssertError("ToCBOR cannot encode a function with the infinite domain:\nNat",
+                   ToCBOR([x \in Nat |-> x]))
+\* SubSeq cuts U+1F600 in half, leaving an unpaired surrogate that UTF-8 cannot carry.
+ASSUME AssertError("ToCBOR cannot encode a string that contains an unpaired UTF-16 surrogate.",
+                   ToCBOR(SubSeq(FromCBOR(<<\h64, \hf0, \h9f, \h98, \h80>>), 1, 1)))
+
+ASSUME AssertError("CBORDeserialize could not read tests/CBORTests/missing.cbor: the file does not exist.",
+                   CBORDeserialize("tests/CBORTests/missing.cbor"))
+\* A decoding error names the file. The JSON text {} starts with 0x7b, the head of a text string
+\* whose length takes the next eight bytes.
+ASSUME AssertError("CBORDeserialize could not read tests/CBORTests/empty-object.json: the input ends inside a CBOR data item at byte 0.",
+                   CBORDeserialize("tests/CBORTests/empty-object.json"))
+ASSUME AssertError("The first argument of CBORSerialize should be a string, but instead it is:\n42",
+                   CBORSerialize(42, 1))
+ASSUME AssertError("The argument of CBORDeserialize should be a string, but instead it is:\n42",
+                   CBORDeserialize(42))
+
+\* A refused value leaves the existing file as it was.
+ASSUME /\ CBORSerialize("build/cbor/refused.cbor", "CBOR")
+       /\ AssertError("CBORSerialize cannot encode a special set constant:\nNat",
+                      CBORSerialize("build/cbor/refused.cbor", <<"a", Nat>>))
+       /\ AssertEq(FileText("build/cbor/refused.cbor"), "dCBOR")
+
 =============================================================================
