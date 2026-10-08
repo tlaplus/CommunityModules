@@ -18,9 +18,10 @@ ASSUME AssertEq(ToString(DOMAIN [cbora |-> 0, cborzz |-> 0]), "{\"cborzz\", \"cb
 
 (***************************************************************************)
 (* A golden test is an ASSUME that calls Golden or SameBytes with a name   *)
-(* and the bytes that ToCBOR must return.  tests/CBORTests/fixtures.py, an *)
-(* encoder that shares no code with CBOR.java, checks those bytes against  *)
-(* its own encoding of the value it has under that name.                   *)
+(* and the bytes that ToCBOR must return.  The JUnit test                  *)
+(* tests/java/tlc2/overrides/CBORGoldenTest.java, an encoder that shares   *)
+(* no code with CBOR.java, checks those bytes against its own encoding of  *)
+(* the value it has under that name.                                       *)
 (*                                                                         *)
 (* All definitions are LOCAL because AllTests extends every test module.   *)
 (***************************************************************************)
