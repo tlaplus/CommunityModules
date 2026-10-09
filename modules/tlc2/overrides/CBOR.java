@@ -85,9 +85,9 @@ public final class CBOR {
 	/** IANA tag 258, "Mathematical finite set", around the array of a set's elements. */
 	private static final int TAG_SET = 258;
 	/**
-	 * Around the [x, f[x]] pairs of a function that is neither a sequence nor a record. Not yet registered
-	 * with IANA; 33000 lies in the First Come First Served range. CBOR.tla is the only other place that
-	 * names it.
+	 * IANA tag 33000, "TLA+ function as an array of [argument, value] pairs", registered for this module on
+	 * 2026-10-08, around the [x, f[x]] pairs of a function that is neither a sequence nor a record. CBOR.tla
+	 * is the only other place that names it.
 	 */
 	private static final int TAG_FUNCTION = 33000;
 
