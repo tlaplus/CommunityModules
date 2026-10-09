@@ -56,20 +56,21 @@ import tlc2.value.impl.StringValue;
 import tlc2.value.impl.TupleValue;
 import tlc2.value.impl.Value;
 import util.Assert.TLCRuntimeException;
-import util.UniqueString;
 
 /**
  * Module overrides for CBOR.tla: encode a finite TLA+ value as CBOR (RFC 8949), as a sequence of bytes or
- * in a file, and decode it back. CBOR.tla documents the encoding; this class is its only implementation.
+ * in a file, and decode it back. CBOR.tla describes the operators. docs/CBOR.md specifies the encoding.
  *
  * <p>There is no intermediate data model. {@link Encoder} walks TLC values and writes bytes, and
- * {@link Decoder} reads bytes and builds TLC values. The four operators are thin shells around them. Both
- * decide how a function is written by one rule, {@link #shape(Value[])}, so the form the encoder writes and
- * the class the decoder builds cannot drift apart. The class depends only on TLC and the JDK.
+ * {@link Decoder} reads bytes and builds TLC values. The encoder and the decoder's map and tagged-function
+ * paths use {@link #functionValue(FcnRcdValue)} to select a TLC representation. The class depends only on
+ * TLC and the JDK.
  *
- * <p>Every error this class raises is an {@link EvalException}, never a Java exception that TLC would wrap
- * as error 2154. A wrong argument type uses the CommunityModules argument codes; errors about a value or a
- * file use {@link EC#GENERAL}, whose message TLC prints verbatim. An error that TLC raises itself while the
+ * <p>There is no fixed nesting limit. Deep values may cause a {@link StackOverflowError}.
+ * Increasing -Xss can allow deeper values. The module reports validation and file failures with
+ * {@link EvalException}, rather than Java exceptions that TLC would wrap as error 2154.
+ * A wrong argument type uses the CommunityModules argument codes. Errors about a value or a file use
+ * {@link EC#GENERAL}, whose message TLC prints verbatim. An error that TLC raises itself while the
  * encoder enumerates a value, such as {x \in Nat : x < 3}, still arrives wrapped.
  */
 public final class CBOR {
@@ -86,18 +87,10 @@ public final class CBOR {
 	private static final int TAG_SET = 258;
 	/**
 	 * IANA tag 33000, "TLA+ function as an array of [argument, value] pairs", registered for this module on
-	 * 2026-10-08, around the [x, f[x]] pairs of a function that is neither a sequence nor a record. CBOR.tla
-	 * is the only other place that names it.
+	 * 2026-10-08, around the [x, f[x]] pairs of a function that is neither a sequence nor a record.
+	 * See docs/CBOR.md for the encoding.
 	 */
 	private static final int TAG_FUNCTION = 33000;
-
-	/**
-	 * The deepest nesting of data items that the decoder reads, which bounds its recursion, so hostile input
-	 * is an error instead of a stack overflow. The encoder refuses to write deeper, so it writes nothing the
-	 * decoder rejects for its depth. A tag is a data item: a set takes two levels and the pairs of tag 33000
-	 * three.
-	 */
-	private static final int MAX_DEPTH = 512;
 
 	/**
 	 * Guards file reads and writes, not encoding, so that a read in one worker never sees half of
@@ -105,36 +98,24 @@ public final class CBOR {
 	 */
 	private static final Object FILES = new Object();
 
-	/** How a function is written. TLC equates functions across Java classes, so only the domain decides. */
-	private enum Shape {
-		/** DOMAIN f = 1..n for some n >= 0: an array. Includes the empty function and the empty record. */
-		SEQUENCE,
-		/** A non-empty set of strings: a map keyed by text. */
-		RECORD,
-		/** Anything else: tag 33000 around [x, f[x]] pairs. */
-		PAIRS
-	}
-
-	private static Shape shape(final Value[] domain) {
-		final boolean[] seen = new boolean[domain.length + 1];
-		int indices = 0;
-		boolean strings = domain.length > 0;
-		for (final Value d : domain) {
-			strings &= d instanceof StringValue;
-			if (d instanceof IntValue) {
-				final int i = ((IntValue) d).val;
-				if (1 <= i && i <= domain.length && !seen[i]) {
-					seen[i] = true;
-					indices++;
-				}
+	/** Tuple conversion must precede record conversion, including for empty functions. */
+	private static Value functionValue(final FcnRcdValue f) {
+		final Value tuple = f.toTuple();
+		if (tuple != null) {
+			return tuple;
+		}
+		// toRcd normalizes before checking types, which rejects incomparable domains.
+		for (final Value key : f.getDomainAsValues()) {
+			if (!(key instanceof StringValue)) {
+				return f;
 			}
 		}
-		return indices == domain.length ? Shape.SEQUENCE : strings ? Shape.RECORD : Shape.PAIRS;
+		return f.toRcd();
 	}
 
 	@TLAPlusOperator(identifier = "ToCBOR", module = "CBOR", warn = false)
 	public static TupleValue toCBOR(final Value value) {
-		final byte[] bytes = Encoder.encode(value, "ToCBOR", 1);
+		final byte[] bytes = Encoder.encode(value, "ToCBOR");
 		final Value[] elems = new Value[bytes.length];
 		for (int i = 0; i < elems.length; i++) {
 			elems[i] = IntValue.gen(bytes[i] & 0xff);
@@ -177,7 +158,7 @@ public final class CBOR {
 					new String[] { "first", "CBORSerialize", "string", Values.ppr(absoluteFilename.toString()) });
 		}
 		final String file = ((StringValue) absoluteFilename).val.toString();
-		final byte[] bytes = Encoder.encode(value, "CBORSerialize", 1);
+		final byte[] bytes = Encoder.encode(value, "CBORSerialize");
 		synchronized (FILES) {
 			try {
 				final Path path = Paths.get(file);
@@ -221,8 +202,8 @@ public final class CBOR {
 	/**
 	 * Writes the one encoding of a TLC value. Values that TLC considers equal produce identical bytes,
 	 * whatever their Java class and whatever order TLC interned their strings in, so the encoder sorts by
-	 * encoded bytes and never consults TLC's normalized order. It never calls normalize() either, so it
-	 * mutates nothing that other workers read.
+	 * encoded bytes rather than relying on TLC's normalized order. TLC's record and lambda conversions
+	 * may normalize their inputs in place.
 	 *
 	 * <p>Set elements and the keys of maps and pairs are the sort keys. Each is encoded once into its own
 	 * array, sorted, and copied into the parent. Map and pair values stream straight into the output.
@@ -236,15 +217,13 @@ public final class CBOR {
 			this.operator = operator;
 		}
 
-		static byte[] encode(final Value v, final String operator, final int depth) {
+		static byte[] encode(final Value v, final String operator) {
 			final Encoder e = new Encoder(operator);
-			e.value(v, depth);
+			e.value(v);
 			return e.out.toByteArray();
 		}
 
-		/** depth is the level of the data item that v becomes, counted as the decoder counts it. */
-		private void value(final Value v, final int depth) {
-			level(depth);
+		private void value(final Value v) {
 			if (v instanceof IntValue) {
 				integer(((IntValue) v).val);
 			} else if (v instanceof BoolValue) {
@@ -253,82 +232,72 @@ public final class CBOR {
 				text(((StringValue) v).val.toString());
 			} else if (v instanceof ModelValue) {
 				head(TAG, TAG_MODEL_VALUE);
-				level(depth + 1);
 				text(((ModelValue) v).val.toString());
 			} else if (v instanceof TupleValue) {
-				array(((TupleValue) v).elems, depth);
-			} else if (v instanceof RecordValue) {
-				// Not toFcnRcd(), which normalizes the record in place.
-				final RecordValue r = (RecordValue) v;
-				final Value[] names = new Value[r.names.length];
-				for (int i = 0; i < names.length; i++) {
-					names[i] = new StringValue(r.names[i]);
-				}
-				function(names, r.values, depth);
-			} else if (v instanceof FcnRcdValue) {
-				final FcnRcdValue f = (FcnRcdValue) v;
-				function(f.getDomainAsValues(), f.values, depth);
+				array(((TupleValue) v).elems);
+			} else if (v instanceof RecordValue || v instanceof FcnRcdValue) {
+				function((FcnRcdValue) v.toFcnRcd());
 			} else if (v instanceof FcnLambdaValue) {
 				// The domain, not the function: TLC prints a function's body as its source location.
 				final Value domain = ((FcnLambdaValue) v).getDomain();
 				if (!domain.isFinite()) {
 					throw cannotEncode("a function with the infinite domain", domain);
 				}
-				value(v.toFcnRcd(), depth);
+				function((FcnRcdValue) v.toFcnRcd());
 			} else if (v instanceof EnumerableValue) {
 				if (!v.isFinite()) {
 					throw cannotEncode("an infinite set", v);
 				}
-				set(((SetEnumValue) v.toSetEnum()).elems.toArray(), depth);
+				set(((SetEnumValue) v.toSetEnum()).elems.toArray());
 			} else {
 				throw cannotEncode(v.getKindString(), v);
 			}
 		}
 
-		private void level(final int depth) {
-			if (depth > MAX_DEPTH) {
-				throw new EvalException(EC.GENERAL,
-						operator + " cannot encode a value nested more than " + MAX_DEPTH + " CBOR data items deep.");
-			}
-		}
-
-		private void function(final Value[] domain, final Value[] values, final int depth) {
-			final Shape shape = shape(domain);
-			if (shape == Shape.SEQUENCE) {
-				final Value[] elems = new Value[domain.length];
-				for (int i = 0; i < domain.length; i++) {
-					elems[((IntValue) domain[i]).val - 1] = values[i];
-				}
-				array(elems, depth);
+		private void function(final FcnRcdValue f) {
+			final Value form = functionValue(f);
+			if (form instanceof TupleValue) {
+				array(((TupleValue) form).elems);
 				return;
 			}
-			// A pair is an array inside the array inside the tag.
-			final int entry = shape == Shape.RECORD ? depth + 1 : depth + 3;
-			final byte[][] keys = encodeEach(domain, entry);
+			final boolean record = form instanceof RecordValue;
+			final Value[] domain, values;
+			if (record) {
+				final RecordValue r = (RecordValue) form;
+				domain = new Value[r.names.length];
+				for (int i = 0; i < domain.length; i++) {
+					domain[i] = new StringValue(r.names[i]);
+				}
+				values = r.values;
+			} else {
+				domain = f.getDomainAsValues();
+				values = f.values;
+			}
+			final byte[][] keys = encodeEach(domain);
 			final Integer[] order = new Integer[keys.length];
 			for (int i = 0; i < order.length; i++) {
 				order[i] = i;
 			}
 			Arrays.sort(order, (i, j) -> Arrays.compareUnsigned(keys[i], keys[j]));
-			if (shape == Shape.RECORD) {
+			if (record) {
 				head(MAP, keys.length);
 			} else {
 				head(TAG, TAG_FUNCTION);
 				head(ARRAY, keys.length);
 			}
 			for (final int i : order) {
-				if (shape == Shape.PAIRS) {
+				if (!record) {
 					head(ARRAY, 2);
 				}
 				write(keys[i]);
-				value(values[i], entry);
+				value(values[i]);
 			}
 		}
 
-		private void array(final Value[] elems, final int depth) {
+		private void array(final Value[] elems) {
 			head(ARRAY, elems.length);
 			for (final Value e : elems) {
-				value(e, depth + 1);
+				value(e);
 			}
 		}
 
@@ -336,9 +305,8 @@ public final class CBOR {
 		 * An unnormalized set may hold an element twice, possibly in two Java classes. Equal elements have
 		 * equal encodings, so dropping equal neighbours after sorting removes exactly TLC's duplicates.
 		 */
-		private void set(final Value[] elems, final int depth) {
-			level(depth + 1);
-			final byte[][] items = encodeEach(elems, depth + 2);
+		private void set(final Value[] elems) {
+			final byte[][] items = encodeEach(elems);
 			Arrays.sort(items, Arrays::compareUnsigned);
 			int n = 0;
 			for (final byte[] item : items) {
@@ -353,10 +321,10 @@ public final class CBOR {
 			}
 		}
 
-		private byte[][] encodeEach(final Value[] values, final int depth) {
+		private byte[][] encodeEach(final Value[] values) {
 			final byte[][] encoded = new byte[values.length][];
 			for (int i = 0; i < values.length; i++) {
-				encoded[i] = encode(values[i], operator, depth);
+				encoded[i] = encode(values[i], operator);
 			}
 			return encoded;
 		}
@@ -420,14 +388,13 @@ public final class CBOR {
 	}
 
 	/**
-	 * Reads one CBOR data item into a TLC value. Liberal about form, strict about meaning: it accepts set
-	 * elements, map keys and pairs in any order, integers and lengths in any width, and maps with keys that
-	 * are not strings. Encoders in other languages differ on exactly these by default, and none of them
-	 * changes the TLA+ value. It rejects every item whose TLA+ meaning is missing, out of TLC's range, or
-	 * ambiguous, and names the source and the byte offset of the item.
+	 * Reads one CBOR data item into a TLC integer, boolean, string, sequence, set, record, function,
+	 * or existing model value. It accepts non-minimal integer and length encodings, set elements,
+	 * map keys, and tag 33000 function arguments in any order, and maps with non-string keys. It rejects duplicate
+	 * elements and keys, values TLC cannot represent, and unknown model values, naming the byte offset.
 	 *
-	 * <p>It never creates a model value. ModelValue.make at run time leaves ModelValue.mvs stale, and TLC
-	 * reads model values back from its disk queues by index into mvs.
+	 * <p>Known model values are reused, never created. ModelValue.make at run time leaves ModelValue.mvs
+	 * stale, and TLC reads model values back from its disk queues by index into mvs.
 	 */
 	private static final class Decoder {
 
@@ -444,16 +411,16 @@ public final class CBOR {
 		}
 
 		Value document() {
-			final Value v = item(1);
+			final Value v = item();
 			if (pos != in.length) {
 				throw error(pos, "there are bytes after the first CBOR data item");
 			}
 			return v;
 		}
 
-		private Value item(final int depth) {
+		private Value item() {
 			final int start = pos;
-			final int ib = initial(depth);
+			final int ib = initial();
 			final int major = ib >>> 5;
 			if (major == SIMPLE) {
 				return simple(start, ib & 0x1f);
@@ -468,18 +435,18 @@ public final class CBOR {
 			case TEXT:
 				return new StringValue(text(start, arg));
 			case ARRAY:
-				return new TupleValue(items(count(start, arg, 1), depth + 1));
+				return new TupleValue(items(count(start, arg, 1)));
 			case MAP:
 				final int n = count(start, arg, 2);
 				final Value[] keys = new Value[n], values = new Value[n];
 				owed += 2 * n;
 				for (int i = 0; i < n; i++) {
-					keys[i] = member(depth + 1);
-					values[i] = member(depth + 1);
+					keys[i] = member();
+					values[i] = member();
 				}
 				return function(start, keys, values);
 			default:
-				return tagged(start, arg, depth);
+				return tagged(start, arg);
 			}
 		}
 
@@ -496,42 +463,42 @@ public final class CBOR {
 			case 25:
 			case 26:
 			case 27:
-				throw error(start, "a floating-point number has no TLA+ counterpart");
+				throw error(start, "TLC cannot represent a floating-point number");
 			case 28:
 			case 29:
 			case 30:
 			case 31:
 				throw notWellFormed(start);
 			default:
-				throw error(start, "a simple value has no TLA+ counterpart");
+				throw error(start, "a CBOR simple value has no TLA+ counterpart");
 			}
 		}
 
-		private Value tagged(final int start, final long tag, final int depth) {
+		private Value tagged(final int start, final long tag) {
 			if (tag == TAG_MODEL_VALUE) {
 				final int at = pos;
-				final int ib = initial(depth + 1);
+				final int ib = initial();
 				if (ib >>> 5 != TEXT) {
 					throw error(start, "tag 39 must enclose a text string");
 				}
 				return modelValue(start, text(at, argument(at, TEXT, ib & 0x1f)));
 			}
 			if (tag == TAG_SET) {
-				return set(start, items(arrayHead(start, depth + 1, "tag 258 must enclose an array"), depth + 2));
+				return set(start, items(arrayHead(start, "tag 258 must enclose an array")));
 			}
 			if (tag == TAG_FUNCTION) {
 				final String complaint = "tag " + TAG_FUNCTION + " must enclose an array of [key, value] arrays";
-				final int n = arrayHead(start, depth + 1, complaint);
+				final int n = arrayHead(start, complaint);
 				final Value[] keys = new Value[n], values = new Value[n];
 				owed += n;
 				for (int i = 0; i < n; i++) {
 					owed--;
-					if (arrayHead(start, depth + 2, complaint) != 2) {
+					if (arrayHead(start, complaint) != 2) {
 						throw error(start, complaint);
 					}
 					owed += 2;
-					keys[i] = member(depth + 3);
-					values[i] = member(depth + 3);
+					keys[i] = member();
+					values[i] = member();
 				}
 				return function(start, keys, values);
 			}
@@ -539,9 +506,9 @@ public final class CBOR {
 		}
 
 		/** The length of the array that must follow the tag at start. */
-		private int arrayHead(final int start, final int depth, final String complaint) {
+		private int arrayHead(final int start, final String complaint) {
 			final int at = pos;
-			final int ib = initial(depth);
+			final int ib = initial();
 			if (ib >>> 5 != ARRAY) {
 				throw error(start, complaint);
 			}
@@ -550,30 +517,12 @@ public final class CBOR {
 
 		private Value function(final int start, final Value[] keys, final Value[] values) {
 			final Integer[] order = distinct(start, keys, "key");
-			final int n = keys.length;
-			switch (shape(keys)) {
-			case SEQUENCE:
-				final Value[] elems = new Value[n];
-				for (int i = 0; i < n; i++) {
-					elems[((IntValue) keys[i]).val - 1] = values[i];
-				}
-				return new TupleValue(elems);
-			case RECORD:
-				final UniqueString[] names = new UniqueString[n];
-				final Value[] fields = new Value[n];
-				for (int i = 0; i < n; i++) {
-					names[i] = ((StringValue) keys[order[i]]).val;
-					fields[i] = values[order[i]];
-				}
-				return new RecordValue(names, fields, true);
-			default:
-				final Value[] domain = new Value[n], range = new Value[n];
-				for (int i = 0; i < n; i++) {
-					domain[i] = keys[order[i]];
-					range[i] = values[order[i]];
-				}
-				return new FcnRcdValue(domain, range, true);
+			final Value[] domain = new Value[keys.length], range = new Value[keys.length];
+			for (int i = 0; i < domain.length; i++) {
+				domain[i] = keys[order[i]];
+				range[i] = values[order[i]];
 			}
+			return functionValue(new FcnRcdValue(domain, range, true));
 		}
 
 		private Value set(final int start, final Value[] elems) {
@@ -650,27 +599,24 @@ public final class CBOR {
 			return mv;
 		}
 
-		private Value[] items(final int n, final int depth) {
+		private Value[] items(final int n) {
 			final Value[] items = new Value[n];
 			owed += n;
 			for (int i = 0; i < n; i++) {
-				items[i] = member(depth);
+				items[i] = member();
 			}
 			return items;
 		}
 
 		/** The next of the items that an array or a map has added to owed. */
-		private Value member(final int depth) {
+		private Value member() {
 			owed--;
-			return item(depth);
+			return item();
 		}
 
-		private int initial(final int depth) {
+		private int initial() {
 			if (pos == in.length) {
 				throw error(pos, "the input ends inside a CBOR data item");
-			}
-			if (depth > MAX_DEPTH) {
-				throw error(pos, "data items are nested more than " + MAX_DEPTH + " deep");
 			}
 			return in[pos++] & 0xff;
 		}
@@ -698,8 +644,8 @@ public final class CBOR {
 
 		/**
 		 * Checked before anything is allocated. The bytes owed to the enclosing arrays and maps are not
-		 * available. Otherwise each of 512 nested arrays could claim the rest of the input, and the decoder
-		 * would allocate 512 times the input's size instead of an amount in proportion to it.
+		 * available. Otherwise each nested array could claim the rest of the input, and total allocation
+		 * would grow with nesting depth instead of remaining proportional to the input size.
 		 */
 		private int count(final int start, final long n, final int minBytesPerItem) {
 			if (n < 0 || n > (in.length - pos - owed) / minBytesPerItem) {
