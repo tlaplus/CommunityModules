@@ -41,7 +41,7 @@ appear in module `MTheorems.tla`, and proofs of these theorems can be found in `
 How to use it
 -------------
 
-You must be running [Java 9 or higher](https://github.com/tlaplus/CommunityModules/issues/34#issuecomment-756571840).
+You must be running Java 11 or higher.
 
 Just copy & paste the snippet, the operators, or the set of modules you are interested in.
 
