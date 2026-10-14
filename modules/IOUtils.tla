@@ -14,6 +14,10 @@
 (* perform side effects when executed by TLC with the Java overrides.      *)
 (***************************************************************************)
 
+\* The external-process operators IOExec, IOEnvExec, IOExecTemplate and
+\* IOEnvExecTemplate are disabled by default. Set the system property
+\* -Dtlc2.overrides.IOUtils.enableExec=true to allow TLC to run OS commands.
+
 LOCAL INSTANCE TLC
 LOCAL INSTANCE Integers
 LOCAL INSTANCE Sequences

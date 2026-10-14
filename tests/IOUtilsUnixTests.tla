@@ -100,7 +100,7 @@ ASSUME PrintT("IOUtilsUnixTests!C!d")
 \* Run TLC with some spec depending on CommunityModules and CM on the classpath.
 \* Pass an environment variable to the nested spec.
 ASSUME(LET ret == IOEnvExec([SOME_NESTED_VAR |-> "SOME_VAL", B |-> "23"],
-                            <<"java", "-cp", "modules:build/deps:build/modules:tlc/tla2tools.jar", "tlc2.TLC",
+                            <<"java", "-cp", "modules:build/deps:build/modules:tlc/tla2tools.jar", "-Dtlc2.overrides.IOUtils.enableExec=true", "tlc2.TLC",
                                           "-config", "Counter.cfg", "tests/nested/CounterCM">>)
                                                                  IN /\ PrintT(ret)
                                                                     /\ ret.exitValue = 0

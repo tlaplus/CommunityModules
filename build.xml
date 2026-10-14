@@ -134,6 +134,7 @@
 			<!-- Report execution statistics as azure-pipelien -->
 			<sysproperty key="tlc2.TLC.ide" value="azure-pipeline"/>
 			<sysproperty key="util.ExecutionStatisticsCollector.id" value="01ed03e40ba44f278a934849dd2b1038"/>
+			<sysproperty key="tlc2.overrides.IOUtils.enableExec" value="true"/>
 			
 			<arg value="-fp"/>
 			<arg value="1"/>

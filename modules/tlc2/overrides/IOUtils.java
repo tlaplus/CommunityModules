@@ -370,6 +370,9 @@ public class IOUtils {
 	
 	private static Value runProcess(final ProcessBuilder processBuilder)
 			throws IOException, InterruptedException {
+		if (!Boolean.getBoolean("tlc2.overrides.IOUtils.enableExec")) {
+			throw new EvalException(EC.GENERAL, "IOUtils exec is disabled by default. Evaluating an IOUtils exec operator such as IOExec runs an OS command. Set -Dtlc2.overrides.IOUtils.enableExec=true to allow it.");
+		}
 		// 3. Run command-line and receive its output.
 		final Process process = processBuilder/* .inheritIO() */.start();
 
