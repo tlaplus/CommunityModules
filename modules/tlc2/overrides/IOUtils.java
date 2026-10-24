@@ -346,8 +346,9 @@ public class IOUtils {
 		return runProcess(getEnv(environment), command);
 	}
 
-	private static Map<String, String> getEnv(final RecordValue environment) {
+	private static Map<String, String> getEnv(final RecordValue env) {
 		// Convert record of environment variables to what ProcessBuilder works with.
+		final RecordValue environment = env.snapshot();
 		final Map<String, String> penv = new HashMap<>();
 		for (int i = 0; i < environment.size(); i++) {
 			final UniqueString name = environment.names[i];

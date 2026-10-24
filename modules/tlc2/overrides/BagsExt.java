@@ -51,6 +51,7 @@ public final class BagsExt {
 			throw new EvalException(EC.TLC_MODULE_ARGUMENT_ERROR,
 					new String[] { "third", "FoldBag", "bag", Values.ppr(bag.toString()) });
 		}
+		bfcn = bfcn.snapshot();
 
 		final Value[] domain = bfcn.getDomainAsValues();
 		final Value[] values = bfcn.values;
