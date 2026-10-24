@@ -69,7 +69,7 @@ public final class Functions {
 			final Value fcn = val.toFcnRcd();
 			if (fcn instanceof FcnRcdValue) {
 				// Input e.g. [a |-> 1, b |-> 2] or [x \in BOOLEAN |-> x]
-				return isInjectiveNonDestructive(((FcnRcdValue) fcn).values);
+				return isInjectiveNonDestructive(((FcnRcdValue) fcn).snapshot().values);
 			}
 			throw new EvalException(EC.TLC_MODULE_ONE_ARGUMENT_ERROR,
 					new String[] { "IsInjective", "function", Values.ppr(val.toString()) });

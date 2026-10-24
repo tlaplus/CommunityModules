@@ -75,6 +75,7 @@ public final class SVG {
 		if(attrs == null){
 			throw new Exception("Was unable to convert element to a record: " + attrsVal.toString());
 		}
+		attrs = attrs.snapshot();
 		String attrStr = "";
 		for (UniqueString us : attrs.names) {
 			attrStr += " ";
@@ -96,13 +97,13 @@ public final class SVG {
 			children = tv.elems;
 		} else if (childrenVal instanceof RecordValue) {
 			RecordValue rv = (RecordValue) childrenVal.toRcd();
-			children = rv.values;
+			children = rv.snapshot().values;
 		} else if (childrenVal instanceof FcnRcdValue) {
 			FcnRcdValue fcv = (FcnRcdValue) childrenVal.toFcnRcd();
-			children = fcv.values;
+			children = fcv.snapshot().values;
 		} else if (childrenVal instanceof FcnLambdaValue) {
 			FcnRcdValue fcv = (FcnRcdValue) childrenVal.toFcnRcd();
-			children = fcv.values;
+			children = fcv.snapshot().values;
 		} else {
 			throw new Exception("Was unable to convert element to a tuple or (function) record: " + childrenVal.toString());
 		}

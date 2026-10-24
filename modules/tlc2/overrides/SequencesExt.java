@@ -193,7 +193,7 @@ public final class SequencesExt {
 		set.normalize();
 		
 		final ValueVec elems = set.elems;
-		if (set.elems.isEmpty()) {
+		if (elems.isEmpty()) {
 			throw new EvalException(EC.TLC_MODULE_ONE_ARGUMENT_ERROR,
 					new String[] { "LongestCommonPrefix", "non-empty set", Values.ppr(val.toString()) });
 		}

@@ -263,7 +263,8 @@ public final class CBOR {
 			}
 		}
 
-		private void function(final FcnRcdValue f) {
+		private void function(final FcnRcdValue fcn) {
+			final FcnRcdValue f = fcn.snapshot();
 			final Value form = functionValue(f);
 			if (form instanceof TupleValue) {
 				array(((TupleValue) form).elems);
