@@ -188,7 +188,7 @@ THEOREM ProductSetZero ==
 (* bounded by the product of the full set.                               *)
 (*************************************************************************)
 THEOREM ProductSetNatSubset ==
-    ASSUME NEW S \in SUBSET Nat \ {0}, IsFiniteSet(S),
+    ASSUME NEW S \in SUBSET (Nat \ {0}), IsFiniteSet(S),
            NEW T \in SUBSET S
     PROVE  ProductSet(T) <= ProductSet(S)
 
