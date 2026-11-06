@@ -295,7 +295,7 @@ THEOREM ProductSetZero ==
   <2>. QED   BY DEF P
 
 THEOREM ProductSetNatSubset ==
-    ASSUME NEW S \in SUBSET Nat \ {0}, IsFiniteSet(S),
+    ASSUME NEW S \in SUBSET (Nat \ {0}), IsFiniteSet(S),
            NEW T \in SUBSET S
     PROVE  ProductSet(T) <= ProductSet(S)
 <1>. DEFINE U == S \ T
@@ -362,7 +362,7 @@ THEOREM MapThenSumSetAddElement ==
     ASSUME NEW S, IsFiniteSet(S), NEW x, x \notin S,
            NEW op(_), \A s \in S \union {x} : op(s) \in Int
     PROVE  MapThenSumSet(op, S \union {x}) = op(x) + MapThenSumSet(op, S)
-<1>. \A T \in SUBSET S \union {x} : T # {} => (CHOOSE t \in T : TRUE) \in T 
+<1>. \A T \in SUBSET (S \union {x}) : T # {} => (CHOOSE t \in T : TRUE) \in T 
   OBVIOUS
 <1>. /\ 0 \in Int 
      /\ \A i,j \in Int : i+j \in Int
