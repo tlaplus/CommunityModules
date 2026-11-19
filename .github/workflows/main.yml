@@ -30,6 +30,23 @@ jobs:
       uses: mxschmitt/action-tmate@v3
       with:
         limit-access-to-actor: true
+    - name: Set up Maven 3.9.9
+      if: matrix.os == 'ubuntu-latest'
+      uses: stCarolas/setup-maven@d6af6abeda15e98926a57b5aa970a96bb37f97d1 # v5
+      with:
+        maven-version: '3.9.9'
+    - name: Set up GNUPG private key
+      if: matrix.os == 'ubuntu-latest'
+      run: 'echo "$GPG_PRIVATE_KEY" > key.gpg && gpg --import key.gpg && rm key.gpg'
+      shell: bash
+      env:
+        GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+    - name: Set up maven credentials
+      if: matrix.os == 'ubuntu-latest'
+      run: 'mkdir -p ~/.m2 && echo "$MVN_SETTINGS_XML" > ~/.m2/settings.xml'
+      shell: bash
+      env:
+        MVN_SETTINGS_XML: ${{ secrets.MVN_SETTINGS_XML_2026 }}
     - name: Get current date
       id: date
       run: echo "date=$(date +'%Y%m%d%H%M')" >> "$GITHUB_OUTPUT"
@@ -98,6 +115,16 @@ jobs:
         repository: tlaplus/tlaplus
         event-type: tlaplus-dispatch
         client-payload: '{"source": "CommunityModules"}'
+
+      ##
+      ## Upload dist/CommunityModules.jar to the Central Portal snapshot repository.
+      ## Same mechanism as tla2tools.jar.
+      ##
+    - name: Upload to Maven Central
+      if: matrix.os == 'ubuntu-latest'
+      continue-on-error: true
+      run: |
+           mvn gpg:sign-and-deploy-file -Durl=https://central.sonatype.com/repository/maven-snapshots/ -DrepositoryId=ossrh -DpomFile=ossrh.xml -Dfile=dist/CommunityModules.jar -f ossrh.xml
 
   tlaps:
     name: Verify TLAPS proofs
